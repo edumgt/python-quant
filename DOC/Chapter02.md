@@ -1,0 +1,16 @@
+# Chapter 02. Cross Validation을 쉽게 이해하기
+
+`CrossValid.py`의 핵심은 "한 번 나눠서 평가하지 말고 여러 번 나눠 평균을 보자"입니다.
+
+## 왜 필요한가?
+- 단일 train/test split은 운에 따라 점수가 흔들릴 수 있음
+- K-Fold는 데이터를 K개로 나눠 번갈아 검증하여 안정적인 평균 점수 제공
+
+## 코드에서 보는 포인트
+- `make_classification`: 실습용 분류 데이터 자동 생성
+- `LogisticRegression`: 빠르고 해석이 쉬운 선형 분류기
+- `cross_val_score(..., cv=5)`: 5번 반복 검증
+
+## API로 확장 시 장점
+- 실시간으로 `n_samples`, `n_features`, `cv`를 바꿔 결과 비교 가능
+- 프론트에서 하이퍼파라미터 실험 UI를 만들기 쉬움
