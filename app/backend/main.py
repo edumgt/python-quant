@@ -16,7 +16,16 @@ FRONTEND_DIR = ROOT_DIR / "app" / "frontend"
 GENERATED_DIR = ROOT_DIR / "app" / "generated"
 GENERATED_DIR.mkdir(parents=True, exist_ok=True)
 
-app = FastAPI(title="Python Education Cloud API", version="1.0.0")
+app = FastAPI(
+    title="Python Education Cloud API",
+    version="2.0.0",
+    description=(
+        "교육용 ML/DL API 서버 | Educational ML/DL API server. "
+        "Supports: Cross-Validation, Decision Boundary, Random Forest, "
+        "KMeans Clustering, SVM, MLP Neural Network, Linear/Polynomial Regression, "
+        "Text Classification (NLP), OpenCV Animation, HuggingFace Diffusion."
+    ),
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -41,6 +50,34 @@ class CircleAnimationRequest(BaseModel):
     width: int = Field(default=512, ge=128, le=1920)
     height: int = Field(default=512, ge=128, le=1080)
     fps: int = Field(default=30, ge=10, le=60)
+
+
+class KMeansRequest(BaseModel):
+    n_samples: int = Field(default=400, ge=100, le=5000)
+    n_clusters: int = Field(default=4, ge=2, le=10)
+    cluster_std: float = Field(default=0.8, ge=0.1, le=3.0)
+
+
+class SVMRequest(BaseModel):
+    kernel: str = Field(default="rbf", pattern="^(rbf|linear|poly)$")
+    C: float = Field(default=1.0, ge=0.01, le=100.0)
+
+
+class MLPRequest(BaseModel):
+    hidden_layers: str = Field(default="128,64,32", pattern=r"^\d+(,\d+)*$")
+    max_iter: int = Field(default=300, ge=50, le=1000)
+    n_samples: int = Field(default=1000, ge=200, le=10000)
+
+
+class LinearRegressionRequest(BaseModel):
+    degree: int = Field(default=1, ge=1, le=5)
+    n_samples: int = Field(default=200, ge=50, le=2000)
+    noise: float = Field(default=3.0, ge=0.0, le=20.0)
+
+
+class TextClassifyRequest(BaseModel):
+    texts: list[str] = Field(default=["The team played amazing hockey tonight!"])
+    max_features: int = Field(default=5000, ge=500, le=20000)
 
 
 class DiffusionRequest(BaseModel):
@@ -177,6 +214,278 @@ def circle_animation(req: CircleAnimationRequest) -> dict[str, str]:
 
     writer.release()
     return {"video_url": "/files/circle_animation.mp4"}
+
+
+@app.post("/api/ml/kmeans")
+def kmeans_clustering(req: KMeansRequest) -> dict[str, object]:
+    import matplotlib
+    import numpy as np
+    from sklearn.cluster import KMeans
+    from sklearn.datasets import make_blobs
+    from sklearn.metrics import silhouette_score
+    from sklearn.preprocessing import StandardScaler
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    X, _ = make_blobs(
+        n_samples=req.n_samples,
+        centers=req.n_clusters,
+        cluster_std=req.cluster_std,
+        random_state=42,
+    )
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    kmeans = KMeans(n_clusters=req.n_clusters, random_state=42, n_init=10)
+    labels = kmeans.fit_predict(X_scaled)
+    centers = kmeans.cluster_centers_
+    sil = float(silhouette_score(X_scaled, labels))
+
+    # Elbow data
+    inertias = []
+    ks = list(range(2, min(req.n_clusters + 4, 10)))
+    for ki in ks:
+        km = KMeans(n_clusters=ki, random_state=42, n_init=10)
+        km.fit(X_scaled)
+        inertias.append(float(km.inertia_))
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    axes[0].scatter(X_scaled[:, 0], X_scaled[:, 1], c=labels, cmap="tab10", alpha=0.7, s=12)
+    axes[0].scatter(centers[:, 0], centers[:, 1], c="red", marker="X", s=200, zorder=5)
+    axes[0].set_title(f"KMeans (k={req.n_clusters})  Silhouette={sil:.3f}")
+    axes[0].grid(True)
+    axes[1].plot(ks, inertias, "bo-")
+    axes[1].set_xlabel("k")
+    axes[1].set_ylabel("Inertia")
+    axes[1].set_title("Elbow Method")
+    axes[1].grid(True)
+    plt.tight_layout()
+
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format="png", dpi=120)
+    plt.close(fig)
+
+    return {
+        "image_base64": base64.b64encode(buffer.getvalue()).decode(),
+        "silhouette_score": sil,
+        "inertia": float(kmeans.inertia_),
+        "elbow": {"ks": ks, "inertias": inertias},
+    }
+
+
+@app.post("/api/ml/svm")
+def svm_classifier(req: SVMRequest) -> dict[str, object]:
+    import matplotlib
+    import numpy as np
+    from sklearn.datasets import make_classification
+    from sklearn.inspection import DecisionBoundaryDisplay
+    from sklearn.metrics import accuracy_score, classification_report
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.svm import SVC
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    X, y = make_classification(
+        n_samples=300, n_features=2, n_redundant=0, n_informative=2,
+        n_clusters_per_class=1, random_state=42,
+    )
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=42)
+
+    svm = SVC(kernel=req.kernel, C=req.C, gamma="scale", random_state=42)
+    svm.fit(X_train, y_train)
+    y_pred = svm.predict(X_test)
+    report = classification_report(y_test, y_pred, output_dict=True)
+    accuracy = float(accuracy_score(y_test, y_pred))
+    n_support = int(np.sum(svm.n_support_))
+
+    fig, ax = plt.subplots(figsize=(7, 5))
+    DecisionBoundaryDisplay.from_estimator(
+        svm, X_scaled, ax=ax, alpha=0.3, cmap=plt.cm.coolwarm, response_method="predict"
+    )
+    ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=plt.cm.coolwarm, edgecolors="k", s=25, label="Train")
+    ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=plt.cm.coolwarm, marker="^", edgecolors="k", s=25, label="Test")
+    ax.scatter(
+        svm.support_vectors_[:, 0], svm.support_vectors_[:, 1],
+        s=100, linewidth=1.5, facecolors="none", edgecolors="k", label="Support Vectors",
+    )
+    ax.set_title(f"SVM ({req.kernel} kernel, C={req.C})  Acc={accuracy:.3f}")
+    ax.legend(fontsize=8)
+    ax.grid(True)
+    plt.tight_layout()
+
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format="png", dpi=140)
+    plt.close(fig)
+
+    return {
+        "image_base64": base64.b64encode(buffer.getvalue()).decode(),
+        "accuracy": accuracy,
+        "n_support_vectors": n_support,
+        "report": report,
+    }
+
+
+@app.post("/api/ml/mlp")
+def mlp_classifier(req: MLPRequest) -> dict[str, object]:
+    import matplotlib
+    from sklearn.datasets import make_classification
+    from sklearn.metrics import accuracy_score, classification_report
+    from sklearn.model_selection import train_test_split
+    from sklearn.neural_network import MLPClassifier
+    from sklearn.preprocessing import StandardScaler
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    hidden_layers = tuple(int(x) for x in req.hidden_layers.split(","))
+
+    X, y = make_classification(
+        n_samples=req.n_samples, n_features=10, n_informative=6,
+        n_redundant=2, n_classes=2, random_state=42,
+    )
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+    mlp = MLPClassifier(
+        hidden_layer_sizes=hidden_layers, activation="relu", solver="adam",
+        max_iter=req.max_iter, random_state=42,
+    )
+    mlp.fit(X_train, y_train)
+    y_pred = mlp.predict(X_test)
+    accuracy = float(accuracy_score(y_test, y_pred))
+    report = classification_report(y_test, y_pred, output_dict=True)
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.plot(mlp.loss_curve_, linewidth=2, color="#2563eb")
+    ax.set_xlabel("Iteration")
+    ax.set_ylabel("Loss")
+    ax.set_title(f"MLP Loss Curve  (layers={hidden_layers})  Acc={accuracy:.3f}")
+    ax.grid(True)
+    plt.tight_layout()
+
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format="png", dpi=140)
+    plt.close(fig)
+
+    return {
+        "image_base64": base64.b64encode(buffer.getvalue()).decode(),
+        "accuracy": accuracy,
+        "n_iterations": mlp.n_iter_,
+        "report": report,
+    }
+
+
+@app.post("/api/ml/linear-regression")
+def linear_regression(req: LinearRegressionRequest) -> dict[str, object]:
+    import matplotlib
+    import numpy as np
+    from sklearn.linear_model import LinearRegression as LR
+    from sklearn.metrics import mean_squared_error, r2_score
+    from sklearn.pipeline import make_pipeline
+    from sklearn.preprocessing import PolynomialFeatures
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    rng = np.random.default_rng(42)
+    X = rng.uniform(0, 10, size=(req.n_samples, 1))
+    # True underlying function: mixture so poly can shine
+    y = sum(
+        c * X.ravel() ** i
+        for i, c in enumerate([10, -4, 0.5][: req.degree + 1])
+    ) + rng.normal(0, req.noise, req.n_samples)
+
+    model = make_pipeline(
+        PolynomialFeatures(degree=req.degree, include_bias=False),
+        LR(),
+    )
+    model.fit(X, y)
+    y_pred = model.predict(X)
+    r2 = float(r2_score(y, y_pred))
+    mse = float(mean_squared_error(y, y_pred))
+
+    X_plot = np.linspace(0, 10, 200).reshape(-1, 1)
+    y_plot = model.predict(X_plot)
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.scatter(X, y, alpha=0.4, s=15, label="Data")
+    ax.plot(X_plot, y_plot, "r-", linewidth=2, label=f"Poly degree={req.degree}")
+    ax.set_title(f"Regression (degree={req.degree})  R²={r2:.3f}  MSE={mse:.2f}")
+    ax.set_xlabel("X")
+    ax.set_ylabel("y")
+    ax.legend()
+    ax.grid(True)
+    plt.tight_layout()
+
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format="png", dpi=140)
+    plt.close(fig)
+
+    return {
+        "image_base64": base64.b64encode(buffer.getvalue()).decode(),
+        "r2_score": r2,
+        "mse": mse,
+        "degree": req.degree,
+    }
+
+
+@app.post("/api/nlp/text-classify")
+def text_classify(req: TextClassifyRequest) -> dict[str, object]:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.pipeline import make_pipeline
+
+    # Inline bilingual training corpus — sports vs. politics
+    _TRAIN_TEXTS = [
+        # Sports (label 0)
+        "The hockey team scored three goals in the final period to win the championship.",
+        "Basketball playoffs begin next week with exciting matchups across the league.",
+        "The pitcher threw a no-hitter in yesterday's baseball game.",
+        "Football season kicks off with record-breaking ticket sales.",
+        "The swimmer broke the world record in the 100m freestyle at the Olympics.",
+        "Tennis star wins Grand Slam after coming back from injury.",
+        "Ice hockey league announces expansion teams in new cities.",
+        "The marathon runner finished in record time despite difficult conditions.",
+        "Soccer World Cup qualifying matches start this weekend.",
+        "Gold medals were awarded in gymnastics and rowing at the games.",
+        # Politics (label 1)
+        "The senator proposed a new budget policy for healthcare reform.",
+        "Parliament voted on the controversial immigration bill last night.",
+        "The president signed an executive order on environmental regulations.",
+        "Political debates are heating up ahead of the upcoming election.",
+        "The government announced a new economic stimulus package.",
+        "Opposition leaders called for an emergency session of parliament.",
+        "Tax reform legislation passed the Senate with bipartisan support.",
+        "Foreign policy discussions dominated the United Nations summit.",
+        "The prime minister addressed the nation about the economic crisis.",
+        "Congressional hearings on data privacy began on Monday.",
+    ]
+    _TRAIN_LABELS = [0] * 10 + [1] * 10
+    _LABEL_NAMES = ["rec.sport", "politics"]
+
+    pipe = make_pipeline(
+        TfidfVectorizer(max_features=req.max_features, ngram_range=(1, 2), stop_words="english"),
+        LogisticRegression(max_iter=1000),
+    )
+    pipe.fit(_TRAIN_TEXTS, _TRAIN_LABELS)
+
+    predictions = []
+    for text in req.texts:
+        pred_idx = int(pipe.predict([text])[0])
+        prob = pipe.predict_proba([text])[0]
+        predictions.append({
+            "text": text[:200],
+            "label": _LABEL_NAMES[pred_idx],
+            "confidence": float(prob[pred_idx]),
+        })
+
+    return {"predictions": predictions, "categories": _LABEL_NAMES}
 
 
 @app.post("/api/genai/text-to-image")
