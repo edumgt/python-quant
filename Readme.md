@@ -1,107 +1,307 @@
 <div align="center">
 
-# 🧠 Python ML/DL Education Lab
+# 🐍 Python → 퀀트 시스템 개발 완전 로드맵
 
-**Python FastAPI 백엔드 + Vanilla JS 프론트엔드로 구성한 ML/DL 교육 플랫폼**
+**파이썬 기초부터 알고리즘 트레이딩 시스템까지 — 실습 중심 교육 플랫폼**
 
-**ML/DL Education Platform with Python FastAPI Backend + Vanilla JS Frontend**
+**From Python Basics to Algorithmic Trading System — Hands-on Education Platform**
 
 [![GitHub Sponsors](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=github-sponsors)](https://github.com/sponsors/edumgt)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)](https://fastapi.tiangolo.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[**한국어 README**](README.ko.md) | [**English README**](README.en.md) | [**📚 Docs**](DOC/)
+[**한국어 README**](README.ko.md) | [**English README**](README.en.md) | [**📚 챕터 문서**](DOC/) | [**📖 퀀트 용어 사전**](README2.md)
 
 </div>
 
 ---
 
-## 📖 소개 / Introduction
+## 🗺️ 전체 로드맵 / Full Roadmap
 
-이 저장소는 **기초 ML → 신경망 → NLP → 컴퓨터 비전 → 생성형 AI** 흐름으로 구성한 교육용 실습 플랫폼입니다.  
-각 실습 모듈은 **독립 Python 스크립트**와 **FastAPI REST API** 두 가지 방식으로 실행할 수 있습니다.
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Phase 0   │  파이썬 기초 (Python Fundamentals)                  │
+│            │  환경 설정 · 자료형 · 제어문 · 함수 · 클래스        │
+└─────┬───────────────────────────────────────────────────────────┘
+      │
+┌─────▼───────────────────────────────────────────────────────────┐
+│  Phase 1   │  데이터 분석 기초 (Data Analysis)                   │
+│            │  pandas · numpy · matplotlib · 금융 데이터 수집     │
+└─────┬───────────────────────────────────────────────────────────┘
+      │
+┌─────▼───────────────────────────────────────────────────────────┐
+│  Phase 2   │  투자 이론 & 기술 분석 (Investment Theory)          │
+│            │  이동평균 · RSI · 재무제표 · 밸류에이션             │
+└─────┬───────────────────────────────────────────────────────────┘
+      │
+┌─────▼───────────────────────────────────────────────────────────┐
+│  Phase 3   │  머신러닝 기초 (ML Fundamentals)          [Lab]     │
+│            │  회귀 · 분류 · 교차검증 · 결정경계 시각화           │
+└─────┬───────────────────────────────────────────────────────────┘
+      │
+┌─────▼───────────────────────────────────────────────────────────┐
+│  Phase 4   │  퀀트 전략 & 백테스팅 (Quant Strategy)             │
+│            │  추세추종 · 모멘텀 · 포트폴리오 최적화 · MDD/샤프   │
+└─────┬───────────────────────────────────────────────────────────┘
+      │
+┌─────▼───────────────────────────────────────────────────────────┐
+│  Phase 5   │  고급 ML/DL & 예측 모델 (Advanced ML/DL) [Lab]     │
+│            │  SVM · RandomForest · MLP · 시계열 · NLP 감성분석  │
+└─────┬───────────────────────────────────────────────────────────┘
+      │
+┌─────▼───────────────────────────────────────────────────────────┐
+│  Phase 6   │  자동매매 시스템 (Algorithmic Trading)    [Lab]     │
+│            │  FastAPI 서비스 · 증권사 API · 실전 배포            │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-This repository is an educational lab platform organized from **basic ML → neural networks → NLP → computer vision → generative AI**.  
-Each module can be run as a **standalone Python script** or accessed via a **FastAPI REST API**.
+> 📖 퀀트 용어가 낯설다면 [README2.md — 퀀트 투자 용어 사전](README2.md)을 먼저 읽어보세요.
 
 ---
 
-## 🗂️ 구성 / Structure
+## 📚 커리큘럼 상세 / Detailed Curriculum
+
+### 🟦 Phase 0 — 파이썬 기초 (Python Fundamentals)
+
+> 목표: 코딩 경험 없이도 퀀트 실습이 가능한 파이썬 기반 구축
+
+| # | 주제 | 핵심 내용 | 퀀트 연결 |
+|---|------|-----------|-----------|
+| P0-1 | 환경 설정 | Python 설치, pip, venv, Jupyter | 실습 환경 준비 |
+| P0-2 | 자료형 & 연산 | int, float, str, list, dict | 주가·수익률 데이터 표현 |
+| P0-3 | 제어문 & 반복 | if/else, for, while | 매매 신호 조건 로직 |
+| P0-4 | 함수 & 모듈 | def, import, lambda | 전략 함수화 |
+| P0-5 | 클래스 기초 | OOP, \_\_init\_\_, method | 트레이딩 시스템 설계 |
+
+---
+
+### 🟩 Phase 1 — 데이터 분석 기초 (Data Analysis)
+
+> 목표: 금융 데이터를 수집·정제·시각화하는 능력 확보
+
+| # | 주제 | 핵심 라이브러리 | 퀀트 실습 |
+|---|------|----------------|-----------|
+| P1-1 | 배열 연산 | `numpy` | 수익률 계산, 로그 수익률 |
+| P1-2 | 데이터프레임 | `pandas` | OHLCV 데이터 처리 |
+| P1-3 | 시각화 | `matplotlib`, `seaborn` | 주가 차트, 수익률 히스토그램 |
+| P1-4 | 금융 데이터 수집 | `yfinance`, `FinanceDataReader` | 글로벌·국내 주가 다운로드 |
+| P1-5 | 데이터 전처리 | `pandas` | 결측치 처리, 정규화 |
+
+**핵심 코드 예시:**
+```python
+import FinanceDataReader as fdr
+import matplotlib.pyplot as plt
+
+df = fdr.DataReader('005930', '2020-01-01')  # 삼성전자
+df['Close'].plot(title='삼성전자 주가')
+plt.show()
+```
+
+---
+
+### 🟨 Phase 2 — 투자 이론 & 기술 분석 (Investment Theory)
+
+> 목표: 차트 지표와 재무 지표를 코드로 직접 계산·해석
+
+| # | 주제 | 내용 | 관련 용어 |
+|---|------|------|-----------|
+| P2-1 | 이동평균 & 골든/데드크로스 | MA5/20/60/120, 매매 신호 | [이동평균선 →](README2.md#-이동평균선-moving-average-ma) |
+| P2-2 | RSI & 볼린저 밴드 | 과매수/과매도 판단 | [RSI →](README2.md#-rsi-relative-strength-index-상대강도지수) |
+| P2-3 | 캔들 차트 분석 | 양봉/음봉, 패턴 인식 | [캔들 차트 →](README2.md#️-캔들-차트-candlestick-chart) |
+| P2-4 | 재무제표 수집 | PER, PBR, ROE 계산 | [기본적 분석 →](README2.md#-기본적-분석-fundamental-analysis) |
+| P2-5 | 밸류에이션 | DCF 모델, 상대가치 | [밸류에이션 →](README2.md#-밸류에이션-valuation) |
+| P2-6 | 거시지표 해석 | 금리·환율·유가와 주식 관계 | [거시경제 →](README2.md#2-거시경제-용어) |
+
+**핵심 코드 예시:**
+```python
+# RSI 계산
+delta = df['Close'].diff()
+gain = delta.clip(lower=0).rolling(14).mean()
+loss = -delta.clip(upper=0).rolling(14).mean()
+rsi = 100 - (100 / (1 + gain / loss))
+```
+
+---
+
+### 🟧 Phase 3 — 머신러닝 기초 (ML Fundamentals) `[Lab]`
+
+> 목표: scikit-learn으로 주가 방향 예측 모델 구축의 기초 이해
+
+| Chapter | 주제 | 스크립트 | 퀀트 적용 |
+|---------|------|----------|-----------|
+| [Ch.02](DOC/Chapter02.md) | 교차 검증 | `CrossValid.py` | 전략 과최적화(overfitting) 방지 |
+| [Ch.03](DOC/Chapter03.md) | 결정경계 시각화 | `DecisionBoundary.py` | 매수/매도 구간 시각화 |
+| [Ch.04](DOC/Chapter04.md) | 선형·다항 회귀 | `LinearRegression.py` | 가격 예측, 추세선 모델링 |
+| — | 특징 공학 | — | 기술 지표 → ML 입력 피처 변환 |
+
+**핵심 퀀트 연결:**
+```python
+from sklearn.model_selection import cross_val_score
+# 교차 검증으로 백테스트 신뢰도 검증
+scores = cross_val_score(model, X_features, y_direction, cv=5)
+print(f'평균 정확도: {scores.mean():.2%}')
+```
+
+---
+
+### 🟥 Phase 4 — 퀀트 전략 & 백테스팅 (Quant Strategy)
+
+> 목표: 실제 투자 전략을 코드로 구현하고 성과를 정량 평가
+
+| # | 전략 | 내용 | 성과 지표 |
+|---|------|------|-----------|
+| P4-1 | 추세추종 | 이동평균 크로스오버 | 연간 수익률, MDD |
+| P4-2 | 모멘텀 | 12개월 수익률 기반 종목 선택 | 샤프 비율 |
+| P4-3 | 평균회귀 | 볼린저 밴드 이탈 전략 | 승률, 손익비 |
+| P4-4 | 포트폴리오 최적화 | Mean-Variance, Risk Parity | 변동성, 상관계수 |
+| P4-5 | 백테스트 구현 | `backtrader` / 직접 구현 | [MDD →](README2.md#-mdd-maximum-drawdown-최대낙폭) · [샤프 →](README2.md#-샤프-비율-sharpe-ratio) |
+| P4-6 | 계절성 분석 | 1월 효과, 연말 랠리 탐지 | [계절성 →](README2.md#-시장-계절성-seasonality) |
+
+**핵심 코드 예시:**
+```python
+# 샤프 비율 계산
+def sharpe_ratio(returns, risk_free=0.03):
+    excess = returns - risk_free / 252
+    return excess.mean() / excess.std() * (252 ** 0.5)
+
+# MDD 계산
+def max_drawdown(equity_curve):
+    rolling_max = equity_curve.cummax()
+    drawdown = (equity_curve - rolling_max) / rolling_max
+    return drawdown.min()
+```
+
+> ⚠️ 백테스트 주의: 과거 성과 ≠ 미래 수익. 항상 워크포워드 테스트와 교차 검증을 병행하세요.
+
+---
+
+### 🟪 Phase 5 — 고급 ML/DL & 예측 모델 (Advanced ML/DL) `[Lab]`
+
+> 목표: 앙상블·딥러닝·NLP로 퀀트 예측 모델을 고도화
+
+| Chapter | 주제 | 스크립트 | 퀀트 적용 |
+|---------|------|----------|-----------|
+| [Ch.11](DOC/Chapter11.md) | KMeans 클러스터링 | `KMeansClustering.py` | 주식 섹터 자동 분류, 포트폴리오 분산화 |
+| [Ch.12](DOC/Chapter12.md) | SVM 분류기 | `SVMClassifier.py` | 주가 방향(상승/하락) 분류 |
+| [Ch.04](DOC/Chapter04.md) | 랜덤 포레스트 | `RandomForest.py` | 팩터 중요도 분석, 앙상블 예측 |
+| [Ch.13](DOC/Chapter13.md) | MLP 신경망 | `NeuralNetMLP.py` | 비선형 가격 패턴 학습 |
+| [Ch.14](DOC/Chapter14.md) | NLP 감성 분석 | `SentimentAnalysis.py` | 뉴스 감성 → 투자 신호 생성 |
+| [Ch.05](DOC/Chapter05.md) | 시계열 예측 | `(ARIMA / LSTM 확장)` | ARIMA → LSTM 순차 예측 |
+| [Ch.06](DOC/Chapter06.md) | 생성형 AI | `HuggingFaceGPU.py` | LLM 기반 리포트 요약·분석 |
+
+**ML → 퀀트 파이프라인:**
+```
+[기술 지표 피처]        [ML 모델]           [퀀트 신호]
+ MA, RSI, Volume  →  RandomForest  →  매수(1) / 매도(0)
+ PER, PBR, ROE    →  SVM           →  가치주 스크리닝
+ 뉴스 텍스트       →  TF-IDF+LR    →  감성 점수 → 포지션 조절
+```
+
+---
+
+### 🔴 Phase 6 — 자동매매 시스템 (Algorithmic Trading) `[Lab]`
+
+> 목표: ML 모델을 실시간 API 서비스로 만들고 증권사 API에 연결
+
+| Chapter | 주제 | 스크립트 | 내용 |
+|---------|------|----------|------|
+| [Ch.07](DOC/Chapter07.md) | FastAPI 백엔드 | `app/backend/main.py` | REST API 서버로 모델 서빙 |
+| [Ch.08](DOC/Chapter08.md) | Vanilla JS 프론트 | `app/frontend/` | 실시간 대시보드 UI |
+| [Ch.09](DOC/Chapter09.md) | 클라우드 배포 | — | AWS/GCP 배포, Docker 컨테이너화 |
+| [Ch.10](DOC/Chapter10.md) | 실습 과제 | — | 종합 퀀트 시스템 구축 |
+| — | 증권사 API 연결 | — | [KIS·키움·Binance →](README2.md#-api-application-programming-interface) |
+| — | 알고리즘 트레이딩 | — | [추세·평균회귀·차익거래 →](README2.md#️-알고리즘-트레이딩-algorithmic-trading) |
+
+**시스템 아키텍처:**
+```
+[데이터 수집]  →  [ML 예측]  →  [FastAPI 서버]  →  [증권사 API]
+ yfinance         모델 추론     /api/ml/predict    매수/매도 주문
+ 크롤링            신호 생성     실시간 대시보드     포지션 관리
+```
+
+---
+
+## 🗂️ 저장소 구조 / Repository Structure
 
 ```text
 .
-├── CrossValid.py              # K-Fold Cross Validation
-├── DecisionBoundary.py        # Decision Boundary Visualization
-├── RandomForest.py            # Random Forest Classifier
-├── KMeansClustering.py        # KMeans Unsupervised Clustering  [NEW]
-├── SVMClassifier.py           # SVM with RBF/Linear/Poly kernel  [NEW]
-├── NeuralNetMLP.py            # MLP Neural Network               [NEW]
-├── LinearRegression.py        # Linear & Polynomial Regression   [NEW]
-├── SentimentAnalysis.py       # TF-IDF + LR Text Classification  [NEW]
-├── HuggingFaceGPU.py          # Stable Diffusion (GPU)
+├── CrossValid.py           # Phase 3: K-Fold 교차 검증
+├── DecisionBoundary.py     # Phase 3: 결정경계 시각화
+├── LinearRegression.py     # Phase 3: 선형·다항 회귀
+├── RandomForest.py         # Phase 5: 랜덤 포레스트 (팩터 분석)
+├── KMeansClustering.py     # Phase 5: 섹터 클러스터링
+├── SVMClassifier.py        # Phase 5: 방향 분류
+├── NeuralNetMLP.py         # Phase 5: MLP 신경망
+├── SentimentAnalysis.py    # Phase 5: 뉴스 감성 분석
+├── OpenCVCPU.py            # Phase 5: 차트 패턴 인식 (OpenCV)
+├── HuggingFaceGPU.py       # Phase 5: 생성형 AI (GPU)
 ├── requirements.txt
+├── README2.md              # 📖 퀀트 투자 용어 사전
 ├── DOC/
-│   ├── Chapter01.md ~ Chapter14.md   (한국어 + English)
+│   ├── Chapter01.md        # 저장소 전체 지도 & 학습 전략
+│   ├── Chapter02.md        # Cross Validation
+│   ├── Chapter03.md        # Decision Boundary
+│   ├── Chapter04.md        # Random Forest
+│   ├── Chapter05.md        # OpenCV 영상 처리
+│   ├── Chapter06.md        # HuggingFace 생성형 AI
+│   ├── Chapter07.md        # FastAPI 백엔드
+│   ├── Chapter08.md        # Vanilla JS 프론트엔드
+│   ├── Chapter09.md        # 클라우드 배포
+│   ├── Chapter10.md        # 실습 과제
+│   ├── Chapter11.md        # KMeans Clustering
+│   ├── Chapter12.md        # SVM Classifier
+│   ├── Chapter13.md        # MLP Neural Network
+│   └── Chapter14.md        # NLP Text Classification
 └── app/
     ├── backend/
-    │   └── main.py            # FastAPI server (all endpoints)
+    │   └── main.py         # FastAPI 서버 (전체 엔드포인트)
     └── frontend/
-        ├── package.json       # Node.js dev setup
         ├── index.html
         ├── styles.css
         └── js/
-            ├── app.js
-            ├── api.js
-            └── views/
-                ├── home.js
-                ├── crossValidation.js
-                ├── decisionBoundary.js
-                ├── randomForest.js
-                ├── kmeans.js         [NEW]
-                ├── svm.js            [NEW]
-                ├── mlp.js            [NEW]
-                ├── linearRegression.js [NEW]
-                ├── sentiment.js      [NEW]
-                ├── opencv.js
-                └── huggingface.js
+            ├── app.js · api.js
+            └── views/      # 각 실습별 UI 모듈
 ```
 
 ---
 
-## 🚀 실행 방법 / Quick Start
+## 🚀 빠른 시작 / Quick Start
 
-### Python 환경 설정 / Python Setup
+### Python 환경
 
 ```bash
-# 1. 의존성 설치 / Install dependencies
+# 1. 의존성 설치
 pip install -r requirements.txt
 
-# 2. 서버 실행 / Start server
+# 2. FastAPI 서버 실행
 uvicorn app.backend.main:app --host 0.0.0.0 --port 8000 --reload
 
-# 3. 브라우저 접속 / Open browser
+# 3. 브라우저 접속
 # http://localhost:8000
 ```
 
-### Node.js 개발 서버 / Node.js Dev Server
+### Node.js 개발 서버
 
 ```bash
 cd app/frontend
-npm install       # devDependencies 설치
-npm run dev       # http://localhost:3000 (CORS 포함)
+npm install
+npm run dev     # http://localhost:3000
 ```
 
-### 독립 스크립트 실행 / Run Standalone Scripts
+### 독립 스크립트 실행
 
 ```bash
+# Phase 3 — ML 기초
 python CrossValid.py
 python DecisionBoundary.py
-python RandomForest.py
+python LinearRegression.py
+
+# Phase 5 — 고급 ML/DL
 python KMeansClustering.py
 python SVMClassifier.py
+python RandomForest.py
 python NeuralNetMLP.py
-python LinearRegression.py
 python SentimentAnalysis.py
 ```
 
@@ -109,66 +309,77 @@ python SentimentAnalysis.py
 
 ## 📡 API 엔드포인트 / API Endpoints
 
-| Method | Endpoint | 설명 / Description |
-|--------|----------|-------------------|
-| `GET`  | `/api/health` | 서버 상태 확인 / Health check |
-| `POST` | `/api/ml/cross-validation` | K-Fold 교차 검증 |
-| `GET`  | `/api/ml/decision-boundary` | 결정 경계 시각화 |
-| `POST` | `/api/ml/random-forest` | 랜덤 포레스트 분류 |
-| `POST` | `/api/ml/kmeans` | KMeans 클러스터링 |
-| `POST` | `/api/ml/svm` | SVM 분류 (커널 선택 가능) |
-| `POST` | `/api/ml/mlp` | MLP 신경망 분류 |
-| `POST` | `/api/ml/linear-regression` | 선형/다항 회귀 |
-| `POST` | `/api/nlp/text-classify` | TF-IDF 텍스트 분류 |
-| `POST` | `/api/cv/circle-animation` | OpenCV 영상 생성 |
-| `POST` | `/api/genai/text-to-image` | Stable Diffusion (GPU 필요) |
+| Method | Endpoint | 설명 | 퀀트 용도 |
+|--------|----------|------|-----------|
+| `GET`  | `/api/health` | 서버 상태 확인 | — |
+| `POST` | `/api/ml/cross-validation` | K-Fold 교차 검증 | 전략 신뢰도 검증 |
+| `GET`  | `/api/ml/decision-boundary` | 결정경계 시각화 | 매수/매도 구간 확인 |
+| `POST` | `/api/ml/linear-regression` | 선형·다항 회귀 | 가격 추세 예측 |
+| `POST` | `/api/ml/random-forest` | 랜덤 포레스트 | 팩터 중요도 & 방향 예측 |
+| `POST` | `/api/ml/kmeans` | KMeans 클러스터링 | 종목 섹터 자동 분류 |
+| `POST` | `/api/ml/svm` | SVM 분류 | 상승/하락 신호 생성 |
+| `POST` | `/api/ml/mlp` | MLP 신경망 | 비선형 패턴 학습 |
+| `POST` | `/api/nlp/text-classify` | TF-IDF 감성 분류 | 뉴스 → 투자 신호 |
+| `POST` | `/api/cv/circle-animation` | OpenCV 영상 | 차트 패턴 시각화 |
+| `POST` | `/api/genai/text-to-image` | Stable Diffusion | — (GPU 필요) |
 
-전체 API 문서: `http://localhost:8000/docs` (Swagger UI 자동 생성)
-
-Full API docs auto-generated at: `http://localhost:8000/docs`
+전체 Swagger 문서: `http://localhost:8000/docs`
 
 ---
 
-## 📚 학습 커리큘럼 / Learning Curriculum
+## 🎓 학습 체크리스트 / Learning Checklist
 
-| Chapter | 주제 / Topic | 스크립트 / Script |
-|---------|-------------|-----------------|
-| 01 | 저장소 구성 및 학습 전략 / Repo overview | — |
-| 02 | Cross Validation 이해 / Understanding CV | `CrossValid.py` |
-| 03 | Decision Boundary 시각화 / Visualization | `DecisionBoundary.py` |
-| 04 | Random Forest 결과 해석 / RF Results | `RandomForest.py` |
-| 05 | OpenCV 영상 생성 / Video generation | `OpenCVCPU.py` |
-| 06 | HuggingFace Diffusers / GenAI | `HuggingFaceGPU.py` |
-| 07 | FastAPI 백엔드 구조 / BE structure | `app/backend/main.py` |
-| 08 | Vanilla JS 프론트엔드 / FE modules | `app/frontend/` |
-| 09 | 클라우드 배포 시나리오 / Cloud deploy | — |
-| 10 | 실습 과제 / Practice tasks | — |
-| 11 | KMeans Clustering | `KMeansClustering.py` |
-| 12 | SVM Classifier | `SVMClassifier.py` |
-| 13 | MLP Neural Network | `NeuralNetMLP.py` |
-| 14 | NLP Text Classification | `SentimentAnalysis.py` |
+```
+Phase 0  [ ] 파이썬 설치 & 기본 문법 완료
+         [ ] pandas로 CSV 읽고 가공하기
+
+Phase 1  [ ] yfinance로 삼성전자 주가 다운로드
+         [ ] 주가 차트 그리기 (matplotlib)
+
+Phase 2  [ ] 이동평균선 + 골든크로스 신호 코딩
+         [ ] RSI 직접 계산 & 과매수/과매도 표시
+
+Phase 3  [ ] CrossValid.py 실행 & 교차 검증 이해
+         [ ] LinearRegression.py로 가격 회귀 모델 학습
+
+Phase 4  [ ] 추세추종 전략 백테스트 구현
+         [ ] 샤프 비율 & MDD 계산 함수 작성
+
+Phase 5  [ ] KMeans로 코스피 종목 클러스터링
+         [ ] SentimentAnalysis로 뉴스 감성 점수 생성
+
+Phase 6  [ ] FastAPI 서버로 모델 API 서빙
+         [ ] 증권사 API 연결 & 모의 주문 실행
+```
+
+---
+
+## ⚠️ 투자 면책 고지 / Investment Disclaimer
+
+> 이 저장소의 모든 코드와 전략은 **교육 목적**으로만 제공됩니다.
+> 백테스트 결과가 미래 수익을 보장하지 않으며, 실제 투자의 책임은 본인에게 있습니다.
+>
+> All code and strategies in this repository are for **educational purposes only**.
+> Past backtesting results do not guarantee future returns. Invest at your own risk.
 
 ---
 
 ## 💖 후원 / Sponsorship
 
-이 프로젝트가 학습에 도움이 되었다면 GitHub Sponsor로 응원해 주세요!  
-If this project helped your learning, please consider sponsoring via GitHub Sponsors!
+이 프로젝트가 도움이 되었다면 GitHub Sponsor로 응원해 주세요!
 
 [![Sponsor](https://img.shields.io/badge/Sponsor%20this%20project-%E2%9D%A4-ea4aaa?logo=github-sponsors&style=for-the-badge)](https://github.com/sponsors/edumgt)
 
-후원금은 새로운 예제 추가, 문서 개선, 클라우드 인프라 유지에 사용됩니다.  
-Sponsorship funds go toward new examples, documentation improvements, and cloud infrastructure.
+후원금은 퀀트 실습 예제 추가, 문서 개선, 클라우드 인프라 유지에 사용됩니다.
 
 ---
 
 ## 🤝 기여 / Contributing
 
-[CONTRIBUTING.md](CONTRIBUTING.md)를 참고해 주세요. / Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+[CONTRIBUTING.md](CONTRIBUTING.md)를 참고해 주세요.
 
 ---
 
 ## 📄 라이선스 / License
 
 [MIT License](LICENSE) © edumgt
-
