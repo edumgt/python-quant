@@ -44,6 +44,45 @@ flowchart TD
 
 ---
 
+## ⚡ 실전 4단계 퀀트 로드맵 (Quick Path)
+
+> 🎯 **가장 빠른 경로**: 데이터 → 전략 → 백테스트 → ML → 자동매매  
+> 전체 Phase 0~6가 벅차다면 이 4단계 경로로 먼저 시작하세요.
+
+```mermaid
+flowchart LR
+    S1["🟦 1단계 (2~3주)\nPython + 데이터\nyfinance · pandas\nOHLCV 처리"]
+    S2["🟩 2단계 (3~4주)\n투자 전략\nMA · RSI · 볼린저\n규칙 기반 신호"]
+    S3["🟨 3단계 (2~3주)\n백테스트 핵심\nCAGR · Sharpe\nMDD 검증"]
+    S4["🟥 4단계 (4주+)\nML 고도화\nRandomForest\n자동매매 연결"]
+
+    S1 --> S2 --> S3 --> S4
+
+    style S1 fill:#1e3a5f,color:#fff,stroke:#4a90e2,stroke-width:2px
+    style S2 fill:#1e5f3a,color:#fff,stroke:#4ae290,stroke-width:2px
+    style S3 fill:#5f5f1e,color:#fff,stroke:#e2c44a,stroke-width:2px
+    style S4 fill:#5f1e1e,color:#fff,stroke:#e24a4a,stroke-width:2px
+```
+
+| 단계 | 기간 | 핵심 목표 | 주요 도구 | 실습 파일 |
+|------|------|-----------|-----------|-----------|
+| **1단계** | 2~3주 | 데이터를 자유롭게 다루기 | `yfinance` · `pandas` · `matplotlib` | `QuantPipeline.py` |
+| **2단계** | 3~4주 | 규칙 기반 매매 전략 1개 만들기 | `pandas rolling()` · RSI · 볼린저 | `QuantPipeline.py` |
+| **3단계** | 2~3주 | 전략이 진짜 돈 되는지 검증 | CAGR · Sharpe · MDD · 승률 | `Backtest.py` |
+| **4단계** | 4주+ | ML로 예측 정확도 높이기 + 자동매매 | `scikit-learn` · Alpaca · KIS API | `QuantPipeline.py` |
+
+**🚀 4단계 첫 실행:**
+```bash
+python QuantPipeline.py   # 4단계 통합 실행 → quant_pipeline_result.png 생성
+python Backtest.py        # 백테스트 상세 분석 → backtest_result.png 생성
+python RiskManager.py     # 리스크 분석 → risk_result.png 생성
+python PortfolioOptimizer.py  # 포트폴리오 최적화 → portfolio_result.png 생성
+```
+
+> 📘 **상세 가이드**: [DOC/Chapter16.md — 4단계 실전 로드맵 전체 코드](DOC/Chapter16.md)
+
+---
+
 ## 📚 커리큘럼 상세 / Detailed Curriculum
 
 ### 🟦 Phase 0 — 파이썬 기초 (Python Fundamentals)
@@ -238,6 +277,10 @@ flowchart LR
 
 ```text
 .
+├── QuantPipeline.py        # ★ 4단계 통합 파이프라인 (데이터→전략→백테스트→ML)
+├── Backtest.py             # 백테스트 엔진 (MA 크로스오버, CAGR·Sharpe·MDD)
+├── RiskManager.py          # 리스크 관리 (손절선·VaR·포지션 사이징)
+├── PortfolioOptimizer.py   # 포트폴리오 최적화 (Mean-Variance·Risk Parity)
 ├── CrossValid.py           # Phase 3: K-Fold 교차 검증
 ├── DecisionBoundary.py     # Phase 3: 결정경계 시각화
 ├── LinearRegression.py     # Phase 3: 선형·다항 회귀
@@ -249,7 +292,7 @@ flowchart LR
 ├── OpenCVCPU.py            # Phase 5: 차트 패턴 인식 (OpenCV)
 ├── HuggingFaceGPU.py       # Phase 5: 생성형 AI (GPU)
 ├── requirements.txt
-├── README2.md              # 📖 퀀트 투자 용어 사전
+├── README2.md              # 📖 퀀트 투자 용어 사전 & 초급/중급/고급 가이드
 ├── DOC/
 │   ├── Chapter01.md        # 저장소 전체 지도 & 학습 전략
 │   ├── Chapter02.md        # Cross Validation
@@ -264,7 +307,9 @@ flowchart LR
 │   ├── Chapter11.md        # KMeans Clustering
 │   ├── Chapter12.md        # SVM Classifier
 │   ├── Chapter13.md        # MLP Neural Network
-│   └── Chapter14.md        # NLP Text Classification
+│   ├── Chapter14.md        # NLP Text Classification
+│   ├── Chapter15.md        # TradingView & Pine Script
+│   └── Chapter16.md        # ★ 퀀트 4단계 로드맵 (데이터→전략→백테스트→ML→자동매매)
 └── app/
     ├── backend/
     │   └── main.py         # FastAPI 서버 (전체 엔드포인트)
@@ -304,6 +349,14 @@ npm run dev     # http://localhost:3000
 ### 독립 스크립트 실행
 
 ```bash
+# ★ 4단계 통합 파이프라인 (첫 실행 추천)
+python QuantPipeline.py          # 데이터→전략→백테스트→ML → quant_pipeline_result.png
+
+# 퀀트 분석 스크립트
+python Backtest.py               # 백테스트 엔진 (MA 크로스오버) → backtest_result.png
+python RiskManager.py            # 리스크 분석 (VaR·손절·포지션) → risk_result.png
+python PortfolioOptimizer.py     # 포트폴리오 최적화 → portfolio_result.png
+
 # Phase 3 — ML 기초
 python CrossValid.py
 python DecisionBoundary.py
@@ -342,6 +395,44 @@ python SentimentAnalysis.py
 ## 🎓 학습 체크리스트 / Learning Checklist
 
 ```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ★ 4단계 실전 경로 (QuantPipeline.py / DOC/Chapter16.md)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1단계 — Python + 데이터 (2~3주)
+  [ ] yfinance로 AAPL, QQQ, SPY, 삼성전자(.KS) 다운로드
+  [ ] OHLCV 의미 이해 (시가·고가·저가·종가·거래량)
+  [ ] pct_change()로 일별 수익률 계산
+  [ ] rolling().mean()으로 MA20·MA60 추가
+  [ ] matplotlib으로 주가·거래량·누적수익률 3패널 차트
+
+2단계 — 투자 전략 만들기 (3~4주)
+  [ ] 이동평균 골든크로스/데드크로스 signal 컬럼 생성
+  [ ] RSI 14일 직접 구현 (과매수/과매도 표시)
+  [ ] 볼린저 밴드 (20일, 2σ) 계산
+  [ ] MACD (12/26/9) 히스토그램 차트
+  [ ] 전략 신호를 차트에 매수▲/매도▼ 마커로 표시
+
+3단계 — 백테스트 핵심 (2~3주)
+  [ ] CAGR, Sharpe Ratio, MDD, 승률 계산 함수 작성
+  [ ] position = signal.shift(1) 로 미래 데이터 누수 방지
+  [ ] 전략 vs Buy&Hold 누적 수익률 비교 차트
+  [ ] Sharpe > 1.0 & MDD > -15% 합격 기준 체크
+  [ ] Backtest.py 실행 → backtest_result.png 확인
+  [ ] fast/slow 파라미터 변경하며 최적 조합 탐색
+
+4단계 — ML + 자동매매 (4주+)
+  [ ] 기술 지표 8개+ 를 ML 피처로 변환
+  [ ] TimeSeriesSplit으로 미래 누수 없이 교차검증
+  [ ] RandomForest 피처 중요도 분석
+  [ ] QuantPipeline.py 실행 → quant_pipeline_result.png 확인
+  [ ] Alpaca 계좌 생성 → Paper Trading 연결
+  [ ] 또는 KIS API 모의투자 연결
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Phase 0~6 전체 경로
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 Phase 0  [ ] 파이썬 설치 & 기본 문법 완료
          [ ] pandas로 CSV 읽고 가공하기
 
@@ -354,14 +445,17 @@ Phase 2  [ ] 이동평균선 + 골든크로스 신호 코딩
 Phase 3  [ ] CrossValid.py 실행 & 교차 검증 이해
          [ ] LinearRegression.py로 가격 회귀 모델 학습
 
-Phase 4  [ ] 추세추종 전략 백테스트 구현
-         [ ] 샤프 비율 & MDD 계산 함수 작성
+Phase 4  [ ] Backtest.py 실행 → CAGR·Sharpe·MDD 확인
+         [ ] RiskManager.py 실행 → VaR·손절선 분석
+         [ ] PortfolioOptimizer.py → 효율적 프론티어 시각화
 
 Phase 5  [ ] KMeans로 코스피 종목 클러스터링
          [ ] SentimentAnalysis로 뉴스 감성 점수 생성
+         [ ] QuantPipeline.py → ML 방향 예측 정확도 확인
 
 Phase 6  [ ] FastAPI 서버로 모델 API 서빙
          [ ] 증권사 API 연결 & 모의 주문 실행
+         [ ] 텔레그램 알림 연동
 ```
 
 
