@@ -115,22 +115,22 @@ python SentimentAnalysis.py    # 텍스트 분류
 
 ## 📚 학습 커리큘럼
 
-| 챕터 | 주제 | 스크립트 |
-|------|------|---------|
-| 01 | 저장소 구성 및 학습 전략 | — |
-| 02 | Cross Validation 이해 | `CrossValid.py` |
-| 03 | Decision Boundary 시각화 | `DecisionBoundary.py` |
-| 04 | Random Forest 결과 해석 | `RandomForest.py` |
-| 05 | OpenCV 영상 생성 | `OpenCVCPU.py` |
-| 06 | HuggingFace Diffusers | `HuggingFaceGPU.py` |
-| 07 | FastAPI 백엔드 구조 | `app/backend/main.py` |
-| 08 | Vanilla JS 프론트엔드 모듈 | `app/frontend/` |
-| 09 | 클라우드 배포 시나리오 | — |
-| 10 | 실습 과제 목록 | — |
-| 11 | KMeans 비지도 클러스터링 | `KMeansClustering.py` |
-| 12 | SVM 분류기 | `SVMClassifier.py` |
-| 13 | MLP 신경망 | `NeuralNetMLP.py` |
-| 14 | NLP 텍스트 분류 | `SentimentAnalysis.py` |
+| 챕터 | 주제 | 스크립트 | 📺 추천 YouTube |
+|------|------|---------|----------------|
+| 01 | 저장소 구성 및 학습 전략 | — | [🎬 머신러닝 학습 로드맵](https://www.youtube.com/results?search_query=머신러닝+학습+로드맵+파이썬+한국어) |
+| 02 | Cross Validation 이해 | `CrossValid.py` | [🎬 K-Fold 교차검증 설명](https://www.youtube.com/results?search_query=K-Fold+교차검증+파이썬+머신러닝+한국어) |
+| 03 | Decision Boundary 시각화 | `DecisionBoundary.py` | [🎬 결정경계 시각화 강의](https://www.youtube.com/results?search_query=결정경계+시각화+머신러닝+파이썬+한국어) |
+| 04 | Random Forest 결과 해석 | `RandomForest.py` | [🎬 랜덤포레스트 한국어 강의](https://www.youtube.com/results?search_query=랜덤포레스트+파이썬+머신러닝+한국어+설명) |
+| 05 | OpenCV 영상 생성 | `OpenCVCPU.py` | [🎬 OpenCV 파이썬 기초](https://www.youtube.com/results?search_query=OpenCV+파이썬+영상처리+기초+한국어) |
+| 06 | HuggingFace Diffusers | `HuggingFaceGPU.py` | [🎬 HuggingFace Stable Diffusion](https://www.youtube.com/results?search_query=HuggingFace+Stable+Diffusion+파이썬+한국어+강의) |
+| 07 | FastAPI 백엔드 구조 | `app/backend/main.py` | [🎬 FastAPI 한국어 강의](https://www.youtube.com/results?search_query=FastAPI+파이썬+REST+API+백엔드+한국어) |
+| 08 | Vanilla JS 프론트엔드 모듈 | `app/frontend/` | [🎬 Vanilla JS 프론트엔드](https://www.youtube.com/results?search_query=Vanilla+JavaScript+프론트엔드+DOM+한국어) |
+| 09 | 클라우드 배포 시나리오 | — | [🎬 파이썬 앱 클라우드 배포](https://www.youtube.com/results?search_query=파이썬+FastAPI+클라우드+배포+AWS+한국어) |
+| 10 | 실습 과제 목록 | — | [🎬 머신러닝 프로젝트 실습](https://www.youtube.com/results?search_query=머신러닝+프로젝트+실습+파이썬+포트폴리오+한국어) |
+| 11 | KMeans 비지도 클러스터링 | `KMeansClustering.py` | [🎬 KMeans 클러스터링 설명](https://www.youtube.com/results?search_query=KMeans+클러스터링+파이썬+비지도학습+한국어) |
+| 12 | SVM 분류기 | `SVMClassifier.py` | [🎬 SVM 서포트벡터머신](https://www.youtube.com/results?search_query=SVM+서포트벡터머신+파이썬+분류+한국어) |
+| 13 | MLP 신경망 | `NeuralNetMLP.py` | [🎬 MLP 다층퍼셉트론 신경망](https://www.youtube.com/results?search_query=MLP+다층퍼셉트론+신경망+파이썬+딥러닝+한국어) |
+| 14 | NLP 텍스트 분류 | `SentimentAnalysis.py` | [🎬 TF-IDF 텍스트 분류](https://www.youtube.com/results?search_query=TF-IDF+텍스트분류+NLP+파이썬+한국어) |
 
 ---
 

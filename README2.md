@@ -18,11 +18,13 @@
 데이터 분석 역량과 디지털 문해력을 평가하며, 최근 금융권에서 가장 우대하는 분야입니다.
 
 ### 📊 ADsP (데이터분석 준전문가)
+> 📺 **YouTube 강의**: [🎬 ADsP 시험 합격 전략](https://www.youtube.com/results?search_query=ADsP+데이터분석+준전문가+시험+한국어+강의)
 * **특징:** 데이터 분석 기획과 데이터 분석 실무의 기초를 다루는 자격증입니다.
 * **대상:** 데이터 분석 입문자 및 비전공자.
 * **장점:** 시험 문항이 객관식(일부 단답형) 위주라 비교적 짧은 기간 내에 취득이 가능합니다.
 
 ### 🏆 ADP (데이터분석 전문가)
+> 📺 **YouTube 강의**: [🎬 ADP 데이터분석 전문가 강의](https://www.youtube.com/results?search_query=ADP+데이터분석+전문가+시험+한국어+강의)
 * **특징:** ADsP의 상위 등급으로, 데이터 분석 전문가로서의 고도화된 실무 능력을 증명합니다.
 * **대상:** 실무 경력자 또는 전문적인 분석 능력을 갖춘 자.
 * **장점:** 필기뿐만 아니라 **실기 시험**을 포함하고 있어, 취득 시 데이터 분석 분야에서 확실한 전문성을 인정받습니다.
@@ -56,6 +58,7 @@
 ## 1. 투자 분석 4대 방법
 
 ### 🌍 매크로 분석 (Macro Analysis)
+> 📺 **YouTube 강의**: [🎬 거시경제 투자 분석 입문](https://www.youtube.com/results?search_query=거시경제+매크로분석+주식투자+한국어+입문)
 
 **📌 한 줄 정의**: 세계 경제 전체의 흐름을 보는 분석
 
@@ -68,6 +71,7 @@
 ---
 
 ### 🏭 산업 분석 (Industry Analysis)
+> 📺 **YouTube 강의**: [🎬 산업 분석 섹터 투자 전략](https://www.youtube.com/results?search_query=산업분석+섹터분석+주식투자+한국어)
 
 **📌 한 줄 정의**: 특정 업종(반도체, 자동차 등)의 경쟁력을 분석
 
@@ -80,6 +84,7 @@
 ---
 
 ### 📊 기본적 분석 (Fundamental Analysis)
+> 📺 **YouTube 강의**: [🎬 기본적 분석 펀더멘털 투자](https://www.youtube.com/results?search_query=기본적분석+펀더멘털+주식투자+한국어)
 
 **📌 한 줄 정의**: 회사의 진짜 실력(매출, 이익 등)을 보는 분석
 
@@ -92,6 +97,7 @@
 ---
 
 ### 📈 기술적 분석 (Technical Analysis)
+> 📺 **YouTube 강의**: [🎬 기술적 분석 차트 패턴 기초](https://www.youtube.com/results?search_query=기술적분석+차트분석+주식+한국어+입문)
 
 **📌 한 줄 정의**: 차트 모양과 패턴으로 미래 가격 예측
 
@@ -106,6 +112,7 @@
 ## 2. 거시경제 용어
 
 ### 💰 금리 (Interest Rate)
+> 📺 **YouTube 강의**: [🎬 금리와 주식시장 관계 설명](https://www.youtube.com/results?search_query=금리+주식시장+영향+한국어+설명)
 
 **📌 한 줄 정의**: 돈을 빌리거나 맡길 때의 이자율
 
@@ -122,6 +129,7 @@
 ---
 
 ### 🛒 물가 (Inflation)
+> 📺 **YouTube 강의**: [🎬 인플레이션 물가상승 쉬운 설명](https://www.youtube.com/results?search_query=인플레이션+물가상승+주식투자+한국어)
 
 **📌 한 줄 정의**: 물건값이 오르는 정도
 
@@ -134,6 +142,7 @@
 ---
 
 ### ⛽ 유가 (Oil Price)
+> 📺 **YouTube 강의**: [🎬 유가와 경제 주식 관계](https://www.youtube.com/results?search_query=유가+원유+경제+주식+한국어+설명)
 
 **📌 한 줄 정의**: 원유(기름) 가격
 
@@ -148,6 +157,7 @@
 ## 3. 재무제표 용어
 
 ### 📒 재무제표 (Financial Statements)
+> 📺 **YouTube 강의**: [🎬 재무제표 읽는 법 기초](https://www.youtube.com/results?search_query=재무제표+읽는법+주식투자+한국어+기초)
 
 **📌 한 줄 정의**: 회사의 가계부 3종 세트
 
@@ -156,6 +166,7 @@
 ---
 
 ### 💵 손익계산서 (Income Statement)
+> 📺 **YouTube 강의**: [🎬 손익계산서 읽는 법](https://www.youtube.com/results?search_query=손익계산서+읽는법+한국어+주식투자)
 
 **📌 한 줄 정의**: 얼마 벌고 얼마 썼는지 보여주는 표
 
@@ -171,6 +182,7 @@
 ---
 
 ### 🏦 재무상태표 (Balance Sheet) / 대차대조표
+> 📺 **YouTube 강의**: [🎬 재무상태표 대차대조표 쉬운 설명](https://www.youtube.com/results?search_query=재무상태표+대차대조표+한국어+주식)
 
 **📌 한 줄 정의**: 지금 회사가 가진 것 vs 갚아야 할 것
 
@@ -184,6 +196,7 @@
 ---
 
 ### 💸 현금흐름표 (Cash Flow Statement)
+> 📺 **YouTube 강의**: [🎬 현금흐름표 쉬운 설명](https://www.youtube.com/results?search_query=현금흐름표+읽는법+한국어+주식투자)
 
 **📌 한 줄 정의**: 실제로 돈이 들어오고 나간 흐름
 
@@ -198,6 +211,7 @@
 ## 4. 기업 가치 평가 용어
 
 ### 🔄 밸류에이션 (Valuation)
+> 📺 **YouTube 강의**: [🎬 밸류에이션 기업가치 평가 기초](https://www.youtube.com/results?search_query=밸류에이션+기업가치평가+한국어+주식)
 
 **📌 한 줄 정의**: 회사의 적정 가격을 계산하는 것
 
@@ -206,6 +220,7 @@
 ---
 
 ### 📊 상대가치평가 (Multiple Valuation)
+> 📺 **YouTube 강의**: [🎬 PER PBR PSR 멀티플 평가 설명](https://www.youtube.com/results?search_query=PER+PBR+PSR+주식투자+한국어+설명)
 
 **📌 한 줄 정의**: 비슷한 회사들과 비교해서 가격 정하기
 
@@ -226,6 +241,7 @@
 ---
 
 ## 1. PER (Price Earning Ratio, 주가수익비율)
+> 📺 **YouTube 강의**: [🎬 PER 주가수익비율 쉬운 설명](https://www.youtube.com/results?search_query=PER+주가수익비율+주식투자+한국어+쉬운설명)
 **"회사가 벌어들이는 이익에 비해 주가가 몇 배인가?"**
 
 * **공식:** 주가 ÷ 1주당 순이익 (EPS)
@@ -237,6 +253,7 @@
 ---
 
 ## 2. PBR (Price Book-value Ratio, 주가순자산비율)
+> 📺 **YouTube 강의**: [🎬 PBR 주가순자산비율 쉬운 설명](https://www.youtube.com/results?search_query=PBR+주가순자산비율+주식투자+한국어+설명)
 **"회사가 가진 자산에 비해 주가가 몇 배인가?"**
 
 * **공식:** 주가 ÷ 1주당 순자산 (BPS)
@@ -248,6 +265,7 @@
 ---
 
 ## 3. PSR (Price Sales Ratio, 주가매출비율)
+> 📺 **YouTube 강의**: [🎬 PSR 주가매출비율 성장주 평가](https://www.youtube.com/results?search_query=PSR+주가매출비율+성장주+스타트업+한국어+설명)
 **"회사의 매출 규모에 비해 주가가 몇 배인가?"**
 
 * **공식:** 주가 ÷ 1주당 매출액 (SPS)
@@ -278,6 +296,7 @@
 ---
 
 ### 💎 절대가치평가 (Absolute Valuation)
+> 📺 **YouTube 강의**: [🎬 DCF 절대가치평가 쉬운 설명](https://www.youtube.com/results?search_query=DCF+할인현금흐름+기업가치평가+한국어)
 
 **📌 한 줄 정의**: 회사가 미래에 벌 돈을 다 합쳐서 가치 계산
 
@@ -307,6 +326,7 @@
 ## 5. 기술적 분석 용어
 
 ### 📈 이동평균선 (Moving Average, MA)
+> 📺 **YouTube 강의**: [🎬 이동평균선 골든크로스 데드크로스](https://www.youtube.com/results?search_query=이동평균선+골든크로스+데드크로스+주식+한국어)
 
 **📌 한 줄 정의**: 최근 며칠간 가격의 평균을 선으로 그린 것
 
@@ -325,6 +345,7 @@
 ---
 
 ### 🚧 지지선 & 저항선 (Support & Resistance)
+> 📺 **YouTube 강의**: [🎬 지지선 저항선 기술적 분석](https://www.youtube.com/results?search_query=지지선+저항선+기술적분석+주식+한국어)
 
 **📌 한 줄 정의**:
 - **지지선**: 가격이 잘 안 떨어지는 바닥선
@@ -339,6 +360,7 @@
 ---
 
 ### 🕯️ 캔들 차트 (Candlestick Chart)
+> 📺 **YouTube 강의**: [🎬 캔들차트 읽는 법 양봉 음봉](https://www.youtube.com/results?search_query=캔들차트+읽는법+양봉+음봉+주식+한국어)
 
 **📌 한 줄 정의**: 양초 모양으로 가격 변화를 표현한 차트
 
@@ -361,6 +383,7 @@
 ---
 
 ### 🌊 엘리어트 파동이론 (Elliott Wave Theory)
+> 📺 **YouTube 강의**: [🎬 엘리어트 파동이론 입문 강의](https://www.youtube.com/results?search_query=엘리어트파동이론+주식+기술적분석+한국어)
 
 **📌 한 줄 정의**: 주가는 5번 오르고 3번 내리는 파도 모양으로 움직인다는 이론
 
@@ -374,6 +397,7 @@
 ---
 
 ### 📉 RSI (Relative Strength Index, 상대강도지수)
+> 📺 **YouTube 강의**: [🎬 RSI 상대강도지수 기술적 분석](https://www.youtube.com/results?search_query=RSI+상대강도지수+주식+기술적분석+한국어)
 
 **📌 한 줄 정의**: 주식이 너무 많이 올랐는지/떨어졌는지 알려주는 지표 (0~100)
 
@@ -388,6 +412,7 @@
 ## 6. 금융 상품 용어
 
 ### 📈 주식 (Stock)
+> 📺 **YouTube 강의**: [🎬 주식 투자 기초 입문 강의](https://www.youtube.com/results?search_query=주식투자+기초+한국어+입문+초보)
 
 **📌 한 줄 정의**: 회사의 작은 조각을 사는 것
 
@@ -400,6 +425,7 @@
 ---
 
 ### 🧺 ETF (Exchange Traded Fund)
+> 📺 **YouTube 강의**: [🎬 ETF 투자 쉬운 설명 한국어](https://www.youtube.com/results?search_query=ETF+투자+한국어+설명+입문+코덱스)
 
 **📌 한 줄 정의**: 여러 주식을 한 바구니에 담아서 파는 상품
 
@@ -425,6 +451,7 @@
 미국 시장은 크게 3대 지수를 중심으로 움직입니다.
 
 ### 📊 주요 3대 지수
+> 📺 **YouTube 강의**: [🎬 미국 주식시장 3대 지수 나스닥 S&P500 다우](https://www.youtube.com/results?search_query=미국주식+나스닥+S&P500+다우+한국어+설명)
 * **나스닥 (NASDAQ):** 기술주와 성장주 중심 (Apple, NVIDIA, Microsoft 등).
 * **다우 존스 (Dow Jones):** 미국 대표 우량주 30개 종목 (전통적 우량 기업).
 * **S&P 500:** 미국 상장 기업 상위 500개. 경제 전체의 흐름을 가장 잘 나타내는 지표.
@@ -436,6 +463,7 @@
 ---
 
 ## 2. 한국 시장의 주요 지수
+> 📺 **YouTube 강의**: [🎬 코스피 코스닥 한국 주식시장 설명](https://www.youtube.com/results?search_query=코스피+코스닥+한국주식시장+한국어+설명)
 
 미국 시장의 구조와 대응하여 이해하면 쉽습니다.
 
@@ -458,6 +486,7 @@
 ---
 
 ## 4. 레버리지(Leverage) 투자 이해하기
+> 📺 **YouTube 강의**: [🎬 레버리지 ETF 투자 위험성 설명](https://www.youtube.com/results?search_query=레버리지+ETF+투자+위험성+TQQQ+한국어)
 
 레버리지는 '지렛대'를 뜻하며, 적은 자본으로 큰 수익 또는 손실을 내는 방식입니다.
 
@@ -482,6 +511,7 @@
 ---
 
 ### 📜 채권 (Bond)
+> 📺 **YouTube 강의**: [🎬 채권 투자 국채 회사채 설명](https://www.youtube.com/results?search_query=채권투자+국채+회사채+한국어+설명)
 
 **📌 한 줄 정의**: 나라나 회사에 돈 빌려주고 이자 받는 증서
 
@@ -501,6 +531,7 @@
 ---
 
 ### 🎲 파생상품 (Derivatives)
+> 📺 **YouTube 강의**: [🎬 파생상품 선물 옵션 기초 설명](https://www.youtube.com/results?search_query=파생상품+선물+옵션+한국어+설명)
 
 **📌 한 줄 정의**: 다른 상품(주식, 원자재 등)의 가격 변화에서 파생된 상품
 
@@ -517,6 +548,7 @@
 ## 7. 자산 배분 용어
 
 ### 🥗 포트폴리오 (Portfolio)
+> 📺 **YouTube 강의**: [🎬 포트폴리오 분산 투자 전략](https://www.youtube.com/results?search_query=포트폴리오+분산투자+자산배분+한국어)
 
 **📌 한 줄 정의**: 내가 가진 투자 상품들의 조합
 
@@ -531,6 +563,7 @@
 ---
 
 ### 🎯 포트폴리오 이론 (Modern Portfolio Theory)
+> 📺 **YouTube 강의**: [🎬 현대 포트폴리오 이론 마코위츠](https://www.youtube.com/results?search_query=현대포트폴리오이론+마코위츠+한국어+설명)
 
 **📌 한 줄 정의**: 수학으로 최고의 투자 비율을 계산하는 이론
 
@@ -541,6 +574,7 @@
 ---
 
 ### ⚖️ 평균-분산 모델 (Mean-Variance Model)
+> 📺 **YouTube 강의**: [🎬 평균 분산 포트폴리오 최적화](https://www.youtube.com/results?search_query=평균분산모델+포트폴리오최적화+한국어)
 
 **📌 한 줄 정의**: 평균 수익(Mean)과 위험(Variance)의 황금 비율 찾기
 
@@ -549,6 +583,7 @@
 ---
 
 ### 🎩 블랙-리터만 모델 (Black-Litterman Model)
+> 📺 **YouTube 강의**: [🎬 블랙-리터만 포트폴리오 모델 설명](https://www.youtube.com/results?search_query=블랙리터만+모델+포트폴리오+한국어)
 
 **📌 한 줄 정의**: 시장 평균 + 내 의견 섞기
 
@@ -561,7 +596,8 @@
 
 ---
 
-### 🛡️ 리스크 패리티 (Risk Parity)
+### ��️ 리스크 패리티 (Risk Parity)
+> 📺 **YouTube 강의**: [🎬 리스크 패리티 All Weather 전략](https://www.youtube.com/results?search_query=리스크패리티+자산배분+All+Weather+한국어)
 
 **📌 한 줄 정의**: 각 자산이 가진 위험을 똑같이 맞추는 전략
 
@@ -576,6 +612,7 @@
 ## 8. 백테스트 & 성과 지표
 
 ### 🎮 백테스트 (Backtest)
+> 📺 **YouTube 강의**: [🎬 파이썬 백테스트 투자 전략 검증](https://www.youtube.com/results?search_query=백테스트+파이썬+주식+투자전략+한국어)
 
 **📌 한 줄 정의**: 과거 데이터로 내 전략이 잘 됐을지 시뮬레이션
 
@@ -589,6 +626,7 @@
 ---
 
 ### 📉 MDD (Maximum Drawdown, 최대낙폭)
+> 📺 **YouTube 강의**: [🎬 MDD 최대낙폭 투자 성과 지표](https://www.youtube.com/results?search_query=MDD+최대낙폭+투자성과지표+한국어)
 
 **📌 한 줄 정의**: 투자 중 가장 많이 잃었을 때의 손실률
 
@@ -609,6 +647,7 @@
 ---
 
 ### ⚡ 샤프 비율 (Sharpe Ratio)
+> 📺 **YouTube 강의**: [🎬 샤프 비율 투자 효율성 지표](https://www.youtube.com/results?search_query=샤프비율+Sharpe+Ratio+투자성과+한국어)
 
 **📌 한 줄 정의**: 위험 1만큼 감수했을 때 얼마나 벌었나 (효율성)
 
@@ -630,6 +669,7 @@
 ---
 
 ### 📅 시장 계절성 (Seasonality)
+> 📺 **YouTube 강의**: [🎬 주식 계절성 1월효과 산타랠리](https://www.youtube.com/results?search_query=주식+계절성+1월효과+산타랠리+한국어)
 
 **📌 한 줄 정의**: 시장이 특정 시기에 반복적으로 보이는 패턴
 
@@ -659,6 +699,7 @@
 ## 9. AI / 머신러닝 용어
 
 ### 🕷️ 웹 크롤링 (Web Crawling)
+> 📺 **YouTube 강의**: [🎬 파이썬 웹크롤링 주가 데이터 수집](https://www.youtube.com/results?search_query=파이썬+웹크롤링+BeautifulSoup+주가데이터+한국어)
 
 **📌 한 줄 정의**: 웹사이트에서 자동으로 데이터를 수집하는 기술
 
@@ -675,6 +716,7 @@
 ---
 
 ### 🎨 클러스터링 (Clustering)
+> 📺 **YouTube 강의**: [🎬 클러스터링 KMeans 비지도학습 파이썬](https://www.youtube.com/results?search_query=클러스터링+KMeans+비지도학습+파이썬+한국어)
 
 **📌 한 줄 정의**: 비슷한 것끼리 자동으로 묶는 기술
 
@@ -691,6 +733,7 @@
 ---
 
 ### 🤖 머신러닝 (Machine Learning)
+> 📺 **YouTube 강의**: [🎬 머신러닝 입문 파이썬 한국어 강의](https://www.youtube.com/results?search_query=머신러닝+입문+파이썬+한국어+강의+scikit-learn)
 
 **📌 한 줄 정의**: 컴퓨터가 데이터를 보고 스스로 패턴을 배우는 기술
 
@@ -704,6 +747,7 @@
 ---
 
 ### 🧠 딥러닝 (Deep Learning)
+> 📺 **YouTube 강의**: [🎬 딥러닝 입문 파이썬 한국어 강의](https://www.youtube.com/results?search_query=딥러닝+입문+파이썬+한국어+강의+모두를위한딥러닝)
 
 **📌 한 줄 정의**: 사람 뇌처럼 깊게 생각하는 머신러닝의 한 종류
 
@@ -716,6 +760,7 @@
 ---
 
 ### ⏰ 시계열 (Time Series)
+> 📺 **YouTube 강의**: [🎬 시계열 분석 LSTM ARIMA 파이썬](https://www.youtube.com/results?search_query=시계열분석+LSTM+ARIMA+파이썬+한국어)
 
 **📌 한 줄 정의**: 시간 순서대로 기록된 데이터
 
@@ -736,6 +781,7 @@
 ## 10. 자동매매 & 개발 도구
 
 ### 📊 TradingView (트레이딩뷰)
+> 📺 **YouTube 강의**: [🎬 트레이딩뷰 차트 분석 사용법](https://www.youtube.com/results?search_query=트레이딩뷰+차트분석+사용법+한국어+강의)
 
 **📌 한 줄 정의**: 전 세계에서 가장 많이 쓰는 차트 분석 사이트
 
@@ -749,6 +795,7 @@
 ---
 
 ### 🌲 PineScript (파인스크립트)
+> 📺 **YouTube 강의**: [🎬 파인스크립트 트레이딩뷰 전략 코딩](https://www.youtube.com/results?search_query=트레이딩뷰+파인스크립트+한국어+강의)
 
 **📌 한 줄 정의**: TradingView 전용 프로그래밍 언어
 
@@ -767,6 +814,7 @@ sell_signal = close < ma20
 ---
 
 ### 🐍 Python (파이썬)
+> 📺 **YouTube 강의**: [🎬 파이썬 퀀트 주식 데이터 분석](https://www.youtube.com/results?search_query=파이썬+퀀트+주식분석+한국어+강의)
 
 **📌 한 줄 정의**: 퀀트 투자에서 가장 많이 쓰는 프로그래밍 언어
 
@@ -787,6 +835,7 @@ sell_signal = close < ma20
 ---
 
 ### 🔌 API (Application Programming Interface)
+> 📺 **YouTube 강의**: [🎬 증권 API 파이썬 자동매매 키움](https://www.youtube.com/results?search_query=증권API+자동매매+파이썬+키움+한국어)
 
 **📌 한 줄 정의**: 프로그램끼리 대화하는 약속된 통로
 
@@ -801,6 +850,7 @@ sell_signal = close < ma20
 ---
 
 ### 🤖 로보 어드바이저 (Robo-Advisor)
+> 📺 **YouTube 강의**: [🎬 로보어드바이저 AI 투자 자산 배분](https://www.youtube.com/results?search_query=로보어드바이저+AI투자+자산배분+한국어)
 
 **📌 한 줄 정의**: AI 알고리즘이 자동으로 돈을 굴려주는 서비스
 
@@ -814,6 +864,7 @@ sell_signal = close < ma20
 ---
 
 ### ⚙️ 알고리즘 트레이딩 (Algorithmic Trading)
+> 📺 **YouTube 강의**: [🎬 알고리즘 트레이딩 파이썬 자동 매매](https://www.youtube.com/results?search_query=알고리즘트레이딩+자동매매+파이썬+한국어)
 
 **📌 한 줄 정의**: 미리 정해진 규칙대로 컴퓨터가 자동 매매
 
