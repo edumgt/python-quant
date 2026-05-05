@@ -87,6 +87,35 @@ class DiffusionRequest(BaseModel):
     guidance_scale: float = Field(default=8.0, ge=1.0, le=15.0)
 
 
+class BacktestRequest(BaseModel):
+    fast: int = Field(default=5, ge=2, le=50, description="단기 이동평균 기간")
+    slow: int = Field(default=20, ge=5, le=200, description="장기 이동평균 기간")
+    n_days: int = Field(default=1260, ge=252, le=3780, description="시뮬레이션 일수 (252=1년)")
+    annual_return: float = Field(default=0.08, ge=-0.2, le=0.5)
+    annual_vol: float = Field(default=0.20, ge=0.05, le=1.0)
+    risk_free: float = Field(default=0.03, ge=0.0, le=0.1)
+
+
+class PortfolioRequest(BaseModel):
+    n_portfolios: int = Field(default=3000, ge=500, le=10000)
+    risk_free: float = Field(default=0.03, ge=0.0, le=0.1)
+
+
+class RiskRequest(BaseModel):
+    annual_vol: float = Field(default=0.25, ge=0.05, le=1.0)
+    capital: float = Field(default=10_000_000, ge=1_000_000, le=1_000_000_000)
+    risk_pct: float = Field(default=0.01, ge=0.001, le=0.05)
+    confidence: float = Field(default=0.95, ge=0.90, le=0.99)
+    atr_multiplier: float = Field(default=2.0, ge=1.0, le=5.0)
+
+
+class TVAlertRequest(BaseModel):
+    action: str = Field(default="buy", pattern="^(buy|sell)$")
+    ticker: str = Field(default="AAPL", max_length=20)
+    price: float = Field(default=0.0, ge=0.0)
+    rsi: float | None = Field(default=None)
+
+
 @app.get("/api/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
