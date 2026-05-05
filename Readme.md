@@ -23,10 +23,10 @@
 flowchart TD
     P0["🟦 Phase 0 — 파이썬 기초<br/>Python Fundamentals<br/>환경 설정 · 자료형 · 제어문 · 함수 · 클래스"]
     P1["🟩 Phase 1 — 데이터 분석 기초<br/>Data Analysis<br/>pandas · numpy · matplotlib · 금융 데이터 수집"]
-    P2["🟨 Phase 2 — 투자 이론 &amp; 기술 분석<br/>Investment Theory<br/>이동평균 · RSI · 재무제표 · 밸류에이션"]
+    P2["🟨 Phase 2 — 투자 이론 & 기술 분석<br/>Investment Theory<br/>이동평균 · RSI · 재무제표 · 밸류에이션"]
     P3["🟧 Phase 3 — 머신러닝 기초 ★Lab<br/>ML Fundamentals<br/>회귀 · 분류 · 교차검증 · 결정경계 시각화"]
-    P4["🟥 Phase 4 — 퀀트 전략 &amp; 백테스팅<br/>Quant Strategy<br/>추세추종 · 모멘텀 · 포트폴리오 최적화 · MDD/샤프"]
-    P5["🟪 Phase 5 — 고급 ML/DL &amp; 예측 모델 ★Lab<br/>Advanced ML/DL<br/>SVM · RandomForest · MLP · 시계열 · NLP 감성분석"]
+    P4["🟥 Phase 4 — 퀀트 전략 & 백테스팅<br/>Quant Strategy<br/>추세추종 · 모멘텀 · 포트폴리오 최적화 · MDD/샤프"]
+    P5["🟪 Phase 5 — 고급 ML/DL & 예측 모델 ★Lab<br/>Advanced ML/DL<br/>SVM · RandomForest · MLP · 시계열 · NLP 감성분석"]
     P6["🔴 Phase 6 — 자동매매 시스템 ★Lab<br/>Algorithmic Trading<br/>FastAPI 서비스 · 증권사 API · 실전 배포"]
 
     P0 --> P1 --> P2 --> P3 --> P4 --> P5 --> P6

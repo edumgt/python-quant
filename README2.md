@@ -222,7 +222,7 @@ flowchart TD
     REV["💰 매출액 Revenue<br/>상품·서비스 전체 판매금액"]
     COGS["➖ 매출원가 COGS<br/>생산 직접 비용 (원재료·노무비)"]
     GP["📊 매출총이익 Gross Profit"]
-    SGA["➖ 판매비·관리비 SG&amp;A<br/>본사·영업·마케팅 비용"]
+    SGA["➖ 판매비·관리비 SG&A<br/>본사·영업·마케팅 비용"]
     OP["🏭 영업이익 Operating Income<br/>본업 순수 이익"]
     OTHER["± 영업외손익<br/>이자수익·환차익·투자수익"]
     EBT["📋 세전이익 EBT"]
