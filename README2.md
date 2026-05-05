@@ -57,6 +57,26 @@
 
 ## 1. 투자 분석 4대 방법
 
+```mermaid
+flowchart TD
+    TOP["🔍 투자 분석 4대 방법"]
+
+    TOP --> MACRO["🌍 매크로 분석<br/>Macro Analysis<br/>세계 경제 전체 흐름"]
+    TOP --> IND["🏭 산업 분석<br/>Industry Analysis<br/>특정 업종 경쟁력"]
+    TOP --> FUND["📊 기본적 분석<br/>Fundamental Analysis<br/>회사 실적·재무 분석"]
+    TOP --> TECH["📈 기술적 분석<br/>Technical Analysis<br/>차트 패턴으로 타이밍 포착"]
+
+    MACRO -->|"하향식 접근 Top-Down"| IND
+    IND -->|"종목 선정"| FUND
+    FUND -->|"매매 타이밍"| TECH
+
+    style TOP fill:#2d2d2d,color:#fff,stroke:#888
+    style MACRO fill:#1e3a5f,color:#fff,stroke:#4a90e2
+    style IND fill:#1e5f3a,color:#fff,stroke:#4ae290
+    style FUND fill:#5f5f1e,color:#fff,stroke:#e2c44a
+    style TECH fill:#5f1e1e,color:#fff,stroke:#e24a4a
+```
+
 ### 🌍 매크로 분석 (Macro Analysis)
 > 📺 **YouTube 강의**: [🎬 거시경제 투자 분석 입문](https://www.youtube.com/results?search_query=거시경제+매크로분석+주식투자+한국어+입문)
 
@@ -126,6 +146,27 @@
 - 금리 ⬆️ → 주식 ⬇️ (예금이 더 매력적)
 - 금리 ⬇️ → 주식 ⬆️ (예금 이자 적으니 주식으로)
 
+```mermaid
+flowchart LR
+    UP["📈 금리 인상<br/>Interest Rate ↑"]
+    DOWN["📉 금리 인하<br/>Interest Rate ↓"]
+
+    UP --> B1["💳 대출 이자 부담 증가"]
+    UP --> B2["🏦 예금 금리 매력 상승"]
+    B1 --> C1["🔴 주식 하락 ↓"]
+    B2 --> C1
+
+    DOWN --> D1["💰 대출 비용 감소"]
+    DOWN --> D2["📉 예금 이자 매력 감소"]
+    D1 --> E1["🟢 주식 상승 ↑"]
+    D2 --> E1
+
+    style UP fill:#5f1e1e,color:#fff
+    style DOWN fill:#1e5f3a,color:#fff
+    style C1 fill:#5f1e1e,color:#fff
+    style E1 fill:#1e5f3a,color:#fff
+```
+
 ---
 
 ### 🛒 물가 (Inflation)
@@ -175,6 +216,29 @@
 | **Revenue** | **매출액** | 상품/서비스를 팔고 받은 **전체 금액** (총수입) | - |
 | **Operating Income** | **영업이익** | **본업** 장사를 통해 순수하게 남긴 이익 | 매출액 - 매출원가 - 판관비 |
 | **Net Income** | **당기순이익** | 세금, 이자 등 **모든 비용을 뺀 최종 이익** | 영업이익 + 영업외손익 - 법인세 |
+
+```mermaid
+flowchart TD
+    REV["💰 매출액 Revenue<br/>상품·서비스 전체 판매금액"]
+    COGS["➖ 매출원가 COGS<br/>생산 직접 비용 (원재료·노무비)"]
+    GP["📊 매출총이익 Gross Profit"]
+    SGA["➖ 판매비·관리비 SG&amp;A<br/>본사·영업·마케팅 비용"]
+    OP["🏭 영업이익 Operating Income<br/>본업 순수 이익"]
+    OTHER["± 영업외손익<br/>이자수익·환차익·투자수익"]
+    EBT["📋 세전이익 EBT"]
+    TAX["➖ 법인세 Tax"]
+    NI["✅ 당기순이익 Net Income<br/>최종 이익"]
+
+    REV --> COGS --> GP --> SGA --> OP --> OTHER --> EBT --> TAX --> NI
+
+    style REV fill:#1e5f3a,color:#fff,stroke:#4ae290
+    style GP fill:#1e3a5f,color:#fff,stroke:#4a90e2
+    style OP fill:#5f5f1e,color:#fff,stroke:#e2c44a
+    style NI fill:#1a3a5c,color:#fff,stroke:#4a90e2
+    style COGS fill:#4a1e1e,color:#fff,stroke:#e24a4a
+    style SGA fill:#4a1e1e,color:#fff,stroke:#e24a4a
+    style TAX fill:#4a1e1e,color:#fff,stroke:#e24a4a
+```
 
 ---
 
@@ -399,6 +463,31 @@
 - 🟢 **골든크로스**: 단기선이 장기선을 위로 뚫음 → 상승 신호
 - 🔴 **데드크로스**: 단기선이 장기선을 아래로 뚫음 → 하락 신호
 
+```mermaid
+flowchart LR
+    subgraph Short["📈 단기선"]
+        MA5["5일선"]
+        MA20["20일선"]
+    end
+    subgraph Long["📉 장기선"]
+        MA60["60일선"]
+        MA120["120일선"]
+    end
+
+    GC["🟢 골든크로스<br/>단기선이 장기선 상향 돌파<br/>→ 매수 신호 BUY"]
+    DC["🔴 데드크로스<br/>단기선이 장기선 하향 이탈<br/>→ 매도 신호 SELL"]
+
+    MA5 -->|"상향 돌파"| GC
+    MA20 -->|"상향 돌파"| GC
+    MA5 -->|"하향 이탈"| DC
+    MA20 -->|"하향 이탈"| DC
+    MA60 --- GC
+    MA60 --- DC
+
+    style GC fill:#1e5f3a,color:#fff,stroke:#4ae290,stroke-width:2px
+    style DC fill:#5f1e1e,color:#fff,stroke:#e24a4a,stroke-width:2px
+```
+
 ---
 
 ### 🚧 지지선 & 저항선 (Support & Resistance)
@@ -424,15 +513,25 @@
 **🎯 쉬운 비유**: 하루 가격을 양초 한 개로 그리기
 
 **💡 캔들 읽는 법**:
-```
-🔴 빨간 캔들 (양봉): 그날 가격이 올랐음
-🔵 파란 캔들 (음봉): 그날 가격이 떨어졌음
 
-   |  ← 고가 (그날 최고가)
-  ▓
-  ▓  ← 종가 / 시가
-  ▓
-   |  ← 저가 (그날 최저가)
+```mermaid
+flowchart TD
+    subgraph Bull["🔴 양봉 (Bullish Candle) — 가격 상승"]
+        B_HIGH["⬆️ 고가 High (윗꼬리)"]
+        B_CLOSE["종가 Close (몸통 상단)"]
+        B_OPEN["시가 Open (몸통 하단)"]
+        B_LOW["⬇️ 저가 Low (아랫꼬리)"]
+        B_HIGH --- B_CLOSE --- B_OPEN --- B_LOW
+    end
+    subgraph Bear["🔵 음봉 (Bearish Candle) — 가격 하락"]
+        S_HIGH["⬆️ 고가 High (윗꼬리)"]
+        S_OPEN["시가 Open (몸통 상단)"]
+        S_CLOSE["종가 Close (몸통 하단)"]
+        S_LOW["⬇️ 저가 Low (아랫꼬리)"]
+        S_HIGH --- S_OPEN --- S_CLOSE --- S_LOW
+    end
+    style Bull fill:#3d0000,color:#fff,stroke:#e24a4a
+    style Bear fill:#00003d,color:#fff,stroke:#4a90e2
 ```
 
 > ⚠️ 한국/일본은 빨강=상승, 미국은 초록=상승 (반대!)
@@ -447,8 +546,20 @@
 **🎯 쉬운 비유**: 바닷가 파도처럼 일정한 리듬이 있다는 생각
 
 **💡 패턴**:
-```
-상승 5파 (1-2-3-4-5) → 조정 3파 (A-B-C)
+
+```mermaid
+flowchart LR
+    W1["① 상승 1파<br/>첫 번째 상승"] --> W2["② 조정 2파<br/>되돌림"] --> W3["③ 상승 3파<br/>가장 강한 상승"] --> W4["④ 조정 4파<br/>되돌림"] --> W5["⑤ 상승 5파<br/>마지막 상승"]
+    W5 --> WA["🔴 A파 하락"] --> WB["🟢 B파 반등"] --> WC["🔴 C파 하락<br/>조정 완료"]
+
+    style W1 fill:#1e5f3a,color:#fff
+    style W3 fill:#1e5f3a,color:#fff
+    style W5 fill:#1e5f3a,color:#fff
+    style W2 fill:#5f1e1e,color:#fff
+    style W4 fill:#5f1e1e,color:#fff
+    style WA fill:#5f1e1e,color:#fff
+    style WB fill:#1e5f3a,color:#fff
+    style WC fill:#5f1e1e,color:#fff
 ```
 
 ---
@@ -463,6 +574,24 @@
 **💡 해석**:
 - **RSI > 70**: 과매수 (너무 많이 올랐다, 곧 떨어질 수도) 🔥
 - **RSI < 30**: 과매도 (너무 많이 떨어졌다, 곧 오를 수도) 🧊
+
+```mermaid
+flowchart TD
+    RSI100["RSI 100"]
+    RSI70["RSI 70 ── 과매수 구간 (Overbought) 🔥<br/>매도 신호 고려"]
+    RSI50["RSI 50 ── 중립 기준선"]
+    RSI30["RSI 30 ── 과매도 구간 (Oversold) 🧊<br/>매수 신호 고려"]
+    RSI0["RSI 0"]
+
+    RSI100 --- RSI70
+    RSI70 --- RSI50
+    RSI50 --- RSI30
+    RSI30 --- RSI0
+
+    style RSI70 fill:#5f1e1e,color:#fff,stroke:#e24a4a
+    style RSI50 fill:#2d2d2d,color:#fff,stroke:#888
+    style RSI30 fill:#1e3a5f,color:#fff,stroke:#4a90e2
+```
 
 ---
 
@@ -617,6 +746,15 @@
 한 회사에만 투자했다가 망하면 0원!
 여러 군데 나눠 투자하면 한 군데 망해도 다른 데서 만회 가능!
 
+```mermaid
+pie title 분산 포트폴리오 예시
+    "국내 주식 (KOSPI)" : 30
+    "미국 주식 (S&P 500)" : 25
+    "채권 (국채/회사채)" : 20
+    "ETF / 인덱스" : 15
+    "현금 / 대기자금" : 10
+```
+
 ---
 
 ### 🎯 포트폴리오 이론 (Modern Portfolio Theory)
@@ -713,6 +851,23 @@
 **💡 계산식**:
 ```
 샤프 비율 = (수익률 - 무위험수익률) / 변동성
+```
+
+```mermaid
+flowchart LR
+    RET["📈 포트폴리오 수익률<br/>Portfolio Return"]
+    RF["🏦 무위험수익률<br/>Risk-Free Rate<br/>(국채 금리 ~3%)"]
+    VOL["📊 변동성<br/>Volatility (σ)"]
+    SHARPE["⚡ 샤프 비율<br/>Sharpe Ratio"]
+
+    RET -->|"수익 초과분"| SHARPE
+    RF -->|"차감"| SHARPE
+    VOL -->|"나누기"| SHARPE
+
+    style SHARPE fill:#1e3a5f,color:#fff,stroke:#4a90e2,stroke-width:2px
+    style RET fill:#1e5f3a,color:#fff
+    style RF fill:#5f5f1e,color:#fff
+    style VOL fill:#5f3a1e,color:#fff
 ```
 
 **💡 기준**:
@@ -933,28 +1088,48 @@ sell_signal = close < ma20
 - **차익거래**: "A시장과 B시장 가격 차이로 돈 벌기"
 - **고빈도매매(HFT)**: 0.001초 단위 초고속 매매 (월스트리트)
 
+```mermaid
+flowchart TD
+    AT["⚙️ 알고리즘 트레이딩<br/>Algorithmic Trading"]
+
+    AT --> TF["📈 추세추종<br/>Trend Following<br/>MA크로스 · 브레이크아웃"]
+    AT --> MR["🔄 평균회귀<br/>Mean Reversion<br/>볼린저 밴드 · 쌍대매매"]
+    AT --> ARB["⚡ 차익거래<br/>Arbitrage<br/>시장 간 가격 차이 포착"]
+    AT --> HFT["🚀 고빈도매매<br/>High-Frequency Trading<br/>밀리초 단위 초고속"]
+
+    TF --> SIG1["신호: 골든크로스 · 52주 신고가"]
+    MR --> SIG2["신호: RSI 과매도 · 밴드 이탈"]
+    ARB --> SIG3["신호: 거래소 간 가격 괴리"]
+    HFT --> SIG4["신호: 오더북 패턴 · 마이크로초"]
+
+    style AT fill:#2d2d2d,color:#fff,stroke:#888
+    style TF fill:#1e5f3a,color:#fff
+    style MR fill:#1e3a5f,color:#fff
+    style ARB fill:#5f5f1e,color:#fff
+    style HFT fill:#5f1e1e,color:#fff
+```
+
 ---
 
 ## 🎓 마무리: 퀀트 마스터 로드맵
 
-```
-[Level 1: 입문] 
-  📚 용어 익히기 → 이 README가 시작!
-        ↓
-[Level 2: 기초]
-  🐍 Python 기본 + 데이터 분석 (pandas)
-        ↓
-[Level 3: 분석]
-  📊 백테스트 만들기 + 기술 지표 코딩
-        ↓
-[Level 4: 모델링]
-  🤖 머신러닝/딥러닝 적용
-        ↓
-[Level 5: 자동화]
-  🔌 증권사 API 연결 → 자동매매
-        ↓
-[Level 6: 실전]
-  💰 모의투자 → 소액 실전 → 본격 운용
+```mermaid
+flowchart TD
+    L1["📚 Level 1 — 입문<br/>용어 익히기 (이 README가 시작!)"]
+    L2["🐍 Level 2 — 기초<br/>Python 기본 + 데이터 분석 pandas"]
+    L3["📊 Level 3 — 분석<br/>백테스트 만들기 + 기술 지표 코딩"]
+    L4["🤖 Level 4 — 모델링<br/>머신러닝 / 딥러닝 적용"]
+    L5["🔌 Level 5 — 자동화<br/>증권사 API 연결 → 자동매매"]
+    L6["💰 Level 6 — 실전<br/>모의투자 → 소액 실전 → 본격 운용"]
+
+    L1 --> L2 --> L3 --> L4 --> L5 --> L6
+
+    style L1 fill:#1e3a5f,color:#fff,stroke:#4a90e2,stroke-width:2px
+    style L2 fill:#1e5f3a,color:#fff,stroke:#4ae290,stroke-width:2px
+    style L3 fill:#5f5f1e,color:#fff,stroke:#e2c44a,stroke-width:2px
+    style L4 fill:#5f3a1e,color:#fff,stroke:#e2884a,stroke-width:2px
+    style L5 fill:#3a1e5f,color:#fff,stroke:#884ae2,stroke-width:2px
+    style L6 fill:#5f1e2d,color:#fff,stroke:#e24a6a,stroke-width:2px
 ```
 
 ---

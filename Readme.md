@@ -19,41 +19,25 @@
 
 ## 🗺️ 전체 로드맵 / Full Roadmap
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  Phase 0   │  파이썬 기초 (Python Fundamentals)                  │
-│            │  환경 설정 · 자료형 · 제어문 · 함수 · 클래스        │
-└─────┬───────────────────────────────────────────────────────────┘
-      │
-┌─────▼───────────────────────────────────────────────────────────┐
-│  Phase 1   │  데이터 분석 기초 (Data Analysis)                   │
-│            │  pandas · numpy · matplotlib · 금융 데이터 수집     │
-└─────┬───────────────────────────────────────────────────────────┘
-      │
-┌─────▼───────────────────────────────────────────────────────────┐
-│  Phase 2   │  투자 이론 & 기술 분석 (Investment Theory)          │
-│            │  이동평균 · RSI · 재무제표 · 밸류에이션             │
-└─────┬───────────────────────────────────────────────────────────┘
-      │
-┌─────▼───────────────────────────────────────────────────────────┐
-│  Phase 3   │  머신러닝 기초 (ML Fundamentals)          [Lab]     │
-│            │  회귀 · 분류 · 교차검증 · 결정경계 시각화           │
-└─────┬───────────────────────────────────────────────────────────┘
-      │
-┌─────▼───────────────────────────────────────────────────────────┐
-│  Phase 4   │  퀀트 전략 & 백테스팅 (Quant Strategy)             │
-│            │  추세추종 · 모멘텀 · 포트폴리오 최적화 · MDD/샤프   │
-└─────┬───────────────────────────────────────────────────────────┘
-      │
-┌─────▼───────────────────────────────────────────────────────────┐
-│  Phase 5   │  고급 ML/DL & 예측 모델 (Advanced ML/DL) [Lab]     │
-│            │  SVM · RandomForest · MLP · 시계열 · NLP 감성분석  │
-└─────┬───────────────────────────────────────────────────────────┘
-      │
-┌─────▼───────────────────────────────────────────────────────────┐
-│  Phase 6   │  자동매매 시스템 (Algorithmic Trading)    [Lab]     │
-│            │  FastAPI 서비스 · 증권사 API · 실전 배포            │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    P0["🟦 Phase 0 — 파이썬 기초<br/>Python Fundamentals<br/>환경 설정 · 자료형 · 제어문 · 함수 · 클래스"]
+    P1["🟩 Phase 1 — 데이터 분석 기초<br/>Data Analysis<br/>pandas · numpy · matplotlib · 금융 데이터 수집"]
+    P2["🟨 Phase 2 — 투자 이론 &amp; 기술 분석<br/>Investment Theory<br/>이동평균 · RSI · 재무제표 · 밸류에이션"]
+    P3["🟧 Phase 3 — 머신러닝 기초 ★Lab<br/>ML Fundamentals<br/>회귀 · 분류 · 교차검증 · 결정경계 시각화"]
+    P4["🟥 Phase 4 — 퀀트 전략 &amp; 백테스팅<br/>Quant Strategy<br/>추세추종 · 모멘텀 · 포트폴리오 최적화 · MDD/샤프"]
+    P5["🟪 Phase 5 — 고급 ML/DL &amp; 예측 모델 ★Lab<br/>Advanced ML/DL<br/>SVM · RandomForest · MLP · 시계열 · NLP 감성분석"]
+    P6["🔴 Phase 6 — 자동매매 시스템 ★Lab<br/>Algorithmic Trading<br/>FastAPI 서비스 · 증권사 API · 실전 배포"]
+
+    P0 --> P1 --> P2 --> P3 --> P4 --> P5 --> P6
+
+    style P0 fill:#1e3a5f,color:#fff,stroke:#4a90e2,stroke-width:2px
+    style P1 fill:#1e5f3a,color:#fff,stroke:#4ae290,stroke-width:2px
+    style P2 fill:#5f5f1e,color:#fff,stroke:#e2c44a,stroke-width:2px
+    style P3 fill:#5f3a1e,color:#fff,stroke:#e2884a,stroke-width:2px
+    style P4 fill:#5f1e1e,color:#fff,stroke:#e24a4a,stroke-width:2px
+    style P5 fill:#3a1e5f,color:#fff,stroke:#884ae2,stroke-width:2px
+    style P6 fill:#5f1e2d,color:#fff,stroke:#e24a6a,stroke-width:2px
 ```
 
 > 📖 퀀트 용어가 낯설다면 [README2.md — 퀀트 투자 용어 사전](README2.md)을 먼저 읽어보세요.
@@ -191,11 +175,29 @@ def max_drawdown(equity_curve):
 | [Ch.06](DOC/Chapter06.md) | 생성형 AI | `HuggingFaceGPU.py` | LLM 기반 리포트 요약·분석 |
 
 **ML → 퀀트 파이프라인:**
-```
-[기술 지표 피처]        [ML 모델]           [퀀트 신호]
- MA, RSI, Volume  →  RandomForest  →  매수(1) / 매도(0)
- PER, PBR, ROE    →  SVM           →  가치주 스크리닝
- 뉴스 텍스트       →  TF-IDF+LR    →  감성 점수 → 포지션 조절
+```mermaid
+flowchart LR
+    subgraph Features["📊 기술 지표 피처"]
+        F1["MA · RSI · Volume"]
+        F2["PER · PBR · ROE"]
+        F3["뉴스 텍스트"]
+    end
+    subgraph Models["🤖 ML 모델"]
+        M1["RandomForest"]
+        M2["SVM"]
+        M3["TF-IDF + LR"]
+    end
+    subgraph Signals["📈 퀀트 신호"]
+        S1["매수(1) / 매도(0)"]
+        S2["가치주 스크리닝"]
+        S3["감성 점수 → 포지션 조절"]
+    end
+    F1 --> M1 --> S1
+    F2 --> M2 --> S2
+    F3 --> M3 --> S3
+    style M1 fill:#1e5f3a,color:#fff
+    style M2 fill:#1e3a5f,color:#fff
+    style M3 fill:#3a1e5f,color:#fff
 ```
 
 ---
@@ -214,10 +216,19 @@ def max_drawdown(equity_curve):
 | — | 알고리즘 트레이딩 | — | [추세·평균회귀·차익거래 →](README2.md#️-알고리즘-트레이딩-algorithmic-trading) |
 
 **시스템 아키텍처:**
-```
-[데이터 수집]  →  [ML 예측]  →  [FastAPI 서버]  →  [증권사 API]
- yfinance         모델 추론     /api/ml/predict    매수/매도 주문
- 크롤링            신호 생성     실시간 대시보드     포지션 관리
+```mermaid
+flowchart LR
+    DC["🗄️ 데이터 수집<br/>yfinance · 크롤링"]
+    ML["🤖 ML 예측<br/>모델 추론 · 신호 생성"]
+    API["⚡ FastAPI 서버<br/>/api/ml/predict<br/>실시간 대시보드"]
+    BRK["🏦 증권사 API<br/>매수/매도 주문<br/>포지션 관리"]
+
+    DC --> ML --> API --> BRK
+
+    style DC fill:#1a3a5c,color:#fff,stroke:#4a90e2
+    style ML fill:#1a5c3a,color:#fff,stroke:#4ae290
+    style API fill:#5c3a1a,color:#fff,stroke:#e2884a
+    style BRK fill:#5c1a1a,color:#fff,stroke:#e24a4a
 ```
 
 ---
