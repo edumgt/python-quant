@@ -684,12 +684,110 @@ flowchart TD
 
 ## 5. 트레이딩뷰 (TradingView)
 
-전 세계 투자자들이 사용하는 가장 강력한 웹 기반 차트 분석 도구입니다.
+> 📺 **YouTube 강의**: [🎬 트레이딩뷰 완전 정복 — 차트 분석 사용법](https://www.youtube.com/results?search_query=트레이딩뷰+차트분석+완전정복+한국어+강의)
 
-* **통합 분석:** 주식, 코인, 외환, 원자재 차트를 한곳에서 확인.
-* **편의성:** 웹/앱 연동이 자유롭고 인터페이스가 깔끔함.
-* **소셜 기능:** 다른 투자자들의 분석 시나리오(아이디어)를 공유받고 토론 가능.
-* **커스텀:** '파인 스크립트'를 통해 자신만의 보조지표나 자동 매매 전략 수립 가능.
+전 세계 **5,000만 명 이상**의 투자자들이 사용하는 가장 강력한 **웹 기반 차트 분석 플랫폼**입니다.  
+주식·코인·외환·원자재를 하나의 인터페이스에서 분석하고, 전 세계 트레이더와 아이디어를 공유하며, 파인 스크립트로 나만의 전략을 코딩할 수 있습니다.
+
+### 🔍 핵심 4대 기능
+
+#### 1️⃣ 통합 분석 — 모든 시장을 한 화면에서
+
+| 자산군 | 대표 심볼 예시 |
+|--------|---------------|
+| 주식 (한국) | `KRX:005930` (삼성전자), `KRX:035720` (카카오) |
+| 주식 (미국) | `NASDAQ:AAPL`, `NYSE:TSLA`, `SP:SPX` |
+| 암호화폐 | `BINANCE:BTCUSDT`, `COINBASE:ETHUSD` |
+| 외환 (FX) | `FX:EURUSD`, `FX:USDJPY`, `FX_IDC:USDKRW` |
+| 원자재 | `COMEX:GC1!` (금), `NYMEX:CL1!` (WTI 원유) |
+| 채권/지수 | `TVC:US10Y` (미 10년물), `CBOE:VIX` (공포지수) |
+
+- **멀티 차트**: 한 화면에 최대 8개 차트를 동시 배치해 자산 간 상관관계를 한눈에 파악
+- **200개 이상의 내장 보조지표**: EMA, RSI, MACD, 볼린저 밴드, 피보나치 등 즉시 사용 가능
+- **타임프레임 자유 전환**: 1분봉 ~ 월봉까지 원클릭 전환
+
+#### 2️⃣ 편의성 — 어디서나 끊김 없이
+
+- **완전한 웹 기반**: 별도 설치 없이 브라우저(Chrome, Safari, Edge)에서 즉시 사용
+- **iOS / Android 앱**: 모바일에서도 동일한 차트 레이아웃과 알림 수신
+- **실시간 알림 설정**: 가격 돌파, 지표 크로스 등 이벤트 발생 시 이메일·앱 푸시·웹훅(Webhook)으로 알림
+- **자동 저장 & 클라우드 동기화**: 레이아웃·아이디어·스크립트를 계정에 저장해 어디서나 불러오기
+
+#### 3️⃣ 소셜 기능 — 전 세계 트레이더와 토론
+
+- **퍼블리시드 아이디어(Published Ideas)**: 전문 애널리스트·개인 트레이더들이 차트에 직접 그린 분석 시나리오를 팔로우하거나 댓글로 토론
+- **스크리너(Screener)**: 조건 필터링(PER, RSI, 거래량 등)으로 종목 발굴, 결과를 커뮤니티와 공유
+- **팔로우 피드**: 팔로우한 트레이더의 신규 아이디어를 실시간으로 수신
+- **채팅·토론방**: 심볼별 실시간 채팅으로 시장 분위기와 뉴스 즉시 공유
+
+#### 4️⃣ 파인 스크립트 — 나만의 전략을 코딩
+
+'파인 스크립트(Pine Script)'는 TradingView 전용 스크립팅 언어로, **보조지표·백테스트 전략·경보 조건**을 직접 구현할 수 있습니다.
+
+```pinescript
+//@version=5
+strategy("골든/데드크로스 전략", overlay=true)
+
+ma5  = ta.sma(close, 5)
+ma20 = ta.sma(close, 20)
+
+// 골든크로스: 5일선이 20일선 상향 돌파 → 매수
+if ta.crossover(ma5, ma20)
+    strategy.entry("Long", strategy.long)
+
+// 데드크로스: 5일선이 20일선 하향 돌파 → 매도
+if ta.crossunder(ma5, ma20)
+    strategy.close("Long")
+
+plot(ma5,  color=color.blue,  title="MA5")
+plot(ma20, color=color.orange, title="MA20")
+```
+
+```pinescript
+//@version=5
+indicator("RSI 과매수/과매도 신호", overlay=false)
+
+rsi_val = ta.rsi(close, 14)
+plot(rsi_val, color=color.purple, title="RSI")
+hline(70, "과매수", color=color.red,   linestyle=hline.style_dashed)
+hline(30, "과매도", color=color.green, linestyle=hline.style_dashed)
+
+bgcolor(rsi_val > 70 ? color.new(color.red, 85)   : na)
+bgcolor(rsi_val < 30 ? color.new(color.green, 85) : na)
+```
+
+### 📊 요금제 비교
+
+| 플랜 | 가격 | 차트 수 | 보조지표 | 알림 | 백테스트 |
+|------|------|---------|---------|------|---------|
+| **Free** | 무료 | 1 | 5개 | 1개 | ✅ 기본 |
+| **Essential** | ~$14.95/월 | 2 | 10개 | 20개 | ✅ |
+| **Plus** | ~$29.95/월 | 4 | 25개 | 100개 | ✅ |
+| **Premium** | ~$59.95/월 | 8 | 무제한 | 무제한 | ✅ 고급 |
+
+> 💡 **팁**: 무료 플랜으로도 대부분의 기술 분석과 파인 스크립트 작성이 가능합니다.
+
+### 🔗 Python과의 연동
+
+TradingView의 웹훅(Webhook) 알림을 FastAPI 서버로 받아 자동매매에 활용할 수 있습니다.
+
+```python
+# FastAPI로 TradingView 웹훅 수신 예시
+from fastapi import FastAPI, Request
+
+app = FastAPI()
+
+@app.post("/webhook/tradingview")
+async def tradingview_webhook(request: Request):
+    """TradingView 알림 → 증권사 API 주문 연결"""
+    data = await request.json()
+    signal  = data.get("action")   # "buy" 또는 "sell"
+    symbol  = data.get("ticker")   # 예: "AAPL"
+    price   = data.get("price")
+    print(f"[TradingView 신호] {symbol} {signal} @ {price}")
+    # 여기서 KIS / 키움 / Binance API로 실제 주문 실행
+    return {"status": "received", "signal": signal}
+```
 
 ---
 *본 문서는 정보 제공을 목적으로 하며, 투자의 최종 결정과 책임은 본인에게 있습니다.*
@@ -993,35 +1091,101 @@ flowchart LR
 ## 10. 자동매매 & 개발 도구
 
 ### 📊 TradingView (트레이딩뷰)
-> 📺 **YouTube 강의**: [🎬 트레이딩뷰 차트 분석 사용법](https://www.youtube.com/results?search_query=트레이딩뷰+차트분석+사용법+한국어+강의)
+> 📺 **YouTube 강의**: [🎬 트레이딩뷰 차트 분석 완전정복](https://www.youtube.com/results?search_query=트레이딩뷰+차트분석+사용법+한국어+강의)
 
-**📌 한 줄 정의**: 전 세계에서 가장 많이 쓰는 차트 분석 사이트
+**📌 한 줄 정의**: 전 세계 5,000만 명이 사용하는 웹 기반 통합 차트 분석 플랫폼
 
-**🎯 쉬운 비유**: 주식계의 인스타그램 + 포토샵
+**🎯 쉬운 비유**: 주식계의 인스타그램 + 포토샵 + 코딩 IDE를 합친 도구
 
-**💡 특징**:
-- 무료로도 강력한 차트 가능
-- 전 세계 트레이더와 아이디어 공유
-- PineScript로 나만의 전략 코딩 가능
+**💡 4대 핵심 기능**:
+
+| 기능 | 설명 | 퀀트 활용 |
+|------|------|-----------|
+| **통합 분석** | 주식·코인·외환·원자재 차트를 한 화면에서 | 멀티 자산 상관관계 분석 |
+| **편의성** | 웹/앱 연동, 실시간 알림(웹훅 포함) | FastAPI 웹훅 수신 → 자동매매 트리거 |
+| **소셜 기능** | 퍼블리시드 아이디어, 팔로우, 커뮤니티 토론 | 시장 심리·센티멘트 파악 |
+| **파인 스크립트** | 나만의 보조지표·백테스트 전략 코딩 | 매수/매도 신호 자동화 |
+
+**💡 Python 연동 핵심 — 웹훅으로 자동매매 트리거**:
+```python
+# TradingView 알림 → FastAPI 웹훅 → 증권사 API 주문
+from fastapi import FastAPI, Request
+app = FastAPI()
+
+@app.post("/webhook/tradingview")
+async def tv_alert(request: Request):
+    data   = await request.json()
+    action = data.get("action")   # "buy" / "sell"
+    ticker = data.get("ticker")
+    # 여기서 KIS / 키움 / Binance API 호출
+    return {"status": "received", "action": action, "ticker": ticker}
+```
 
 ---
 
 ### 🌲 PineScript (파인스크립트)
-> 📺 **YouTube 강의**: [🎬 파인스크립트 트레이딩뷰 전략 코딩](https://www.youtube.com/results?search_query=트레이딩뷰+파인스크립트+한국어+강의)
+> 📺 **YouTube 강의**: [🎬 파인스크립트 v5 트레이딩뷰 전략 코딩](https://www.youtube.com/results?search_query=트레이딩뷰+파인스크립트+v5+한국어+강의)
 
-**📌 한 줄 정의**: TradingView 전용 프로그래밍 언어
+**📌 한 줄 정의**: TradingView 전용 프로그래밍 언어 (v5 최신)
 
-**🎯 쉬운 비유**: 트레이딩뷰에서 그림 그리는 전용 붓
+**🎯 쉬운 비유**: 트레이딩뷰에서 그림 그리고 전략을 자동으로 테스트하는 전용 붓
 
-**💡 실제 사례 코드**:
+**💡 3가지 활용 유형**:
+
+| 유형 | 키워드 | 용도 |
+|------|--------|------|
+| **indicator** | `indicator()` | 차트에 보조지표 추가 |
+| **strategy** | `strategy()` | 매매 로직 + 백테스트 |
+| **library** | `library()` | 공통 함수 패키지화 |
+
+**💡 실전 코드 — 골든/데드크로스 전략**:
 ```pinescript
-// 20일 이동평균선 위에서 사고, 아래서 팔기
+//@version=5
+strategy("골든/데드크로스", overlay=true, initial_capital=1000000)
+
+ma5  = ta.sma(close, 5)
 ma20 = ta.sma(close, 20)
-buy_signal = close > ma20
-sell_signal = close < ma20
+
+// 골든크로스 → 매수
+if ta.crossover(ma5, ma20)
+    strategy.entry("Long", strategy.long)
+
+// 데드크로스 → 청산
+if ta.crossunder(ma5, ma20)
+    strategy.close("Long")
+
+plot(ma5,  color=color.blue,   title="MA5")
+plot(ma20, color=color.orange, title="MA20")
 ```
 
-**💡 장점**: 초보자도 쉽게 배울 수 있음!
+**💡 실전 코드 — RSI 과매수/과매도 신호**:
+```pinescript
+//@version=5
+indicator("RSI 신호", overlay=false)
+
+rsi_val = ta.rsi(close, 14)
+plot(rsi_val, color=color.purple)
+hline(70, "과매수", color=color.red,   linestyle=hline.style_dashed)
+hline(30, "과매도", color=color.green, linestyle=hline.style_dashed)
+
+bgcolor(rsi_val > 70 ? color.new(color.red,   85) : na)
+bgcolor(rsi_val < 30 ? color.new(color.green, 85) : na)
+
+// 웹훅 알림 — FastAPI 서버로 JSON 전송
+alertcondition(ta.crossunder(rsi_val, 70), title="RSI 과매수 이탈", message='{"action":"sell","ticker":"{{ticker}}","price":{{close}}}')
+alertcondition(ta.crossover(rsi_val,  30), title="RSI 과매도 탈출", message='{"action":"buy","ticker":"{{ticker}}","price":{{close}}}')
+```
+
+**💡 Python과의 차이점**:
+| 항목 | Pine Script | Python |
+|------|-------------|--------|
+| 실행 환경 | TradingView 클라우드 | 로컬 / 서버 |
+| 백테스트 | 내장 (Strategy Tester) | backtrader / 직접 구현 |
+| 데이터 | 실시간 차트 데이터 자동 연결 | yfinance / API로 수집 필요 |
+| 난이도 | 쉬움 (퀀트 입문용) | 유연성 높음 (고급 모델 구현) |
+| 자동매매 | 웹훅 알림으로 외부 연결 | 직접 증권사 API 호출 |
+
+**💡 장점**: 코딩 경험이 적어도 30분이면 나만의 지표를 만들 수 있음!
 
 ---
 

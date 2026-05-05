@@ -96,6 +96,7 @@ plt.show()
 | P2-4 | 재무제표 수집 | PER, PBR, ROE 계산 | [기본적 분석 →](README2.md#-기본적-분석-fundamental-analysis) |
 | P2-5 | 밸류에이션 | DCF 모델, 상대가치 | [밸류에이션 →](README2.md#-밸류에이션-valuation) |
 | P2-6 | 거시지표 해석 | 금리·환율·유가와 주식 관계 | [거시경제 →](README2.md#2-거시경제-용어) |
+| P2-7 | **TradingView & Pine Script** | 멀티 자산 차트 분석, 보조지표·전략 코딩, 웹훅 연동 | [Ch.15 →](DOC/Chapter15.md) |
 
 **핵심 코드 예시:**
 ```python
