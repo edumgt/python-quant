@@ -363,34 +363,4 @@ Phase 6  [ ] FastAPI 서버로 모델 API 서빙
          [ ] 증권사 API 연결 & 모의 주문 실행
 ```
 
----
 
-## ⚠️ 투자 면책 고지 / Investment Disclaimer
-
-> 이 저장소의 모든 코드와 전략은 **교육 목적**으로만 제공됩니다.
-> 백테스트 결과가 미래 수익을 보장하지 않으며, 실제 투자의 책임은 본인에게 있습니다.
->
-> All code and strategies in this repository are for **educational purposes only**.
-> Past backtesting results do not guarantee future returns. Invest at your own risk.
-
----
-
-## 💖 후원 / Sponsorship
-
-이 프로젝트가 도움이 되었다면 GitHub Sponsor로 응원해 주세요!
-
-[![Sponsor](https://img.shields.io/badge/Sponsor%20this%20project-%E2%9D%A4-ea4aaa?logo=github-sponsors&style=for-the-badge)](https://github.com/sponsors/edumgt)
-
-후원금은 퀀트 실습 예제 추가, 문서 개선, 클라우드 인프라 유지에 사용됩니다.
-
----
-
-## 🤝 기여 / Contributing
-
-[CONTRIBUTING.md](CONTRIBUTING.md)를 참고해 주세요.
-
----
-
-## 📄 라이선스 / License
-
-[MIT License](LICENSE) © edumgt
