@@ -1,8 +1,8 @@
-# Chapter 12. SVM Classifier — 서포트 벡터 머신 / Support Vector Machine
+# Chapter 12. SVM Classifier — 서포트 벡터 머신
+
+> 💡 **쉽게 이해하기**: 두 그룹 사이에 경계선을 긋되, 양쪽 그룹과 가장 멀리 떨어진 선을 찾는 분류기입니다. 커널을 바꾸면 직선뿐만 아니라 곡선 경계도 학습할 수 있어, 복잡한 데이터 패턴에도 강력하게 사용됩니다.
 
 ---
-
-## 🇰🇷 한국어
 
 ### 핵심 개념
 
@@ -37,35 +37,10 @@ SVM은 클래스 경계에서 **마진(margin)**을 최대화하는 분류기입
 
 ---
 
-## 🇺🇸 English
+## 📺 참고 유튜브 영상
 
-### Core Concept
-
-SVM finds the **maximum-margin hyperplane** that best separates classes.  
-Support vectors — the training samples closest to the boundary — define the decision boundary.
-
-### Kernel Functions
-
-| Kernel | Characteristic | When to Use |
-|--------|---------------|-------------|
-| `linear` | Linear boundary | Linearly separable data |
-| `rbf` | Gaussian non-linear boundary | General classification (default) |
-| `poly` | Polynomial boundary | Curved patterns |
-
-### C Parameter (Regularization)
-
-- **Small C** → wide margin, allows misclassification (risk: underfitting)
-- **Large C** → narrow margin, minimizes misclassification (risk: overfitting)
-
-### Implementation Flow
-
-1. Generate 2D classification data (`make_classification`)
-2. Normalize with `StandardScaler`
-3. Fit `SVC(kernel=..., C=...)`
-4. Visualize with `DecisionBoundaryDisplay`
-5. Highlight support vectors with circles
-
-### API Extension Benefits
-
-- Change kernel and C value interactively to compare decision boundaries
-- View support vector count and accuracy side-by-side
+| 기술 스택 | 채널 | 링크 |
+|---------|------|------|
+| SVM 핵심 개념 | StatQuest | [Support Vector Machines, Clearly Explained!!!](https://www.youtube.com/watch?v=efR1C6CvhmE) |
+| Kernel Trick (RBF) | StatQuest | [Support Vector Machines - The Polynomial Kernel](https://www.youtube.com/watch?v=Toet3EiSFcM) |
+| C 파라미터 / 마진 | StatQuest | [Support Vector Machines - The Soft Margin](https://www.youtube.com/watch?v=IpKLTFGVMzs) |

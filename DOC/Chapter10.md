@@ -1,8 +1,8 @@
-# Chapter 10. 다음 단계 학습 과제 / Next-Level Practice Tasks
+# Chapter 10. 다음 단계 학습 과제
+
+> 💡 **쉽게 이해하기**: 기초 구현을 마친 후 실력을 한 단계 높이기 위한 5가지 심화 과제입니다. 모델 다양화, 비동기 처리, 실데이터 연결 등 실무에 가까운 주제를 단계적으로 도전해 봅니다.
 
 ---
-
-## 🇰🇷 한국어
 
 ### 과제 1: 모델 다양화
 - Logistic Regression 대신 SVM/KNN/MLP 추가 (Chapter 11-13 참고)
@@ -29,28 +29,11 @@
 
 ---
 
-## 🇺🇸 English
+## 📺 참고 유튜브 영상
 
-### Task 1: Model Diversification
-- Add SVM/KNN/MLP alongside Logistic Regression (see Chapters 11–13)
-- Auto-generate a comparison table of results
-
-### Task 2: Async Processing
-- Move long tasks (video/image generation) to a background queue
-- Design a job-status polling API
-
-### Task 3: Real Data Integration
-- CSV upload API
-- Save and reuse preprocessing pipelines
-
-### Task 4: Frontend Enhancement
-- Per-module state management
-- Graph dashboard (Chart.js / Plotly)
-- Store experiment history in localStorage or a database
-
-### Task 5: Advanced NLP (see Chapter 14)
-- Fine-tune a HuggingFace BERT model
-- Multi-label classification
-
-The goal is to evolve from "running scripts" to "operating a deployable service."
-
+| 기술 스택 | 채널 | 링크 |
+|---------|------|------|
+| Python 비동기 처리 (asyncio) | Tech With Tim | [Python Asyncio, Await, Async](https://www.youtube.com/watch?v=t5Bo1Je9EmE) |
+| Chart.js 대시보드 | Chart.js 공식 | [Getting Started with Chart.js](https://www.youtube.com/watch?v=sE08f4iuOhA) |
+| HuggingFace BERT 파인튜닝 | HuggingFace | [Fine-tuning a Pretrained Model](https://www.youtube.com/watch?v=GSt00_-0ncQ) |
+| CSV 데이터 전처리 | Keith Galli | [Pandas Data Cleaning](https://www.youtube.com/watch?v=bDhvCp3_lYw) |

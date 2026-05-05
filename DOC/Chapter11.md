@@ -1,8 +1,8 @@
-# Chapter 11. KMeans Clustering — 비지도 군집화 / Unsupervised Clustering
+# Chapter 11. KMeans Clustering — 비지도 군집화
+
+> 💡 **쉽게 이해하기**: 레이블(정답 라벨) 없이 비슷한 데이터끼리 자동으로 그룹을 만드는 방법입니다. 마치 색깔 펜 없이 사탕을 비슷한 것끼리 모아 K개의 그룹으로 나누는 것과 같습니다. 주가 종목 섹터 자동 분류나 고객 유형 분류에 활용됩니다.
 
 ---
-
-## 🇰🇷 한국어
 
 ### 핵심 개념
 
@@ -42,40 +42,11 @@ $$\text{Inertia} = \sum_{i} \min_{c \in C} \|x_i - c\|^2$$
 
 ---
 
-## 🇺🇸 English
+## 📺 참고 유튜브 영상
 
-### Core Concept
-
-KMeans is an **unsupervised learning** algorithm that partitions data into **K clusters** without labels.
-
-It iteratively moves cluster centroids to minimize:
-
-$$\text{Inertia} = \sum_{i} \min_{c \in C} \|x_i - c\|^2$$
-
-### Implementation Flow
-
-1. Generate multi-cluster data with `make_blobs`
-2. Normalize with `StandardScaler`
-3. Fit `KMeans(n_clusters=K)`
-4. Evaluate quality with Silhouette Score
-5. Find optimal K with the Elbow Method
-
-### Key Parameters
-
-| Parameter | Description |
-|-----------|-------------|
-| `n_clusters` | Number of clusters K |
-| `n_init` | Re-initialization runs (improves stability) |
-| `cluster_std` | Data spread (higher → less distinct clusters) |
-
-### Silhouette Score
-
-- **Range**: −1 to 1
-- **Close to 1**: well-separated clusters
-- **Near 0**: overlapping cluster boundaries
-- **Negative**: likely misassigned points
-
-### API Extension Benefits
-
-- Users can change K interactively and see the elbow plot update in real time
-- Silhouette Score and Inertia displayed simultaneously
+| 기술 스택 | 채널 | 링크 |
+|---------|------|------|
+| KMeans Clustering | StatQuest | [K-means Clustering](https://www.youtube.com/watch?v=4b5d3muPQmA) |
+| Silhouette Score | StatQuest | [Silhouette Analysis for K-Means](https://www.youtube.com/watch?v=InFNAGc1hZc) |
+| Elbow Method | Normalized Nerd | [K-Means Clustering - Elbow Method](https://www.youtube.com/watch?v=4OEsJGPNPSo) |
+| 비지도 학습 개념 | 3Blue1Brown | [Neural Networks - Unsupervised Learning](https://www.youtube.com/watch?v=aircAruvnKk) |

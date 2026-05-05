@@ -1,8 +1,8 @@
-# Chapter 14. NLP Text Classification — 텍스트 분류 / Text Classification
+# Chapter 14. NLP Text Classification — 텍스트 분류
+
+> 💡 **쉽게 이해하기**: 텍스트를 숫자로 변환(TF-IDF)한 후 어떤 주제인지 분류하는 NLP의 기본 파이프라인입니다. "이 기사는 스포츠 기사인가, 정치 기사인가?"처럼 텍스트의 주제를 자동으로 분류할 수 있습니다.
 
 ---
-
-## 🇰🇷 한국어
 
 ### 핵심 개념
 
@@ -42,46 +42,11 @@ pipeline = Pipeline([
 
 ---
 
-## 🇺🇸 English
+## 📺 참고 유튜브 영상
 
-### Core Concept
-
-The first step in NLP is converting text into numerical vectors.  
-This module uses a **TF-IDF vectorizer → Logistic Regression** pipeline for text classification.
-
-### What is TF-IDF?
-
-- **TF (Term Frequency)**: How often a word appears in a document
-- **IDF (Inverse Document Frequency)**: Higher weight for rare words across all documents
-- Common words (the, is) → low score; distinctive words → high score
-
-### Pipeline
-
-```python
-pipeline = Pipeline([
-    ('tfidf', TfidfVectorizer(max_features=5000, ngram_range=(1, 2))),
-    ('clf',   LogisticRegression()),
-])
-```
-
-1. `TfidfVectorizer`: text → sparse matrix (documents × vocabulary)
-2. `ngram_range=(1,2)`: includes unigrams and bigrams
-3. `LogisticRegression`: classifies sparse vectors
-
-### Dataset
-
-Two categories from 20 Newsgroups:
-- `rec.sport.hockey` → Sports
-- `talk.politics.misc` → Politics
-
-### API Extension Points
-
-- Classify user-input text in real time
-- Display confidence alongside predicted label
-- Easily extensible to more categories
-
-### Further Directions
-
-- Fine-tune a HuggingFace BERT model for higher accuracy
-- Add multi-label classification for mixed-topic texts
-- Integrate with a database to build a labeled dataset over time
+| 기술 스택 | 채널 | 링크 |
+|---------|------|------|
+| TF-IDF 개념 | StatQuest | [TF-IDF (Term Frequency - Inverse Document Frequency)](https://www.youtube.com/watch?v=OkFdqqyI8y4) |
+| scikit-learn Pipeline | Data School | [Building a Machine Learning Pipeline](https://www.youtube.com/watch?v=irHhDMbw3xo) |
+| BERT 입문 | HuggingFace | [Fine-tuning BERT for Text Classification](https://www.youtube.com/watch?v=GSt00_-0ncQ) |
+| NLP 기초 개념 | StatQuest | [Word Embedding and Word2Vec, Clearly Explained](https://www.youtube.com/watch?v=viZrOnJclY0) |
