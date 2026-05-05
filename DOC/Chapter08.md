@@ -1,8 +1,8 @@
-# Chapter 08. Vanilla JS 프론트엔드 모듈 구성 / Vanilla JS Frontend Module Structure
+# Chapter 08. Vanilla JS 프론트엔드 모듈 구성
+
+> 💡 **쉽게 이해하기**: React나 Vue 같은 프레임워크 없이, 순수 자바스크립트(Vanilla JS)만으로 프론트엔드를 만든 구조입니다. 파일 역할이 명확히 분리되어 있어 배우기 쉽고, 백엔드 API를 브라우저에서 `fetch`로 바로 호출할 수 있습니다.
 
 ---
-
-## 🇰🇷 한국어
 
 프론트엔드는 프레임워크 없이 모듈 분리 방식으로 작성했습니다.
 
@@ -26,25 +26,11 @@ npm run dev   # http://localhost:3000
 
 ---
 
-## 🇺🇸 English
+## 📺 참고 유튜브 영상
 
-The frontend is written with module separation and no framework dependencies.
-
-### File Structure
-- `js/app.js`: routing and navigation menu
-- `js/api.js`: fetch wrappers + shared helpers (`withLoading`, `renderMetrics`, `renderImage`, `renderError`)
-- `js/views/*.js`: per-module UI and event logic
-
-### Advantages
-- Learn quickly without a bundler
-- Clean separation between API calls and rendering logic
-- Add a new module by simply creating a new file in `views/`
-
-### Node.js Dev Setup
-
-```bash
-cd app/frontend
-npm install
-npm run dev   # http://localhost:3000
-```
-
+| 기술 스택 | 채널 | 링크 |
+|---------|------|------|
+| JavaScript 기초 | Traversy Media | [JavaScript Crash Course For Beginners](https://www.youtube.com/watch?v=hdI2bqOjy3c) |
+| Fetch API / 비동기 | Traversy Media | [Fetch API Introduction](https://www.youtube.com/watch?v=Oive66jrwBs) |
+| ES6 모듈 구조 | Fireship | [JavaScript Modules in 100 Seconds](https://www.youtube.com/watch?v=qgRUr-YUk1Q) |
+| Node.js 개발환경 | The Net Ninja | [Node.js Crash Course](https://www.youtube.com/watch?v=zb3Qk8SG5Ms) |

@@ -1,8 +1,8 @@
-# Chapter 05. OpenCV로 영상 생성 흐름 이해 / Understanding OpenCV Video Generation
+# Chapter 05. OpenCV로 영상 생성 흐름 이해
+
+> 💡 **쉽게 이해하기**: 플립북(flipbook) 애니메이션처럼, 이미지 한 장 한 장을 쌓아 동영상을 만드는 원리입니다. `VideoWriter`로 코덱·프레임레이트·해상도를 설정하고, 반복문으로 프레임을 추가하면 mp4가 완성됩니다.
 
 ---
-
-## 🇰🇷 한국어
 
 `OpenCVCPU.py`는 이미지 프레임을 쌓아 mp4를 만드는 가장 기본 패턴입니다.
 
@@ -21,20 +21,10 @@
 
 ---
 
-## 🇺🇸 English
+## 📺 참고 유튜브 영상
 
-`OpenCVCPU.py` demonstrates the most fundamental pattern for building an MP4 from image frames.
-
-### Frame-Based Thinking
-- One image = one frame
-- Combine frames in time order → video
-
-### Code Highlights
-- `VideoWriter`: specify codec, frame rate, and resolution
-- `cv2.circle`: draw a circle on each frame
-- Vary the radius in a loop to create animation
-
-### API Benefits
-- Dynamically generate videos from user input (width, height, FPS)
-- Return the file as a URL so the browser can play it immediately
-
+| 기술 스택 | 채널 | 링크 |
+|---------|------|------|
+| OpenCV Python 기초 | freeCodeCamp | [OpenCV Course - Full Tutorial with Python](https://www.youtube.com/watch?v=oXlwWbU8l2o) |
+| VideoWriter / 영상 처리 | sentdex | [Python plays GTA V (OpenCV series)](https://www.youtube.com/watch?v=ks4MPfMq8aQ) |
+| Computer Vision 입문 | MIT OpenCourseWare | [Computer Vision](https://www.youtube.com/watch?v=715uLCHt4jE) |

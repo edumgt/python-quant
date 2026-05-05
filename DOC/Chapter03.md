@@ -1,8 +1,8 @@
-# Chapter 03. Decision Boundary 시각화 해설 / Decision Boundary Visualization
+# Chapter 03. Decision Boundary 시각화 해설
+
+> 💡 **쉽게 이해하기**: 빨간 공과 파란 공이 섞인 지도에서 두 그룹을 나누는 경계선을 그리는 것입니다. 모델이 공간을 어떻게 분류하는지 색깔 지도로 눈으로 직접 확인할 수 있어 머신러닝 개념 이해에 큰 도움이 됩니다.
 
 ---
-
-## 🇰🇷 한국어
 
 `DecisionBoundary.py`는 모델이 공간을 어떻게 나누는지 시각적으로 보여줍니다.
 
@@ -24,23 +24,10 @@
 
 ---
 
-## 🇺🇸 English
+## 📺 참고 유튜브 영상
 
-`DecisionBoundary.py` visually shows how a model partitions the feature space.
-
-### Core Concept
-- With 2D input features, the model learns a boundary on a plane
-- One side predicts class 0, the other predicts class 1
-
-### Implementation Flow
-1. Generate 2D data
-2. Train/test split
-3. Train Logistic Regression
-4. Create a dense grid with `meshgrid`
-5. Color each grid point by predicted class
-
-### API/Cloud Perspective
-- Server generates PNG and returns it as base64
-- Browser renders instantly with an `<img>` tag
-- Works in headless server environments without `plt.show()`
-
+| 기술 스택 | 채널 | 링크 |
+|---------|------|------|
+| Logistic Regression | StatQuest | [Logistic Regression, Clearly Explained](https://www.youtube.com/watch?v=yIYKR4sgzI8) |
+| Decision Boundary 개념 | StatQuest | [Decision Trees, Part 1](https://www.youtube.com/watch?v=7VeUPuFGJHk) |
+| matplotlib 시각화 | Corey Schafer | [Matplotlib Tutorial Series](https://www.youtube.com/watch?v=UO98lJQ3QGI) |

@@ -1,8 +1,8 @@
-# Chapter 04. Random Forest 분류 결과 읽는 법 / Reading Random Forest Results
+# Chapter 04. Random Forest 분류 결과 읽는 법
+
+> 💡 **쉽게 이해하기**: 전문가 한 명의 의견보다 전문가 100명의 다수결이 더 믿을 만합니다. 랜덤 포레스트는 수백 개의 결정 트리가 각자 예측하고 다수결로 최종 답을 내는 앙상블 모델입니다. 단일 트리보다 훨씬 안정적이고 과적합에 강합니다.
 
 ---
-
-## 🇰🇷 한국어
 
 `RandomForest.py`는 트리 앙상블 기반의 대표 분류 모델을 다룹니다.
 
@@ -21,20 +21,10 @@
 
 ---
 
-## 🇺🇸 English
+## 📺 참고 유튜브 영상
 
-`RandomForest.py` covers the most popular tree ensemble classifier.
-
-### Model Understanding
-- Combines many decision trees by majority vote for the final class
-- More robust to overfitting and more stable than a single decision tree
-
-### Output Metrics
-- Accuracy: overall correct prediction ratio
-- Precision/Recall/F1: per-class performance balance
-
-### Production Extension Tips
-- Connect a real CSV instead of synthetic data
-- Add categorical encoding and missing value handling pipelines
-- Include feature importance in the API response for explainability
-
+| 기술 스택 | 채널 | 링크 |
+|---------|------|------|
+| Decision Trees | StatQuest | [Decision Trees, Part 1](https://www.youtube.com/watch?v=7VeUPuFGJHk) |
+| Random Forest | StatQuest | [Random Forests Part 1 - Building, Using and Evaluating](https://www.youtube.com/watch?v=J4Wdy0Wc_xQ) |
+| Feature Importance | StatQuest | [Random Forests Part 2 - Missing Data and Clustering](https://www.youtube.com/watch?v=sQ870aTKqiM) |

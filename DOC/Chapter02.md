@@ -1,8 +1,8 @@
-# Chapter 02. Cross Validation을 쉽게 이해하기 / Understanding Cross Validation
+# Chapter 02. Cross Validation을 쉽게 이해하기
+
+> 💡 **쉽게 이해하기**: 시험을 한 번만 보면 운이 작용할 수 있습니다. K-Fold는 데이터를 5등분하여 5번 번갈아 시험을 보고 평균 점수를 내는 방법입니다. 한 번의 우연보다 훨씬 공정하게 모델 성능을 평가할 수 있습니다.
 
 ---
-
-## 🇰🇷 한국어
 
 `CrossValid.py`의 핵심은 "한 번 나눠서 평가하지 말고 여러 번 나눠 평균을 보자"입니다.
 
@@ -21,20 +21,10 @@
 
 ---
 
-## 🇺🇸 English
+## 📺 참고 유튜브 영상
 
-The key idea in `CrossValid.py`: "Don't evaluate with a single split — average across multiple splits."
-
-### Why Is It Needed?
-- A single train/test split can have high variance depending on which samples end up in which set
-- K-Fold splits data into K parts, cycling through each as the validation set for a stable average score
-
-### Code Highlights
-- `make_classification`: automatically generates classification data for practice
-- `LogisticRegression`: fast and interpretable linear classifier
-- `cross_val_score(..., cv=5)`: runs 5 validation rounds
-
-### API Extension Benefits
-- Change `n_samples`, `n_features`, `cv` in real time and compare results
-- Easy to build a hyperparameter experiment UI on the frontend
-
+| 기술 스택 | 채널 | 링크 |
+|---------|------|------|
+| Cross Validation | StatQuest | [Machine Learning Fundamentals: Cross Validation](https://www.youtube.com/watch?v=fSytzGwwBVw) |
+| Logistic Regression | StatQuest | [Logistic Regression, Clearly Explained](https://www.youtube.com/watch?v=yIYKR4sgzI8) |
+| scikit-learn | freeCodeCamp | [Machine Learning with Python and Scikit-Learn](https://www.youtube.com/watch?v=hDKCxebp88A) |

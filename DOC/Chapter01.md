@@ -1,8 +1,8 @@
-# Chapter 01. 저장소 전체 지도와 학습 전략 / Repository Overview & Learning Strategy
+# Chapter 01. 저장소 전체 지도와 학습 전략
+
+> 💡 **쉽게 이해하기**: 이 저장소는 퀀트(알고리즘 트레이딩) 개발자가 되기 위한 **6단계 학습 로드맵**입니다. 파이썬 기초부터 자동매매 시스템까지, 각 단계를 실습 파일 하나씩 직접 실행하며 단계별로 성장할 수 있습니다.
 
 ---
-
-## 🇰🇷 한국어
 
 이 저장소는 **파이썬 기초 → 데이터 분석 → 투자 이론 → ML/DL → 퀀트 전략 → 자동매매 시스템** 흐름으로 설계된 퀀트 개발 완전 로드맵입니다.
 
@@ -57,55 +57,12 @@ FastAPI 서비스, 증권사 API 연결, 실전 배포
 
 ---
 
-## 🇺🇸 English
+## 📺 참고 유튜브 영상
 
-This repository is a complete quant development roadmap: **Python basics → data analysis → investment theory → ML/DL → quant strategies → algorithmic trading system**.
-
-### Core Goals
-
-- Hands-on experience with each concept in a single runnable file
-- Understand model results both numerically and visually
-- Practice extending local scripts to API-based services
-- Connect ML/DL techniques to real quant strategies
-
-### 6-Phase Learning Path
-
-#### Phase 0 — Python Fundamentals
-Core Python syntax accessible to beginners with no prior coding experience
-
-#### Phase 1 — Data Analysis
-Collect, process, and visualize financial data with `pandas`, `numpy`, `matplotlib`
-
-#### Phase 2 — Investment Theory & Technical Analysis
-Implement moving averages, RSI, financial statements, and valuation models in code
-
-#### Phase 3 — ML Fundamentals `[Lab]`
-| Order | File | Quant Application |
-|-------|------|-------------------|
-| 1 | `CrossValid.py` | Prevent strategy overfitting |
-| 2 | `DecisionBoundary.py` | Visualize buy/sell zones |
-| 3 | `LinearRegression.py` | Price trend modeling |
-
-#### Phase 4 — Quant Strategy & Backtesting
-Implement trend-following, momentum, portfolio optimization, MDD/Sharpe ratio from scratch
-
-#### Phase 5 — Advanced ML/DL `[Lab]`
-| Order | File | Quant Application |
-|-------|------|-------------------|
-| 4 | `KMeansClustering.py` | Auto sector classification |
-| 5 | `SVMClassifier.py` | Up/down direction classification |
-| 6 | `RandomForest.py` | Factor importance analysis |
-| 7 | `NeuralNetMLP.py` | Nonlinear price pattern learning |
-| 8 | `SentimentAnalysis.py` | News sentiment → trading signals |
-| 9 | `OpenCVCPU.py` | Chart pattern recognition |
-| 10 | `HuggingFaceGPU.py` | LLM-based report analysis |
-
-#### Phase 6 — Algorithmic Trading System `[Lab]`
-FastAPI services, brokerage API integration, production deployment
-
-### Learning Principles
-
-1. **Vocabulary first**: Build concepts via [README2.md Quant Glossary](../README2.md) before touching code
-2. **Start small**: Implement one simple strategy, then refine it incrementally
-3. **Guard against overfitting**: Always walk-forward test even when backtest looks great
-4. **Think in systems**: Simple script → API service → full automation
+| 기술 스택 | 채널 | 링크 |
+|---------|------|------|
+| Python 기초 | freeCodeCamp | [Python for Beginners - Full Course](https://www.youtube.com/watch?v=rfscVS0vtbw) |
+| pandas | Keith Galli | [Complete Python Pandas Tutorial](https://www.youtube.com/watch?v=vmEHCJofslg) |
+| numpy / matplotlib | freeCodeCamp | [Data Analysis with Python - Full Course](https://www.youtube.com/watch?v=r-uOLxNrNk8) |
+| 머신러닝 입문 | StatQuest | [A Gentle Introduction to Machine Learning](https://www.youtube.com/watch?v=Gv9_4yMHFhI) |
+| FastAPI | Tech With Tim | [FastAPI Tutorial](https://www.youtube.com/watch?v=7t2alSnE2-I) |

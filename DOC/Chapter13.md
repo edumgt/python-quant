@@ -1,8 +1,8 @@
-# Chapter 13. MLP Neural Network — 다층 퍼셉트론 신경망 / Multi-Layer Perceptron
+# Chapter 13. MLP Neural Network — 다층 퍼셉트론 신경망
+
+> 💡 **쉽게 이해하기**: 사람의 뇌처럼 뉴런이 여러 층으로 연결된 신경망입니다. 입력이 들어오면 층을 거치며 변환되고, 틀린 예측만큼 오차를 역방향으로 전파(역전파)하여 가중치를 조금씩 수정하며 학습합니다.
 
 ---
-
-## 🇰🇷 한국어
 
 ### 핵심 개념
 
@@ -44,42 +44,11 @@ MLP(Multi-Layer Perceptron)는 **입력층 → 은닉층(들) → 출력층**으
 
 ---
 
-## 🇺🇸 English
+## 📺 참고 유튜브 영상
 
-### Core Concept
-
-An MLP (Multi-Layer Perceptron) is the most fundamental feedforward neural network:
-
-```
-Input features → [128] → [64] → [32] → Output class
-                  ReLU    ReLU   ReLU
-```
-
-### Backpropagation
-
-- Compute prediction error (loss) → propagate gradient backward → update weights
-- `Adam` optimizer: automatically adjusts learning rate for fast convergence
-
-### Key Parameters
-
-| Parameter | Description |
-|-----------|-------------|
-| `hidden_layer_sizes` | Neurons per hidden layer e.g. `(128, 64, 32)` |
-| `activation` | Activation function (`relu`, `tanh`, `logistic`) |
-| `solver` | Optimizer (`adam`, `sgd`) |
-| `max_iter` | Maximum epochs |
-
-### Reading the Loss Curve
-
-- **Monotonically decreasing** → normal training
-- **Sharp drop then plateau** → converged
-- **Oscillations** → learning rate too high (or insufficient data)
-
-### Sklearn MLP vs PyTorch/TensorFlow
-
-| Aspect | sklearn MLP | PyTorch/TF |
-|--------|------------|------------|
-| Difficulty | Easy | Medium–Hard |
-| GPU support | ❌ | ✅ |
-| Flexibility | Limited | Very high |
-| Educational use | ✅ Concept learning | ✅ Production learning |
+| 기술 스택 | 채널 | 링크 |
+|---------|------|------|
+| 신경망 기초 (MLP 개념) | 3Blue1Brown | [But what is a neural network?](https://www.youtube.com/watch?v=aircAruvnKk) |
+| 역전파 (Backpropagation) | 3Blue1Brown | [Backpropagation, Clearly Explained](https://www.youtube.com/watch?v=Ilg3gGewQ5U) |
+| Adam 옵티마이저 | StatQuest | [Adam Optimizer, Clearly Explained!!!](https://www.youtube.com/watch?v=JXQT_vxqwIs) |
+| PyTorch 입문 | freeCodeCamp | [PyTorch for Deep Learning - Full Course](https://www.youtube.com/watch?v=V_xro1bcAuA) |
