@@ -613,16 +613,237 @@ flowchart TD
 ### 🧺 ETF (Exchange Traded Fund)
 > 📺 **YouTube 강의**: [🎬 ETF 투자 쉬운 설명 한국어](https://www.youtube.com/results?search_query=ETF+투자+한국어+설명+입문+코덱스)
 
-**📌 한 줄 정의**: 여러 주식을 한 바구니에 담아서 파는 상품
+**📌 한 줄 정의**: 여러 주식을 한 바구니에 담아서 거래소에서 사고파는 상품
 
 **🎯 쉬운 비유**: 모둠 도시락 (반찬 여러 개 한 번에)
 
-**💡 실제 사례**:
-- **KODEX 200**: 한국 대표 200개 회사를 한 번에 살 수 있음
-- **TIGER 미국나스닥100**: 미국 빅테크 100개를 한 번에
-- **SPY**: 미국 S&P 500 (전 세계에서 가장 큰 ETF)
+**💡 대표 ETF 한눈에 비교**:
 
-**💡 장점**: 한 회사 망해도 다른 회사들이 있어서 안전!
+| ETF | 운용사 | 추종 지수 | 특징 |
+|-----|--------|-----------|------|
+| **SPY** | State Street (SSGA) | S&P 500 | 세계 최대 ETF, 미국 500대 기업 |
+| **QQQ** | Invesco | NASDAQ-100 | 빅테크 집중, 고성장·고변동성 |
+| **KODEX 200** | 삼성자산운용 | KOSPI 200 | 한국 대표 200개 기업 |
+| **TIGER 미국나스닥100** | 미래에셋 | NASDAQ-100 | 국내 상장 QQQ 동등 상품 |
+
+**💡 장점**: 한 회사 망해도 다른 회사들이 있어서 위험 분산!
+
+---
+
+### 📈 SPY — SPDR S&P 500 ETF Trust
+> 📺 **YouTube 강의**: [🎬 SPY ETF 완전 분석 한국어](https://www.youtube.com/results?search_query=SPY+ETF+S&P500+투자+한국어+설명)
+
+**📌 한 줄 정의**: 미국 대표 500개 기업 전체에 한 번에 투자하는 세계 최대 ETF
+
+**🎯 쉬운 비유**: 미국 경제 전체를 한 주에 담은 "미국 경제 종합선물세트"
+
+#### 기본 정보
+
+| 항목 | 내용 |
+|------|------|
+| 공식 명칭 | SPDR S&P 500 ETF Trust |
+| 티커 | `SPY` (NYSE Arca) |
+| 운용사 | State Street Global Advisors (SSGA) |
+| 출시일 | **1993년 1월 22일** (미국 최초 ETF) |
+| 운용 규모 | 약 $500B+ (세계 최대 ETF) |
+| 운용 보수(TER) | **0.0945%/년** (연간) |
+| 배당 | 분기 배당 (약 1.2~1.5%/년) |
+| 추종 지수 | S&P 500 Index |
+
+#### 구성 방식
+
+S&P 500 지수는 **시가총액 가중 방식**으로 구성됩니다.  
+미국 NYSE·NASDAQ에 상장된 상위 500개 기업 중 아래 기준을 충족한 종목만 편입합니다:
+- 미국 법인
+- 시가총액 $15.8B 이상
+- 연간 흑자 (최근 4분기 기준)
+- 유동 주식 비율 50% 이상
+
+#### 주요 편입 종목 (상위 10, 기준: 2025년)
+
+| 순위 | 종목 | 섹터 | 비중(약) |
+|------|------|------|---------|
+| 1 | Apple (AAPL) | 기술 | ~7% |
+| 2 | Microsoft (MSFT) | 기술 | ~7% |
+| 3 | NVIDIA (NVDA) | 반도체 | ~6% |
+| 4 | Amazon (AMZN) | 소비재/클라우드 | ~4% |
+| 5 | Meta (META) | 통신 | ~3% |
+| 6 | Alphabet A (GOOGL) | 통신 | ~2% |
+| 7 | Berkshire Hathaway (BRK.B) | 금융 | ~2% |
+| 8 | Tesla (TSLA) | 임의소비재 | ~2% |
+| 9 | Broadcom (AVGO) | 반도체 | ~2% |
+| 10 | JPMorgan Chase (JPM) | 금융 | ~1% |
+
+#### 섹터 배분 (약)
+
+| 섹터 | 비중 |
+|------|------|
+| 정보기술 | ~31% |
+| 금융 | ~13% |
+| 헬스케어 | ~12% |
+| 임의소비재 | ~10% |
+| 통신서비스 | ~9% |
+| 산업재 | ~8% |
+| 기타 | ~17% |
+
+#### 역사적 성과
+
+- **연평균 수익률(CAGR)**: 약 10~11% (1993년~2024년)
+- **최악의 낙폭**: -57% (2008~2009년 금융위기)
+- **최고 연간 수익률**: +38% (1995년)
+
+#### 퀀트 활용 포인트
+
+- **벤치마크**: 모든 미국 주식 전략의 기준 수익률
+- **시장 헤지**: SPY 인버스(SH) 또는 풋옵션으로 하락 헤지
+- **VIX 연동**: VIX(공포지수)와 SPY 가격은 강한 음의 상관관계
+- **계절성**: 11월~4월 강세("Sell in May" 전략)
+
+```python
+# SPY 수익률과 전략 수익률 비교 예시
+import numpy as np
+import pandas as pd
+
+# 가상 데이터 (실무: yfinance.download("SPY", start="2020-01-01"))
+np.random.seed(42)
+n = 252
+spy_ret    = np.random.normal(0.0004, 0.011, n)   # S&P 500 일별 수익률
+strategy_ret = np.random.normal(0.0006, 0.012, n) # 전략 일별 수익률
+
+spy_cum      = pd.Series((1 + spy_ret).cumprod())
+strategy_cum = pd.Series((1 + strategy_ret).cumprod())
+
+def sharpe(rets, rf=0.03):
+    excess = rets - rf / 252
+    return float(excess.mean() / excess.std() * np.sqrt(252))
+
+def information_ratio(strategy, benchmark):
+    active = strategy - benchmark
+    return float(active.mean() / active.std() * np.sqrt(252))
+
+print(f"SPY Sharpe      : {sharpe(spy_ret):.2f}")
+print(f"전략 Sharpe     : {sharpe(strategy_ret):.2f}")
+print(f"Information Ratio: {information_ratio(strategy_ret, spy_ret):.2f}")
+print(f"전략 초과수익   : {strategy_cum.iloc[-1] - spy_cum.iloc[-1]:+.2%}")
+```
+
+---
+
+### 📊 QQQ — Invesco QQQ Trust (NASDAQ-100 ETF)
+> 📺 **YouTube 강의**: [🎬 QQQ ETF 나스닥100 완전 분석](https://www.youtube.com/results?search_query=QQQ+ETF+나스닥100+투자+한국어+설명)
+
+**📌 한 줄 정의**: 미국 기술 중심 대형주 NASDAQ-100 지수를 추종하는 '테크 ETF'의 대명사
+
+**🎯 쉬운 비유**: 전 세계 최강 IT 기업 100개를 한 번에 담은 "실리콘밸리 종합선물세트"
+
+#### 기본 정보
+
+| 항목 | 내용 |
+|------|------|
+| 공식 명칭 | Invesco QQQ Trust |
+| 티커 | `QQQ` (NASDAQ) |
+| 운용사 | **Invesco** |
+| 출시일 | 1999년 3월 10일 |
+| 운용 규모 | 약 $250B+ |
+| 운용 보수(TER) | **0.20%/년** |
+| 배당 | 분기 배당 (약 0.5~0.7%/년) |
+| 추종 지수 | NASDAQ-100 Index |
+
+#### NASDAQ-100 편입 기준
+
+- NASDAQ에 상장 (NYSE·AMEX 제외)
+- 금융주(은행·보험·투자회사) 제외
+- 일평균 거래량 200,000주 이상
+- 시가총액 상위 100개 비금융주
+
+#### 주요 편입 종목 (상위 10, 기준: 2025년)
+
+| 순위 | 종목 | 섹터 | 비중(약) |
+|------|------|------|---------|
+| 1 | Apple (AAPL) | 기술 | ~9% |
+| 2 | Microsoft (MSFT) | 기술 | ~8% |
+| 3 | NVIDIA (NVDA) | 반도체 | ~8% |
+| 4 | Amazon (AMZN) | 소비재/클라우드 | ~5% |
+| 5 | Meta (META) | 통신 | ~5% |
+| 6 | Alphabet A (GOOGL) | 통신 | ~4% |
+| 7 | Alphabet C (GOOG) | 통신 | ~4% |
+| 8 | Broadcom (AVGO) | 반도체 | ~4% |
+| 9 | Tesla (TSLA) | 임의소비재 | ~3% |
+| 10 | Costco (COST) | 필수소비재 | ~3% |
+
+#### SPY vs QQQ 핵심 비교
+
+| 항목 | SPY (S&P 500) | QQQ (NASDAQ-100) |
+|------|--------------|-----------------|
+| 종목 수 | 500개 | 100개 |
+| 섹터 | 전 섹터 (균형) | 기술·통신 집중 (70%+) |
+| 연평균 수익률 | ~10~11% | ~14~15% |
+| 연간 변동성 | ~15~17% | ~20~22% |
+| MDD (최대낙폭) | -57% (2009) | -83% (닷컴버블) |
+| 운용 보수 | 0.0945% | 0.20% |
+| 배당 수익률 | ~1.2~1.5% | ~0.5~0.7% |
+| 금융주 포함 | ✅ | ❌ (제외) |
+| 적합 투자자 | 안정적 장기 투자 | 성장·기술 집중 투자 |
+
+#### 관련 레버리지 파생 ETF
+
+| ETF | 배수 | 설명 |
+|-----|------|------|
+| **TQQQ** | +3배 | QQQ 3배 레버리지 (초고위험) |
+| **SQQQ** | -3배 | QQQ 3배 인버스 (하락 베팅) |
+| **QLD** | +2배 | QQQ 2배 레버리지 |
+
+> ⚠️ **레버리지 ETF 주의**: 장기 보유 시 '변동성 감소(Volatility Decay)' 효과로 원금이 잠식될 수 있습니다.
+
+#### 역사적 성과 & 주요 사건
+
+| 기간 | 사건 | QQQ 낙폭 |
+|------|------|----------|
+| 2000~2002 | 닷컴 버블 붕괴 | **-83%** |
+| 2008~2009 | 금융위기 | -54% |
+| 2022 | 금리 인상 쇼크 | -33% |
+| 2023~2024 | AI 붐 회복 | +80%+ |
+
+#### 퀀트 활용 포인트
+
+- **모멘텀 전략**: QQQ는 강한 추세 추종 성향 → 이동평균 전략에 잘 반응
+- **섹터 로테이션**: 금리 하락기에 기술주·QQQ 비중 확대
+- **이중 모멘텀**: SPY vs QQQ vs 현금 상대 모멘텀 전략
+- **한국 동등 상품**: TIGER 미국나스닥100 (국내 상장, 환헤지 선택 가능)
+
+```python
+# SPY vs QQQ 이중 모멘텀 전략 (시뮬레이션)
+import numpy as np
+import pandas as pd
+
+np.random.seed(0)
+n = 252 * 5  # 5년
+
+# 시뮬레이션 수익률 (실무: yfinance.download(["SPY","QQQ"], ...))
+spy_ret = np.random.normal(0.0004, 0.010, n)
+qqq_ret = np.random.normal(0.0006, 0.014, n)
+rf_ret  = np.full(n, 0.03 / 252)  # 무위험 수익률 (현금)
+
+spy_cum = pd.Series((1 + spy_ret).cumprod())
+qqq_cum = pd.Series((1 + qqq_ret).cumprod())
+
+# 12개월 모멘텀 → 수익률 높은 자산 선택
+lookback = 252
+holdings = []
+for i in range(lookback, n):
+    spy_mom = spy_cum.iloc[i] / spy_cum.iloc[i - lookback] - 1
+    qqq_mom = qqq_cum.iloc[i] / qqq_cum.iloc[i - lookback] - 1
+    if max(spy_mom, qqq_mom) < 0:
+        holdings.append("Cash")       # 둘 다 하락 → 현금
+    elif spy_mom > qqq_mom:
+        holdings.append("SPY")
+    else:
+        holdings.append("QQQ")
+
+holding_series = pd.Series(holdings)
+print("보유 비율:")
+print(holding_series.value_counts(normalize=True).to_string())
+```
 
 ---
 
