@@ -57,6 +57,7 @@ X_norm = scaler_X.fit_transform(X_raw).astype(np.float32)
 y_norm = scaler_y.fit_transform(y_raw.reshape(-1, 1)).ravel().astype(np.float32)
 
 # Train / Test split (시계열 순서 유지 — 무작위 섞지 않음)
+# 슬라이딩 윈도우 단위의 DataLoader 셔플은 훈련 일반화에 도움이 됩니다.
 split = int(len(X_norm) * 0.8)
 X_train, X_test = X_norm[:split], X_norm[split:]
 y_train, y_test = y_norm[:split], y_norm[split:]
@@ -70,7 +71,7 @@ yte = torch.tensor(y_test)
 
 train_ds = torch.utils.data.TensorDataset(Xtr, ytr)
 test_ds  = torch.utils.data.TensorDataset(Xte, yte)
-train_dl = torch.utils.data.DataLoader(train_ds, batch_size=64, shuffle=False)
+train_dl = torch.utils.data.DataLoader(train_ds, batch_size=64, shuffle=True)
 test_dl  = torch.utils.data.DataLoader(test_ds,  batch_size=128)
 
 # ──────────────────────────────────────────────────────────────

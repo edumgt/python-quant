@@ -75,7 +75,7 @@ yte = torch.tensor(y_test)
 
 train_ds = torch.utils.data.TensorDataset(Xtr, ytr)
 test_ds  = torch.utils.data.TensorDataset(Xte, yte)
-train_dl = torch.utils.data.DataLoader(train_ds, batch_size=64, shuffle=False)
+train_dl = torch.utils.data.DataLoader(train_ds, batch_size=64, shuffle=True)
 test_dl  = torch.utils.data.DataLoader(test_ds,  batch_size=128)
 
 # ──────────────────────────────────────────────────────────────

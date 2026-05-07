@@ -712,7 +712,7 @@ def lstm_predictor(req: LSTMRequest) -> dict[str, object]:
     opt = torch.optim.Adam(model.parameters(), lr=1e-3)
     crit = nn.MSELoss()
     ds = torch.utils.data.TensorDataset(Xtr, ytr)
-    dl = torch.utils.data.DataLoader(ds, batch_size=64, shuffle=False)
+    dl = torch.utils.data.DataLoader(ds, batch_size=64, shuffle=True)
     val_losses = []
 
     for _ in range(req.epochs):
@@ -811,7 +811,7 @@ def transformer_timeseries(req: TransformerTSRequest) -> dict[str, object]:
     opt = torch.optim.AdamW(model.parameters(), lr=5e-4)
     crit = nn.MSELoss()
     ds = torch.utils.data.TensorDataset(Xtr, ytr)
-    dl = torch.utils.data.DataLoader(ds, batch_size=64, shuffle=False)
+    dl = torch.utils.data.DataLoader(ds, batch_size=64, shuffle=True)
     val_losses = []
 
     for _ in range(req.epochs):
