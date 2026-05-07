@@ -131,6 +131,11 @@ python SentimentAnalysis.py    # 텍스트 분류
 | 12 | SVM 분류기 | `SVMClassifier.py` | [🎬 SVM 서포트벡터머신](https://www.youtube.com/results?search_query=SVM+서포트벡터머신+파이썬+분류+한국어) |
 | 13 | MLP 신경망 | `NeuralNetMLP.py` | [🎬 MLP 다층퍼셉트론 신경망](https://www.youtube.com/results?search_query=MLP+다층퍼셉트론+신경망+파이썬+딥러닝+한국어) |
 | 14 | NLP 텍스트 분류 | `SentimentAnalysis.py` | [🎬 TF-IDF 텍스트 분류](https://www.youtube.com/results?search_query=TF-IDF+텍스트분류+NLP+파이썬+한국어) |
+| 15 | TradingView & Pine Script | — | [🎬 Pine Script 퀀트 전략](https://www.youtube.com/results?search_query=PineScript+TradingView+퀀트+전략+한국어) |
+| 16 | 퀀트 실전 4단계 로드맵 | `QuantPipeline.py` | [🎬 퀀트 자동매매 파이썬](https://www.youtube.com/results?search_query=퀀트+자동매매+파이썬+백테스트+한국어) |
+| 17 | 1D CNN 시계열 패턴 분류 | `CNNTimeSeries.py` | [🎬 CNN 시계열 분류](https://www.youtube.com/results?search_query=1D+CNN+시계열+파이썬+딥러닝+한국어) |
+| 18 | LSTM 주가 수익률 예측 | `LSTMPredictor.py` | [🎬 LSTM 주가 예측 파이썬](https://www.youtube.com/results?search_query=LSTM+주가+예측+파이썬+딥러닝+한국어) |
+| 19 | Transformer 시계열 멀티스텝 예측 | `TransformerTimeSeries.py` | [🎬 Transformer 시계열 예측](https://www.youtube.com/results?search_query=Transformer+시계열+예측+파이썬+딥러닝+한국어) |
 
 ---
 
