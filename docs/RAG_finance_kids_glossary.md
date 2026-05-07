@@ -114,17 +114,72 @@
 |---|---|---|---|---|
 | 통계학 | 統計學 | Statistics | 숫자를 모아서 규칙을 찾는 공부 | 반 친구 키를 재서 “우리 반 평균 키” 구하기 |
 | 확률 | 確率 | Probability | 어떤 일이 일어날 가능성의 크기 | 동전을 던져 앞면이 나올 가능성 |
+| 확률변수 | 確率變數 | Random Variable | 확률 상황의 결과를 숫자로 나타낸 값 | 동전 앞면=1, 뒷면=0으로 표시 |
 | 분포 | 分布 | Distribution | 값들이 어디에 많이 모여 있는지 모양 | 시험 점수가 70~80점에 많이 모이는 모습 |
 | 평균 | 平均 | Mean | 값을 모두 더해 개수로 나눈 대표값 | 사과 3개, 5개면 평균은 4개 |
 | 중앙값 | 中央값 | Median | 줄 세웠을 때 한가운데 값 | 1, 3, 100이면 가운데는 3 |
 | 정규분포 | 正規分布 | Normal Distribution | 가운데가 가장 많고 양쪽으로 줄어드는 종 모양 분포 | 키 분포에서 중간 키 친구가 가장 많은 모습 |
 | 이항분포 | 二項分布 | Binomial Distribution | 성공/실패 같은 두 결과를 여러 번 했을 때의 분포 | 자유투 10번 중 성공 횟수 |
 | 포아송분포 | - | Poisson Distribution | 일정 시간에 일이 몇 번 생기는지의 분포 | 1시간 동안 고객이 몇 명 오는지 |
+| 통계적 추론 | 統計的推論 | Statistical Inference | 일부 데이터를 보고 전체 성질을 짐작하는 방법 | 반 친구 5명 키를 보고 반 전체 키 경향 추측 |
+| 표본 추출 | 標本抽出 | Sampling | 전체에서 일부를 뽑는 과정 | 사탕 봉지에서 10개만 꺼내 맛 확인 |
 | 가설 | 假說 | Hypothesis | 먼저 세운 “아마 이럴 거야” 생각 | “새 간식이 더 맛있어서 더 잘 팔릴 거야” |
 | 통계적 검정 | 統計的檢定 | Statistical Test | 모은 숫자로 가설이 맞는지 확인하는 방법 | 간식 A와 B 판매량을 비교해 정말 차이가 있는지 확인 |
 | 귀무가설 | 歸無假說 | Null Hypothesis | 차이가 없다고 먼저 두는 기본 가설 | “간식 A와 B 판매량은 같다” |
 | 대립가설 | 對立假說 | Alternative Hypothesis | 차이가 있다고 보는 가설 | “간식 A와 B 판매량은 다르다” |
 | 유의수준 | 有意水準 | Significance Level | 어디까지를 “우연”으로 볼지 정한 기준선 | 100번 중 5번(5%)은 우연으로 보기 |
 | p값 | - | p-value | 지금 결과가 우연일 가능성 숫자 | p값이 아주 작으면 “진짜 차이일 가능성 큼” |
+| 신뢰구간 | 信賴區間 | Confidence Interval | “진짜 값이 이 범위 안에 있을 가능성이 높다”는 구간 | 평균 키가 140~145cm 사이일 가능성이 큼 |
 | t-검정 | t-檢定 | t-test | 두 집단 평균 차이가 진짜인지 보는 검정 | 우리 반과 옆 반 수학 평균이 정말 다른지 확인 |
 | 카이제곱 검정 | 카이제곱 檢定 | Chi-square Test | 범주(종류) 비율 차이가 있는지 보는 검정 | 좋아하는 과목 비율이 반마다 다른지 확인 |
+| ANOVA(분산분석) | 分散分析 | ANOVA | 세 집단 이상 평균 차이가 있는지 보는 검정 | 1반·2반·3반 평균 점수 차이 확인 |
+
+---
+
+## 9) 파이썬 미니 실습 (NumPy·Pandas + Titanic 예시)
+
+아래 예시는 **기초 통계량 이해 + 확률/확률변수 + 표본 추출 + 신뢰구간 + 가설검정(t-검정, 카이제곱, ANOVA)**를 한 번에 연습하는 초간단 예시입니다.
+
+```python
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+# 1) Titanic 데이터 불러오기 (인터넷 없이도 가능한 예시 CSV 경로로 바꿔 사용 가능)
+df = pd.read_csv("https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv")
+
+# 2) 기초 통계량 (Age)
+age = df["Age"].dropna()
+print("평균:", float(np.mean(age)))
+print("중앙값:", float(np.median(age)))
+print("표준편차:", float(np.std(age, ddof=1)))
+
+# 3) 표본 추출(무작위 30명) + 신뢰구간(평균 나이)
+sample = age.sample(n=30, random_state=42)
+mean = sample.mean()
+sem = stats.sem(sample)
+ci_low, ci_high = stats.t.interval(0.95, len(sample)-1, loc=mean, scale=sem)
+print("95% 신뢰구간:", (float(ci_low), float(ci_high)))
+
+# 4) 확률/확률변수 예시: 생존 여부를 0/1 확률변수로 보기
+survived = df["Survived"].dropna()
+print("생존 확률 추정:", float(survived.mean()))  # 1의 비율
+
+# 5) 통계적 추론/가설검정: 성별에 따른 생존율 차이(t-검정)
+male = df[df["Sex"] == "male"]["Survived"].dropna()
+female = df[df["Sex"] == "female"]["Survived"].dropna()
+t_stat, t_p = stats.ttest_ind(male, female, equal_var=False)
+print("t-검정 p값:", float(t_p))
+
+# 6) 카이제곱 검정: 성별과 생존의 관련성
+table = pd.crosstab(df["Sex"], df["Survived"])
+chi2, chi_p, _, _ = stats.chi2_contingency(table)
+print("카이제곱 p값:", float(chi_p))
+
+# 7) ANOVA: 객실 등급(Pclass)별 나이 평균 차이
+g1 = df[df["Pclass"] == 1]["Age"].dropna()
+g2 = df[df["Pclass"] == 2]["Age"].dropna()
+g3 = df[df["Pclass"] == 3]["Age"].dropna()
+f_stat, anova_p = stats.f_oneway(g1, g2, g3)
+print("ANOVA p값:", float(anova_p))
+```
