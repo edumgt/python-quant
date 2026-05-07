@@ -146,40 +146,45 @@ import pandas as pd
 from scipy import stats
 
 # 1) Titanic 데이터 불러오기 (인터넷 없이도 가능한 예시 CSV 경로로 바꿔 사용 가능)
-df = pd.read_csv("https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv")
+try:
+    df = pd.read_csv("https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv")
+except Exception:
+    # 네트워크가 안 되면 로컬 파일로 바꿔서 실행
+    df = pd.read_csv("titanic.csv")
 
 # 2) 기초 통계량 (Age)
 age = df["Age"].dropna()
-print("평균:", float(np.mean(age)))
-print("중앙값:", float(np.median(age)))
-print("표준편차:", float(np.std(age, ddof=1)))
+print("평균:", np.mean(age))
+print("중앙값:", np.median(age))
+print("표준편차:", np.std(age, ddof=1))
 
 # 3) 표본 추출(무작위 30명) + 신뢰구간(평균 나이)
 sample = age.sample(n=30, random_state=42)
 mean = sample.mean()
 sem = stats.sem(sample)
 ci_low, ci_high = stats.t.interval(0.95, len(sample)-1, loc=mean, scale=sem)
-print("95% 신뢰구간:", (float(ci_low), float(ci_high)))
+print("95% 신뢰구간:", (ci_low, ci_high))
 
 # 4) 확률/확률변수 예시: 생존 여부를 0/1 확률변수로 보기
 survived = df["Survived"].dropna()
-print("생존 확률 추정:", float(survived.mean()))  # 1의 비율
+print("생존 확률 추정:", survived.mean())  # 1의 비율
 
 # 5) 통계적 추론/가설검정: 성별에 따른 생존율 차이(t-검정)
 male = df[df["Sex"] == "male"]["Survived"].dropna()
 female = df[df["Sex"] == "female"]["Survived"].dropna()
+# equal_var=False는 두 집단의 분산이 다를 수 있다고 보고 비교하는 방법입니다.
 t_stat, t_p = stats.ttest_ind(male, female, equal_var=False)
-print("t-검정 p값:", float(t_p))
+print("t-검정 p값:", t_p)
 
 # 6) 카이제곱 검정: 성별과 생존의 관련성
 table = pd.crosstab(df["Sex"], df["Survived"])
 chi2, chi_p, _, _ = stats.chi2_contingency(table)
-print("카이제곱 p값:", float(chi_p))
+print("카이제곱 p값:", chi_p)
 
 # 7) ANOVA: 객실 등급(Pclass)별 나이 평균 차이
 g1 = df[df["Pclass"] == 1]["Age"].dropna()
 g2 = df[df["Pclass"] == 2]["Age"].dropna()
 g3 = df[df["Pclass"] == 3]["Age"].dropna()
 f_stat, anova_p = stats.f_oneway(g1, g2, g3)
-print("ANOVA p값:", float(anova_p))
+print("ANOVA p값:", anova_p)
 ```
