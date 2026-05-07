@@ -23,7 +23,8 @@ app = FastAPI(
         "교육용 ML/DL API 서버 | Educational ML/DL API server. "
         "Supports: Cross-Validation, Decision Boundary, Random Forest, "
         "KMeans Clustering, SVM, MLP Neural Network, Linear/Polynomial Regression, "
-        "Text Classification (NLP), OpenCV Animation, HuggingFace Diffusion."
+        "Text Classification (NLP), OpenCV Animation, HuggingFace Diffusion, "
+        "1D CNN Time Series, LSTM Predictor, Transformer Time Series."
     ),
 )
 
@@ -114,6 +115,26 @@ class TVAlertRequest(BaseModel):
     ticker: str = Field(default="AAPL", max_length=20)
     price: float = Field(default=0.0, ge=0.0)
     rsi: float | None = Field(default=None)
+
+
+class CNNTimeSeriesRequest(BaseModel):
+    window: int = Field(default=20, ge=10, le=60, description="입력 창 길이 (거래일)")
+    n_samples: int = Field(default=2000, ge=500, le=10000, description="합성 데이터 샘플 수")
+    epochs: int = Field(default=20, ge=5, le=50, description="학습 에폭 수")
+
+
+class LSTMRequest(BaseModel):
+    seq_len: int = Field(default=30, ge=10, le=60, description="LSTM 입력 시퀀스 길이")
+    n_days: int = Field(default=2000, ge=500, le=5000, description="시뮬레이션 일수")
+    hidden_size: int = Field(default=64, ge=16, le=256, description="LSTM 은닉 유닛 수")
+    epochs: int = Field(default=30, ge=10, le=80, description="학습 에폭 수")
+
+
+class TransformerTSRequest(BaseModel):
+    seq_len: int = Field(default=40, ge=20, le=80, description="인코더 입력 창 길이")
+    pred_steps: int = Field(default=5, ge=1, le=10, description="예측 스텝 수")
+    d_model: int = Field(default=32, ge=16, le=128, description="Transformer d_model 차원")
+    epochs: int = Field(default=30, ge=10, le=80, description="학습 에폭 수")
 
 
 @app.get("/api/health")
@@ -549,6 +570,277 @@ def get_generated_file(file_name: str) -> FileResponse:
     if not target.exists():
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(path=target)
+
+
+@app.post("/api/dl/cnn-timeseries")
+def cnn_timeseries(req: CNNTimeSeriesRequest) -> dict[str, object]:
+    """
+    1D CNN으로 주가 패턴(상승·횡보·하락)을 분류합니다. (Day036 대응)
+    """
+    try:
+        import torch
+        import torch.nn as nn
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Missing dependency: {exc}") from exc
+
+    import numpy as np
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import StandardScaler
+
+    SEED = 42
+    rng_ = np.random.default_rng(SEED)
+
+    windows, labels = [], []
+    for _ in range(req.n_samples):
+        mu_ = rng_.uniform(-0.0003, 0.0003)
+        sigma_ = rng_.uniform(0.01, 0.025)
+        returns = rng_.normal(mu_, sigma_, req.window + 1)
+        prices = 100 * np.exp(np.cumsum(returns))
+        next_ret = (prices[req.window] - prices[req.window - 1]) / prices[req.window - 1]
+        windows.append(prices[: req.window])
+        labels.append(2 if next_ret > 0.01 else (0 if next_ret < -0.01 else 1))
+
+    X_raw = np.array(windows, dtype=np.float32)
+    y_arr = np.array(labels, dtype=np.int64)
+    X_norm = StandardScaler().fit_transform(X_raw).astype(np.float32)
+    X_tr, X_te, y_tr, y_te = train_test_split(X_norm, y_arr, test_size=0.2, stratify=y_arr, random_state=SEED)
+
+    Xtr = torch.tensor(X_tr).unsqueeze(1)
+    Xte = torch.tensor(X_te).unsqueeze(1)
+    ytr = torch.tensor(y_tr)
+    yte = torch.tensor(y_te)
+
+    class _CNN1D(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.net = nn.Sequential(
+                nn.Conv1d(1, 32, 3, padding=1), nn.ReLU(),
+                nn.Conv1d(32, 64, 3, padding=1), nn.ReLU(),
+                nn.AdaptiveAvgPool1d(1), nn.Flatten(),
+                nn.Linear(64, 32), nn.ReLU(), nn.Dropout(0.3), nn.Linear(32, 3),
+            )
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            return self.net(x)
+
+    torch.manual_seed(SEED)
+    model = _CNN1D()
+    opt = torch.optim.Adam(model.parameters(), lr=1e-3)
+    crit = nn.CrossEntropyLoss()
+    ds = torch.utils.data.TensorDataset(Xtr, ytr)
+    dl = torch.utils.data.DataLoader(ds, batch_size=64, shuffle=True)
+
+    train_acc_hist = []
+    for _ in range(req.epochs):
+        model.train()
+        correct, total = 0, 0
+        for xb, yb in dl:
+            opt.zero_grad()
+            out = model(xb)
+            loss = crit(out, yb)
+            loss.backward()
+            opt.step()
+            correct += (out.argmax(1) == yb).sum().item()
+            total += len(yb)
+        train_acc_hist.append(correct / total)
+
+    model.eval()
+    with torch.no_grad():
+        val_preds = model(Xte).argmax(1).numpy()
+    val_acc = float(np.mean(val_preds == y_te))
+
+    label_names = ["하락", "횡보", "상승"]
+    class_counts = {label_names[i]: int(np.sum(val_preds == i)) for i in range(3)}
+
+    return {
+        "val_accuracy": val_acc,
+        "train_accuracy_final": float(train_acc_hist[-1]),
+        "predicted_class_counts": class_counts,
+        "train_accuracy_history": [round(a, 4) for a in train_acc_hist],
+    }
+
+
+@app.post("/api/dl/lstm-predictor")
+def lstm_predictor(req: LSTMRequest) -> dict[str, object]:
+    """
+    LSTM으로 다음 날 주가 수익률을 예측합니다. (Day037 대응)
+    """
+    try:
+        import torch
+        import torch.nn as nn
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Missing dependency: {exc}") from exc
+
+    import numpy as np
+    from sklearn.preprocessing import StandardScaler
+
+    SEED = 42
+    rng_ = np.random.default_rng(SEED)
+    daily_ret = rng_.normal(0.0002, 0.015, req.n_days)
+    prices = 1000 * np.exp(np.cumsum(daily_ret))
+    returns = (np.diff(prices) / prices[:-1]).astype(np.float32)
+
+    def _make_seq(series: np.ndarray, seq_len: int):
+        X_, y_ = [], []
+        for i in range(len(series) - seq_len):
+            X_.append(series[i : i + seq_len])
+            y_.append(series[i + seq_len])
+        return np.array(X_, dtype=np.float32), np.array(y_, dtype=np.float32)
+
+    scaler_X = StandardScaler()
+    scaler_y = StandardScaler()
+    X_raw, y_raw = _make_seq(returns, req.seq_len)
+    X_norm = scaler_X.fit_transform(X_raw).astype(np.float32)
+    y_norm = scaler_y.fit_transform(y_raw.reshape(-1, 1)).ravel().astype(np.float32)
+
+    split = int(len(X_norm) * 0.8)
+    Xtr = torch.tensor(X_norm[:split]).unsqueeze(-1)
+    Xte = torch.tensor(X_norm[split:]).unsqueeze(-1)
+    ytr = torch.tensor(y_norm[:split])
+    yte_raw = y_raw[split:]
+
+    class _LSTM(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.lstm = nn.LSTM(1, req.hidden_size, 2, batch_first=True, dropout=0.2)
+            self.fc = nn.Sequential(nn.Linear(req.hidden_size, 32), nn.ReLU(), nn.Linear(32, 1))
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            out, _ = self.lstm(x)
+            return self.fc(out[:, -1, :]).squeeze(-1)
+
+    torch.manual_seed(SEED)
+    model = _LSTM()
+    opt = torch.optim.Adam(model.parameters(), lr=1e-3)
+    crit = nn.MSELoss()
+    ds = torch.utils.data.TensorDataset(Xtr, ytr)
+    dl = torch.utils.data.DataLoader(ds, batch_size=64, shuffle=True)
+    val_losses = []
+
+    for _ in range(req.epochs):
+        model.train()
+        for xb, yb in dl:
+            opt.zero_grad()
+            loss = crit(model(xb), yb)
+            loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            opt.step()
+        model.eval()
+        with torch.no_grad():
+            vl = crit(model(Xte), torch.tensor(y_norm[split:])).item()
+        val_losses.append(float(vl))
+
+    model.eval()
+    with torch.no_grad():
+        y_pred_norm = model(Xte).numpy()
+    y_pred_raw = scaler_y.inverse_transform(y_pred_norm.reshape(-1, 1)).ravel()
+    dir_acc = float(np.mean(np.sign(y_pred_raw) == np.sign(yte_raw)))
+
+    return {
+        "direction_accuracy": dir_acc,
+        "val_loss_final": val_losses[-1],
+        "val_loss_history": [round(v, 6) for v in val_losses],
+    }
+
+
+@app.post("/api/dl/transformer-timeseries")
+def transformer_timeseries(req: TransformerTSRequest) -> dict[str, object]:
+    """
+    Transformer Encoder로 멀티스텝 주가를 예측합니다. (Day038-039 대응)
+    """
+    try:
+        import math
+        import torch
+        import torch.nn as nn
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Missing dependency: {exc}") from exc
+
+    import numpy as np
+    from sklearn.preprocessing import MinMaxScaler
+
+    SEED = 42
+    rng_ = np.random.default_rng(SEED)
+    t = np.arange(2500)
+    seasonal = 0.02 * np.sin(2 * np.pi * t / 252)
+    log_returns = 0.0001 + seasonal * 0.005 + rng_.normal(0, 0.012, 2500)
+    prices = 1000 * np.exp(np.cumsum(log_returns))
+    scaler_ = MinMaxScaler()
+    prices_norm = scaler_.fit_transform(prices.reshape(-1, 1)).ravel().astype(np.float32)
+
+    X_list, y_list = [], []
+    for i in range(len(prices_norm) - req.seq_len - req.pred_steps):
+        X_list.append(prices_norm[i : i + req.seq_len])
+        y_list.append(prices_norm[i + req.seq_len : i + req.seq_len + req.pred_steps])
+    X_all = np.array(X_list, dtype=np.float32)
+    y_all = np.array(y_list, dtype=np.float32)
+
+    split = int(len(X_all) * 0.8)
+    Xtr = torch.tensor(X_all[:split]).unsqueeze(-1)
+    Xte = torch.tensor(X_all[split:]).unsqueeze(-1)
+    ytr = torch.tensor(y_all[:split])
+    yte = torch.tensor(y_all[split:])
+
+    class _PE(nn.Module):
+        def __init__(self, d: int, max_len: int = 200) -> None:
+            super().__init__()
+            pe = torch.zeros(max_len, d)
+            pos = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+            div = torch.exp(torch.arange(0, d, 2, dtype=torch.float) * (-math.log(10000.0) / d))
+            pe[:, 0::2] = torch.sin(pos * div)
+            pe[:, 1::2] = torch.cos(pos * div)
+            self.register_buffer("pe", pe.unsqueeze(0))
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            return x + self.pe[:, : x.size(1), :]
+
+    class _TransformerModel(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.proj = nn.Linear(1, req.d_model)
+            self.pe = _PE(req.d_model)
+            nhead = max(1, req.d_model // 8)
+            enc_layer = nn.TransformerEncoderLayer(
+                d_model=req.d_model, nhead=nhead,
+                dim_feedforward=req.d_model * 4, dropout=0.1, batch_first=True,
+            )
+            self.enc = nn.TransformerEncoder(enc_layer, num_layers=2)
+            self.head = nn.Linear(req.d_model, req.pred_steps)
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            x = self.pe(self.proj(x))
+            return self.head(self.enc(x)[:, -1, :])
+
+    torch.manual_seed(SEED)
+    model = _TransformerModel()
+    opt = torch.optim.AdamW(model.parameters(), lr=5e-4)
+    crit = nn.MSELoss()
+    ds = torch.utils.data.TensorDataset(Xtr, ytr)
+    dl = torch.utils.data.DataLoader(ds, batch_size=64, shuffle=True)
+    val_losses = []
+
+    for _ in range(req.epochs):
+        model.train()
+        for xb, yb in dl:
+            opt.zero_grad()
+            loss = crit(model(xb), yb)
+            loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            opt.step()
+        model.eval()
+        with torch.no_grad():
+            vl = crit(model(Xte), yte).item()
+        val_losses.append(float(vl))
+
+    model.eval()
+    with torch.no_grad():
+        y_pred = model(Xte).numpy()
+
+    y_pred_orig = scaler_.inverse_transform(y_pred[:, 0].reshape(-1, 1)).ravel()
+    y_true_orig = scaler_.inverse_transform(yte[:, 0].numpy().reshape(-1, 1)).ravel()
+    last_input = scaler_.inverse_transform(X_all[split:, -1].reshape(-1, 1)).ravel()
+    dir_acc = float(np.mean(np.sign(y_pred_orig - last_input) == np.sign(y_true_orig - last_input)))
+
+    return {
+        "direction_accuracy_step1": dir_acc,
+        "val_loss_final": val_losses[-1],
+        "val_loss_history": [round(v, 6) for v in val_losses],
+    }
 
 
 app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
