@@ -163,6 +163,8 @@ flowchart TD
 ### 🌍 매크로 분석 (Macro Analysis)
 > 📺 **YouTube 강의**: [🎬 거시경제 투자 분석 입문](https://www.youtube.com/results?search_query=거시경제+매크로분석+주식투자+한국어+입문)
 
+## https://www.youtube.com/shorts/4t37q4jDpCU
+
 **📌 한 줄 정의**: 세계 경제 전체의 흐름을 보는 분석
 
 **🎯 쉬운 비유**: 비행기 타고 하늘에서 도시 전체를 내려다보는 것
