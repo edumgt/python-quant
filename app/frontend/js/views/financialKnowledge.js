@@ -1,4 +1,6 @@
 const BASE_MONEY = 1000000;
+const MIN_GROWTH_MULTIPLIER = 0.7;
+const MIN_BAR_WIDTH_PERCENT = 2;
 
 const STYLE_PRESETS = {
   safe: {
@@ -84,7 +86,7 @@ export function financialKnowledgeView(container) {
     const preset = STYLE_PRESETS[style] || STYLE_PRESETS.balanced;
     const expected = calcExpectedReturn(preset.weights) + (SCENARIO_ADJUST[scenario] || 0);
     const risk = calcRisk(preset.weights);
-    const growth = Math.max(0.7, 1 + expected);
+    const growth = Math.max(MIN_GROWTH_MULTIPLIER, 1 + expected);
     const futureMoney = money * (growth ** years);
 
     container.querySelector('#fk-result').innerHTML = `
@@ -127,11 +129,11 @@ function renderSummary(preset, money, years, expected, risk, futureMoney) {
 function renderAllocations(weights, money, expected, years) {
   return `
     <section style="border:1px solid #d9e1ec; border-radius:8px; padding:12px; background:#fff;">
-      <h2 style="font-size:0.95rem; color:#131722; margin:0 0 8px;">100만원 자산배분 결과</h2>
+      <h2 style="font-size:0.95rem; color:#131722; margin:0 0 8px;">${formatWon(money)} 자산배분 결과</h2>
       <div style="display:grid; gap:8px;">
         ${Object.entries(weights).map(([asset, weight]) => {
           const nowMoney = money * weight;
-          const futureMoney = nowMoney * (Math.max(0.7, 1 + expected) ** years);
+          const futureMoney = nowMoney * (Math.max(MIN_GROWTH_MULTIPLIER, 1 + expected) ** years);
           return `
             <div style="border:1px solid #e5edf5; border-radius:8px; padding:10px; background:#f8fafc;">
               <div style="display:flex; justify-content:space-between; gap:8px; font-size:0.8rem; margin-bottom:4px;">
@@ -139,7 +141,7 @@ function renderAllocations(weights, money, expected, years) {
                 <span style="color:#475569;">${toPct(weight)} · ${formatWon(nowMoney)}</span>
               </div>
               <div style="height:6px; border-radius:99px; background:#e5edf5; overflow:hidden; margin-bottom:6px;">
-                <div style="height:100%; width:${Math.max(2, weight * 100)}%; background:#2962ff;"></div>
+                <div style="height:100%; width:${Math.max(MIN_BAR_WIDTH_PERCENT, weight * 100)}%; background:#2962ff;"></div>
               </div>
               <div style="font-size:0.76rem; color:#64748b;">${years}년 후 예상: ${formatWon(futureMoney)}</div>
             </div>
