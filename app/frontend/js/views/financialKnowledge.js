@@ -91,7 +91,7 @@ export function financialKnowledgeView(container) {
 
     container.querySelector('#fk-result').innerHTML = `
       ${renderSummary(preset, money, years, expected, risk, futureMoney)}
-      ${renderAllocations(preset.weights, money, expected, years)}
+      ${renderAllocations(preset.weights, money, growthMultiplier, years)}
     `;
   };
 
@@ -126,8 +126,7 @@ function renderSummary(preset, money, years, expected, risk, futureMoney) {
   `;
 }
 
-function renderAllocations(weights, money, expected, years) {
-  const growthMultiplier = getGrowthMultiplier(expected);
+function renderAllocations(weights, money, growthMultiplier, years) {
   return `
     <section style="border:1px solid #d9e1ec; border-radius:8px; padding:12px; background:#fff;">
       <h2 style="font-size:0.95rem; color:#131722; margin:0 0 8px;">${formatWon(money)} 자산배분 결과</h2>
