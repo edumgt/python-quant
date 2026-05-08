@@ -1,4 +1,5 @@
 const BASE_MONEY = 1000000;
+const MIN_MONEY = 100000;
 // 학습용 시뮬레이션에서 과도한 음수 시나리오를 제한하기 위한 연간 최소 성장 배수(-30%).
 const MIN_GROWTH_MULTIPLIER = 0.7;
 const MIN_BAR_WIDTH_PERCENT = 2;
@@ -43,7 +44,7 @@ export function financialKnowledgeView(container) {
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:12px;">
         <div>
           <label class="param-label">투자 금액 (원)</label>
-          <input id="fk-money" type="number" class="param-input" min="100000" step="10000" value="${BASE_MONEY}" />
+          <input id="fk-money" type="number" class="param-input" min="${MIN_MONEY}" step="10000" value="${BASE_MONEY}" />
         </div>
         <div>
           <label class="param-label">투자 방식 체크</label>
@@ -80,7 +81,7 @@ export function financialKnowledgeView(container) {
   `;
 
   const render = () => {
-    const money = Math.max(100000, Number(container.querySelector('#fk-money').value) || BASE_MONEY);
+    const money = Math.max(MIN_MONEY, Number(container.querySelector('#fk-money').value) || BASE_MONEY);
     const years = Math.max(1, Number(container.querySelector('#fk-years').value) || 1);
     const style = container.querySelector('#fk-style').value;
     const scenario = container.querySelector('#fk-scenario').value;
@@ -131,7 +132,7 @@ function renderSummary(preset, money, years, expected, risk, futureMoney) {
 function renderAllocations(weights, money, years, scenarioAdjust) {
   return `
     <section style="border:1px solid #d9e1ec; border-radius:8px; padding:12px; background:#fff;">
-      <h2 style="font-size:0.95rem; color:#131722; margin:0 0 8px;">입력 금액(${formatWon(money)}) 기준 자산배분 결과</h2>
+      <h2 style="font-size:0.95rem; color:#131722; margin:0 0 8px;">선택 금액(${formatWon(money)}) 자산배분 결과</h2>
       <div style="display:grid; gap:8px;">
         ${Object.entries(weights).map(([asset, weight]) => {
           const nowMoney = money * weight;
