@@ -1,4 +1,5 @@
 const BASE_MONEY = 1000000;
+// 학습용 시뮬레이션에서 과도한 음수 시나리오를 제한하기 위한 연간 최소 성장 배수(-30%).
 const MIN_GROWTH_MULTIPLIER = 0.7;
 const MIN_BAR_WIDTH_PERCENT = 2;
 
@@ -84,14 +85,15 @@ export function financialKnowledgeView(container) {
     const style = container.querySelector('#fk-style').value;
     const scenario = container.querySelector('#fk-scenario').value;
     const preset = STYLE_PRESETS[style] || STYLE_PRESETS.balanced;
-    const expected = calcExpectedReturn(preset.weights) + (SCENARIO_ADJUST[scenario] || 0);
+    const scenarioAdjust = SCENARIO_ADJUST[scenario] || 0;
+    const expected = calcExpectedReturn(preset.weights) + scenarioAdjust;
     const risk = calcRisk(preset.weights);
     const growthMultiplier = getGrowthMultiplier(expected);
     const futureMoney = money * (growthMultiplier ** years);
 
     container.querySelector('#fk-result').innerHTML = `
       ${renderSummary(preset, money, years, expected, risk, futureMoney)}
-      ${renderAllocations(preset.weights, money, growthMultiplier, years)}
+      ${renderAllocations(preset.weights, money, years, scenarioAdjust)}
     `;
   };
 
@@ -126,14 +128,16 @@ function renderSummary(preset, money, years, expected, risk, futureMoney) {
   `;
 }
 
-function renderAllocations(weights, money, growthMultiplier, years) {
+function renderAllocations(weights, money, years, scenarioAdjust) {
   return `
     <section style="border:1px solid #d9e1ec; border-radius:8px; padding:12px; background:#fff;">
-      <h2 style="font-size:0.95rem; color:#131722; margin:0 0 8px;">${formatWon(money)} 자산배분 결과</h2>
+      <h2 style="font-size:0.95rem; color:#131722; margin:0 0 8px;">입력 금액(${formatWon(money)}) 기준 자산배분 결과</h2>
       <div style="display:grid; gap:8px;">
         ${Object.entries(weights).map(([asset, weight]) => {
           const nowMoney = money * weight;
-          const futureMoney = nowMoney * (growthMultiplier ** years);
+          const assetExpected = (ASSET_RETURN[asset] || 0) + scenarioAdjust;
+          const assetGrowthMultiplier = getGrowthMultiplier(assetExpected);
+          const futureMoney = nowMoney * (assetGrowthMultiplier ** years);
           return `
             <div style="border:1px solid #e5edf5; border-radius:8px; padding:10px; background:#f8fafc;">
               <div style="display:flex; justify-content:space-between; gap:8px; font-size:0.8rem; margin-bottom:4px;">
