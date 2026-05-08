@@ -1,18 +1,8 @@
-<div align="center">
-
-# 🐍 Python Quant Lab
-
-**투자분석 기초부터 ML/DL 기반 퀀트 실습, FastAPI 서빙까지 한 번에 학습하는 실습형 저장소**
-
-</div>
-
----
-
 ## 투자분석 기초 방법론
 
 - 매크로 분석: 경제지표 분석(금리, 물가, 유가 등 주요 지표 보는 법), 거시경제상황 분석 실습
 
-<img alt="투자분석 개요" src="image.png" />
+<img alt="투자분석 개요" src="./image.png" />
 
 - 산업 분석: 산업 경쟁력 분석(산업경쟁력 개념/분석모형, 산업별 분석방법), 산업 분석 실습
 - 기본적 분석:
@@ -120,6 +110,3 @@ python app/src/PortfolioOptimizer.py
 
 ---
 
-## 📄 License
-
-MIT License
