@@ -17,6 +17,12 @@
 
 ---
 
+| ◀ 이전 강의 | 📚 커리큘럼 (7 / 10) | 다음 강의 ▶ |
+|:---|:---:|---:|
+| [← OpenStack 프라이빗 클라우드](https://github.com/edumgt/openstack-private-cloud) | **Python 퀀트 시스템** | [Python 트레이딩 샘플 →](https://github.com/edumgt/python-trading-sample) |
+
+---
+
 ## 🗺️ 전체 로드맵 / Full Roadmap
 
 ```mermaid
