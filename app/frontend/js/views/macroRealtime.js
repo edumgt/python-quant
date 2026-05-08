@@ -100,6 +100,13 @@ export function macroRealtimeView(container) {
       const data = await api.macroRealtime({ tickers, period: selectedPeriod });
 
       let html = '';
+      if (data.is_simulated) {
+        html += `<div style="margin-bottom:14px; padding:10px 14px; background:#422006; border:1px solid #92400e;
+                             border-radius:8px; font-size:0.82rem; color:#fde68a; display:flex; gap:8px; align-items:center;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>${data.warning}</span>
+        </div>`;
+      }
       if (data.image) {
         html += `<img src="${data.image}" style="width:100%; border-radius:8px; margin-bottom:20px;"/>`;
       }

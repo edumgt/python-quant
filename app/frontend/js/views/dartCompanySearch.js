@@ -31,7 +31,7 @@ export function dartCompanySearchView(container) {
         </button>
       </div>
       <div class="dart-help">
-        서버 환경변수 `DART_API_KEY` 또는 `OPENDART_API_KEY`가 필요합니다.
+        서버 환경변수 <code>DART_API_KEY</code> 또는 <code>OPENDART_API_KEY</code>가 설정되지 않으면 검색이 제한될 수 있습니다.
       </div>
       <div id="dart-search-result" style="margin-top:18px;"></div>
     </section>

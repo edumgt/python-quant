@@ -21,6 +21,8 @@ import { macroSimulationView }  from './views/macroSimulation.js';
 import { industryAnalysisView } from './views/industryAnalysis.js';
 import { financialStatementView } from './views/financialStatement.js';
 import { dartCompanySearchView } from './views/dartCompanySearch.js';
+import { valuationView }        from './views/valuation.js';
+import { technicalChartView }  from './views/technicalChart.js';
 import { api }                 from './api.js';
 
 const app        = document.getElementById('app');
@@ -50,6 +52,8 @@ const routes = {
   'industry-analysis': { label: '산업 경쟁력 분석',           render: () => industryAnalysisView(app) },
   'financial-statement': { label: '재무제표분석',              render: () => financialStatementView(app) },
   'dart-company-search': { label: 'DART 상장기업 검색',        render: () => dartCompanySearchView(app) },
+  'valuation':           { label: '밸류에이션 실습',            render: () => valuationView(app) },
+  'technical-chart':     { label: '기술적 분석 실습',            render: () => technicalChartView(app) },
 };
 
 let currentView = null;

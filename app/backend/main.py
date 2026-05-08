@@ -1034,6 +1034,7 @@ def quant_backtest(req: BacktestRequest) -> dict[str, object]:
     import matplotlib.gridspec as gridspec
     import numpy as np
     import pandas as pd
+    configure_matplotlib_korean_font(plt)
 
     rng = np.random.default_rng(42)
     dt = 1 / 252
@@ -1156,6 +1157,7 @@ def quant_portfolio(req: PortfolioRequest) -> dict[str, object]:
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import numpy as np
+    configure_matplotlib_korean_font(plt)
 
     tickers = ["KOSPI", "S&P500", "국채10Y", "금(Gold)", "BTC"]
     mu_ann = np.array([0.10, 0.12, 0.04, 0.07, 0.30])
@@ -1249,6 +1251,7 @@ def quant_risk(req: RiskRequest) -> dict[str, object]:
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import numpy as np
+    configure_matplotlib_korean_font(plt)
 
     rng = np.random.default_rng(42)
     mu, sigma = 0.0004, 0.012
@@ -1315,6 +1318,7 @@ def quant_pipeline(req: PipelineRequest) -> dict[str, object]:
     import pandas as pd
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.model_selection import TimeSeriesSplit
+    configure_matplotlib_korean_font(plt)
     from sklearn.metrics import accuracy_score
 
     rng = np.random.default_rng(42)
@@ -1945,6 +1949,7 @@ def macro_realtime(req: MacroRealtimeRequest) -> dict[str, object]:
     import numpy as np
     import pandas as pd
     import io, base64
+    configure_matplotlib_korean_font(plt)
 
     DARK   = "#0f172a"
     SURF   = "#1e293b"
@@ -1958,6 +1963,7 @@ def macro_realtime(req: MacroRealtimeRequest) -> dict[str, object]:
 
     # ── 데이터 fetch ──────────────────────────────────────────────────────────
     raw: dict[str, pd.Series] = {}
+    fetch_error: str | None = None
     for t in req.tickers:
         try:
             df = yf.download(t, period=req.period, progress=False, auto_adjust=True)
@@ -1969,11 +1975,31 @@ def macro_realtime(req: MacroRealtimeRequest) -> dict[str, object]:
             close = close.dropna()
             if len(close) > 0:
                 raw[t] = close
-        except Exception:
-            pass
+        except Exception as e:
+            fetch_error = str(e)
 
+    # ── 실시간 데이터 없을 때 GBM 시뮬레이션으로 폴백 ──────────────────────────
+    is_simulated = False
     if not raw:
-        raise HTTPException(status_code=503, detail="데이터를 가져올 수 없습니다. 잠시 후 다시 시도하세요.")
+        is_simulated = True
+        rng_fb = np.random.default_rng(42)
+        n_days = {"1mo": 22, "3mo": 66, "6mo": 132, "1y": 252,
+                  "2y": 504, "5y": 1260}.get(req.period, 252)
+        BASE = {
+            "^TNX": (4.20, 0.0, 0.40), "CL=F": (78.0, 0.03, 0.35),
+            "^GSPC": (4800, 0.08, 0.17), "^KS11": (2650, 0.06, 0.18),
+            "GC=F": (2000, 0.05, 0.14), "EURUSD=X": (1.08, -0.01, 0.07),
+            "BTC-USD": (45000, 0.20, 0.70), "^IRX": (5.25, 0.0, 0.15),
+            "^VIX": (18.0, 0.0, 0.80), "DX-Y.NYB": (104.0, 0.01, 0.06),
+        }
+        dt = 1 / 252
+        for t in req.tickers:
+            s0, mu, sigma = BASE.get(t, (100, 0.05, 0.20))
+            shocks = rng_fb.standard_normal(n_days)
+            log_r  = (mu - 0.5 * sigma**2) * dt + sigma * np.sqrt(dt) * shocks
+            vals   = s0 * np.exp(np.cumsum(log_r))
+            idx    = pd.date_range(end=pd.Timestamp.today(), periods=n_days, freq="B")
+            raw[t] = pd.Series(vals, index=idx)
 
     labels_used = [TICKER_LABELS.get(t, t) for t in raw]
 
@@ -2069,7 +2095,8 @@ def macro_realtime(req: MacroRealtimeRequest) -> dict[str, object]:
     ax4.tick_params(colors=TEXT, labelsize=7)
     ax4.spines[:].set_color(BORDER)
 
-    fig.suptitle("거시경제현황 — 실시간 데이터 (Yahoo Finance)", color=TEXT,
+    title_suffix = "  [시뮬레이션 — 실시간 연결 불가]" if is_simulated else "  (Yahoo Finance)"
+    fig.suptitle(f"거시경제현황 — 실시간 데이터{title_suffix}", color=TEXT,
                  fontsize=12, fontweight="bold", y=0.97)
 
     buf = io.BytesIO()
@@ -2091,7 +2118,9 @@ def macro_realtime(req: MacroRealtimeRequest) -> dict[str, object]:
         }
 
     return {"image": img_b64, "summary": summary, "period": req.period,
-            "n_tickers": len(raw)}
+            "n_tickers": len(raw),
+            "is_simulated": is_simulated,
+            "warning": "Yahoo Finance 요청 한도 초과로 시뮬레이션 데이터를 표시합니다. 잠시 후 다시 시도하세요." if is_simulated else None}
 
 
 # ── 거시경제현황 2: GBM 시뮬레이션 대시보드 ──────────────────────────────────
@@ -2108,6 +2137,7 @@ def macro_simulation(req: MacroSimRequest) -> dict[str, object]:
     import matplotlib.gridspec as gridspec
     import numpy as np
     import io, base64
+    configure_matplotlib_korean_font(plt)
 
     DARK   = "#0f172a"
     SURF   = "#1e293b"

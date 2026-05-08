@@ -26,7 +26,7 @@ export function homeView(container, navigate) {
         { icon: 'fa-solid fa-scale-balanced', name: '재무제표분석', tag: '손익계산서 · 재무상태표 · 현금흐름표', view: 'financial-statement' },
         { icon: 'fa-solid fa-briefcase', name: '포트폴리오 최적화', tag: '자본 배분 · 샤프 비율', view: 'portfolio' },
         { icon: 'fa-solid fa-shield-halved', name: '리스크 분석 (VaR)', tag: '손실 위험 · 자본 보전', view: 'risk' },
-        { icon: 'fa-solid fa-calculator', name: '밸류에이션 실습', tag: 'PER/PBR · DCF', disabled: true },
+        { icon: 'fa-solid fa-calculator', name: '밸류에이션 실습', tag: 'FCF · DCF · EVA · 기업선정', view: 'valuation' },
       ],
     },
     {
@@ -34,6 +34,7 @@ export function homeView(container, navigate) {
       desc: '가격, 추세, 지표, 백테스트를 통해 매매 전략의 동작을 검증합니다.',
       icon: 'fa-solid fa-chart-line',
       items: [
+        { icon: 'fa-solid fa-chart-candlestick', name: '기술적 분석 실습', tag: '추세·MA·캔들·지표·파동', view: 'technical-chart' },
         { icon: 'fa-solid fa-clock-rotate-left', name: '백테스트 엔진', tag: 'MA 크로스오버 · 성과 분석', view: 'backtest' },
         { icon: 'fa-solid fa-diagram-project', name: '퀀트 파이프라인', tag: 'MA · RSI · MACD · ML', view: 'pipeline' },
       ],

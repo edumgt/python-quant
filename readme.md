@@ -30,6 +30,54 @@
 
 ---
 
+# 📌 DART API Key 발급 방법
+
+## 1. [DART 홈페이지 접속](ca://s?q=DART_API_홈페이지)
+- 주소: [https://opendart.fss.or.kr](https://opendart.fss.or.kr)  
+- 금융감독원 전자공시시스템(Open DART) 공식 사이트
+
+---
+
+## 2. [회원가입](ca://s?q=DART_API_회원가입)
+- 오른쪽 상단 **Login** 버튼 클릭  
+- ‘인증키 신청’을 선택 후 이용약관 동의 및 회원가입 진행
+
+---
+
+## 3. [인증키 신청](ca://s?q=DART_API_인증키_신청)
+- 상단 메뉴에서 **인증키 신청/관리 → 인증키 신청** 클릭  
+- API 사용 환경, 용도 등을 입력 후 신청
+
+---
+
+## 4. [이메일 인증](ca://s?q=DART_API_이메일_인증)
+- 신청 시 입력한 이메일로 인증 메일 발송  
+- 메일 본문의 인증 링크 클릭하여 완료
+
+---
+
+## 5. [인증키 확인](ca://s?q=DART_API_인증키_확인)
+- 메뉴에서 **인증키 신청/관리 → 오픈 API 이용현황** 확인  
+- 발급된 API Key 복사 후 사용 가능
+
+---
+
+# ⚠️ 유의사항
+- **개인/기업 회원 모두 발급 가능**  
+- **무료 제공**: 별도의 비용 없음  
+- **사용 제한**: 하루 호출 횟수 제한 존재  
+- **활용 예시**: 기업 공시자료 조회, 재무제표 분석, 데이터 분석 프로젝트
+
+---
+
+# 📌 결론
+- DART API Key는 **금융감독원 Open DART 홈페이지에서 회원가입 후 신청**하면 발급됩니다.  
+- 이메일 인증을 거친 뒤 **‘오픈 API 이용현황’ 메뉴에서 확인**할 수 있습니다.  
+
+추가로 원하시면 [API 활용 예시 코드](ca://s?q=DART_API_활용_예시코드)나 [Python 라이브러리 dart-fss 사용법](ca://s?q=dart_fss_사용법)까지 정리해드릴 수 있습니다.
+
+---
+
 ## 🗂️ Repository Structure
 
 ```text
@@ -74,10 +122,25 @@
 
 ### 1) Python 앱 실행
 
+#### /home/ubuntu/python-quant/app/backend/.env.example 를 .env 로 복제 후 본인 키 입력
+
+
 ```bash
 cd /path/to/python-quant
-pip install -r requirements.txt
-uvicorn app.backend.main:app --host 0.0.0.0 --port 8000 --reload
+
+python3 -m venv /home/ubuntu/python-quant/.venv && echo "venv created"
+.venv/bin/pip install -r requirements.txt 2>&1
+
+source /home/ubuntu/python-quant/.venv/bin/activate
+cd app/backend
+uvicorn main:app --host 0.0.0.0 --port 8000 --env-file .env
+
+```
+---
+
+```bash
+pkill -f uvicorn
+
 ```
 
 - 웹앱: `http://localhost:8000`

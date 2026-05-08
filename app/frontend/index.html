@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Python Quant Lab</title>
+  <title>EDUMGT Python Quant Lab</title>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="stylesheet" href="styles.css" />
@@ -13,10 +13,18 @@
 
   <header class="topbar">
     <button class="brand" type="button" data-view="home" aria-label="홈으로 이동">
-      <span class="brand-mark">Q</span>
-      <span>
-        <strong>Python Quant Lab</strong>
-        <small>FastAPI quant workspace</small>
+      <span class="brand-mark">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="1" y="10" width="3" height="9" rx="1" fill="#fff" opacity="0.6"/>
+          <rect x="6" y="6"  width="3" height="13" rx="1" fill="#fff" opacity="0.8"/>
+          <rect x="11" y="2" width="3" height="17" rx="1" fill="#fff"/>
+          <polyline points="1,10 6.5,6.5 11.5,2.5 16,5" stroke="#a5f3fc" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="16" cy="5" r="1.5" fill="#a5f3fc"/>
+        </svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">EDUMGT</span>
+        <small class="brand-sub">Python Quant Lab</small>
       </span>
     </button>
 
@@ -45,6 +53,29 @@
       </div>
       <section id="app" class="app-surface"></section>
     </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="footer-logo">EDUMGT</span>
+          <p class="footer-tagline">투자분석 교육 플랫폼 · Python Quant Lab</p>
+        </div>
+        <div class="footer-info">
+          <span><strong>(주)에듀엠지티</strong></span>
+          <span class="sep">|</span>
+          <span>대표이사 김대표</span>
+          <span class="sep">|</span>
+          <span>사업자등록번호 000-00-00000</span>
+          <span class="sep">|</span>
+          <span>서울특별시 강남구 테헤란로</span>
+          <span class="sep">|</span>
+          <span>contact@edumgt.co.kr</span>
+        </div>
+        <div class="footer-copy">
+          © 2025 (주)에듀엠지티. All rights reserved. 본 콘텐츠는 교육 목적으로 제작되었으며 투자 권유가 아닙니다.
+        </div>
+      </div>
+    </footer>
   </div>
 
   <aside id="sidebar" class="right-drawer" aria-label="실습 메뉴" aria-hidden="true">
@@ -84,15 +115,21 @@
         <a class="sidebar-link" data-view="financial-statement"><i class="fa-solid fa-scale-balanced"></i>재무제표분석</a>
         <a class="sidebar-link" data-view="portfolio"><i class="fa-solid fa-briefcase"></i>포트폴리오 최적화</a>
         <a class="sidebar-link" data-view="risk"><i class="fa-solid fa-shield-halved"></i>리스크 분석 (VaR)</a>
-        <span class="sidebar-link is-disabled"><i class="fa-solid fa-calculator"></i>밸류에이션 실습</span>
+        <a class="sidebar-link" data-view="valuation"><i class="fa-solid fa-calculator"></i>밸류에이션 실습</a>
       </div>
 
       <div class="sec-hdr" onclick="toggleSec('technical')">
         <span><i class="fa-solid fa-chart-line"></i> 기술적 분석</span><span id="technical-chev">▾</span>
       </div>
       <div id="technical-sec">
+        <a class="sidebar-link" data-view="technical-chart"><i class="fa-solid fa-chart-candlestick"></i>기술적 분석 실습</a>
         <a class="sidebar-link" data-view="backtest"><i class="fa-solid fa-clock-rotate-left"></i>백테스트 엔진</a>
         <a class="sidebar-link" data-view="pipeline"><i class="fa-solid fa-diagram-project"></i>퀀트 파이프라인</a>
+      </div>
+
+      <div class="drawer-footer">
+        <div class="drawer-footer-logo">EDUMGT</div>
+        <div class="drawer-footer-copy">© 2025 (주)에듀엠지티</div>
       </div>
     </nav>
   </aside>
