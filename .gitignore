@@ -1,24 +1,8 @@
 /venv
 *.key
 *.log
-*.mp4
-*.mp3
-*.txt
-/Youtube
-*.jpg
-*.png
 
 # Python cache
 __pycache__/
-*.py[cod]
-*.pyo
 
-# Node
-node_modules/
 
-# JSON (allow package.json but ignore generated data)
-*.json
-!package.json
-!package-lock.json
-
-rd.pdf
