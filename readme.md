@@ -371,9 +371,9 @@ pkill -f uvicorn
 
 ---
 
-## 🖼️ 웹앱 주요 화면 캡쳐 (실행 검증)
+## 🖼️ 웹앱 주요 화면 캡처 이미지 (실행 검증)
 
-> 실행 환경: FastAPI 서버(`uvicorn main:app`) 구동 후 캡쳐
+> 실행 환경: FastAPI 서버(`uvicorn main:app`) 구동 후 캡처
 
 ### 1) 홈
 ![홈 화면](docs/images/screenshots/screen-01-home.png)
