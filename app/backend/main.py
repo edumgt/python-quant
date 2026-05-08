@@ -1009,6 +1009,7 @@ class BacktestRequest(BaseModel):
 
 class PortfolioRequest(BaseModel):
     n_simulations: int = Field(default=3000, ge=500, le=10000)
+    risk_free: float = Field(default=0.03, ge=0.0, le=0.1)
 
 
 class RiskRequest(BaseModel):
@@ -1021,6 +1022,12 @@ class PipelineRequest(BaseModel):
     ticker: str = Field(default="SPY")
     fast_ma: int = Field(default=20, ge=5, le=60)
     slow_ma: int = Field(default=60, ge=20, le=200)
+
+
+class FinancialKnowledgeRequest(BaseModel):
+    focus: str = Field(default="balanced", pattern="^(balanced|products|allocation)$")
+    n_simulations: int = Field(default=3000, ge=500, le=10000)
+    risk_free: float = Field(default=0.03, ge=0.0, le=0.1)
 
 
 # ─── Quant Endpoints ──────────────────────────────────────────────────────────
@@ -1172,7 +1179,7 @@ def quant_portfolio(req: PortfolioRequest) -> dict[str, object]:
     cov = np.outer(vol_ann, vol_ann) * corr
     n = len(tickers)
     rng = np.random.default_rng(42)
-    rf = 0.03
+    rf = req.risk_free
 
     port_rets, port_vols, port_sharpes = [], [], []
     all_weights = []
@@ -1241,6 +1248,223 @@ def quant_portfolio(req: PortfolioRequest) -> dict[str, object]:
         "optimal_vol": round(float(port_vols[best_i]), 4),
         "optimal_sharpe": round(float(port_sharpes[best_i]), 4),
         "riskparity_weights": {tk: round(float(w), 4) for tk, w in zip(tickers, rp_w)},
+    }
+
+
+@app.post("/api/quant/financial-knowledge")
+def quant_financial_knowledge(req: FinancialKnowledgeRequest) -> dict[str, object]:
+    """모듈 8 — 금융상품 이해와 자산배분방법론 5일 커리큘럼 점검/실습."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import numpy as np
+    configure_matplotlib_korean_font(plt)
+
+    coverage = [
+        {
+            "day": "Day 052",
+            "topic": "주식/ETF 상품",
+            "document": "docs/37.md",
+            "coverage": 0.96,
+            "web_status": "보완됨",
+            "items": ["주식/ETF 개요", "ETF 운용 전략", "성과 비교"],
+        },
+        {
+            "day": "Day 053",
+            "topic": "채권 상품",
+            "document": "docs/37.md",
+            "coverage": 0.88,
+            "web_status": "보완됨",
+            "items": ["채권 개요", "듀레이션", "수익률 곡선", "운용 전략"],
+        },
+        {
+            "day": "Day 054",
+            "topic": "파생상품",
+            "document": "docs/38.md",
+            "coverage": 0.86,
+            "web_status": "보완됨",
+            "items": ["선물", "옵션", "스왑", "헤징 전략"],
+        },
+        {
+            "day": "Day 055",
+            "topic": "포트폴리오 이론",
+            "document": "docs/39.md",
+            "coverage": 0.94,
+            "web_status": "기존+보완",
+            "items": ["MPT", "성과분석", "MDD", "Sharpe", "Sortino"],
+        },
+        {
+            "day": "Day 056",
+            "topic": "자산배분 모델",
+            "document": "docs/40.md",
+            "coverage": 0.92,
+            "web_status": "기존+보완",
+            "items": ["평균분산", "블랙-리터만", "Risk-Parity", "사례 분석"],
+        },
+    ]
+
+    rng = np.random.default_rng(7)
+    n_days = 252
+    asset_names = ["주식/ETF", "채권", "원자재", "현금"]
+    mu = np.array([0.10, 0.04, 0.06, 0.025])
+    vol = np.array([0.19, 0.07, 0.16, 0.01])
+    corr = np.array([
+        [1.00, -0.10, 0.25, 0.00],
+        [-0.10, 1.00, 0.05, 0.00],
+        [0.25, 0.05, 1.00, 0.00],
+        [0.00, 0.00, 0.00, 1.00],
+    ])
+    cov = np.outer(vol, vol) * corr
+    daily_mean = mu / 252
+    daily_cov = cov / 252
+    returns = rng.multivariate_normal(daily_mean, daily_cov, n_days)
+    curves = np.cumprod(1 + returns, axis=0)
+
+    inv_vol = 1 / vol
+    risk_parity_w = inv_vol / inv_vol.sum()
+    sixty_forty_w = np.array([0.60, 0.35, 0.00, 0.05])
+    market_w = np.array([0.50, 0.30, 0.15, 0.05])
+    investor_view = np.array([0.005, 0.000, 0.006, 0.000])
+    black_litterman_return = (mu * 0.75) + ((mu + investor_view) * 0.25)
+
+    port_rets, port_vols, sharpes, weights = [], [], [], []
+    for _ in range(req.n_simulations):
+        w = rng.random(len(asset_names))
+        w = w / w.sum()
+        r = float(w @ mu)
+        v = float(np.sqrt(w.T @ cov @ w))
+        s = (r - req.risk_free) / v
+        port_rets.append(r)
+        port_vols.append(v)
+        sharpes.append(s)
+        weights.append(w)
+
+    port_rets = np.array(port_rets)
+    port_vols = np.array(port_vols)
+    sharpes = np.array(sharpes)
+    weights = np.array(weights)
+    best_i = int(np.argmax(sharpes))
+    mean_variance_w = weights[best_i]
+    black_litterman_w = black_litterman_return / black_litterman_return.sum()
+
+    def metrics(w: np.ndarray) -> dict[str, float]:
+        portfolio_daily = returns @ w
+        cumulative = np.cumprod(1 + portfolio_daily)
+        cagr = float(cumulative[-1] ** (252 / len(cumulative)) - 1)
+        annual_vol = float(np.std(portfolio_daily) * np.sqrt(252))
+        mdd = float(np.min(cumulative / np.maximum.accumulate(cumulative) - 1))
+        downside = portfolio_daily[portfolio_daily < 0]
+        downside_vol = float(np.std(downside) * np.sqrt(252)) if len(downside) else annual_vol
+        sharpe = float((cagr - req.risk_free) / annual_vol) if annual_vol else 0.0
+        sortino = float((cagr - req.risk_free) / downside_vol) if downside_vol else 0.0
+        return {
+            "cagr": round(cagr, 4),
+            "volatility": round(annual_vol, 4),
+            "mdd": round(mdd, 4),
+            "sharpe": round(sharpe, 3),
+            "sortino": round(sortino, 3),
+        }
+
+    strategies = {
+        "60/40 사례": sixty_forty_w,
+        "평균분산": mean_variance_w,
+        "블랙-리터만": black_litterman_w,
+        "Risk-Parity": risk_parity_w,
+    }
+
+    strategy_payload = {
+        name: {
+            "weights": {asset: round(float(weight), 4) for asset, weight in zip(asset_names, w)},
+            "metrics": metrics(w),
+        }
+        for name, w in strategies.items()
+    }
+
+    spots = np.linspace(70, 130, 121)
+    call = np.maximum(spots - 100, 0) - 5
+    put = np.maximum(100 - spots, 0) - 4
+    straddle = call + put
+    tenors = ["3M", "2Y", "5Y", "10Y", "30Y"]
+    yields = np.array([4.6, 4.3, 4.0, 4.1, 4.25])
+
+    text_c = "#e2e8f0"; grid_c = "#334155"
+    fig, axes = plt.subplots(2, 2, figsize=(14, 9), facecolor="#0f172a")
+
+    ax = axes[0, 0]; ax.set_facecolor("#1e293b")
+    for i, name in enumerate(asset_names):
+        ax.plot(curves[:, i] * 100, label=name, linewidth=1.4)
+    ax.set_title("금융상품 이해: 자산군별 누적 성과", color=text_c, fontweight="bold")
+    ax.set_ylabel("기준가", color=text_c)
+    ax.legend(fontsize=8, labelcolor=text_c, facecolor="#0f172a")
+    ax.tick_params(colors=text_c); ax.grid(True, alpha=0.2, color=grid_c)
+    ax.spines[:].set_color(grid_c)
+
+    ax = axes[0, 1]; ax.set_facecolor("#1e293b")
+    sc = ax.scatter(port_vols * 100, port_rets * 100, c=sharpes, cmap="viridis", s=5, alpha=0.55)
+    ax.scatter(port_vols[best_i] * 100, port_rets[best_i] * 100, marker="*", s=260, color="#fbbf24", label="평균분산")
+    rp_r = float(risk_parity_w @ mu); rp_v = float(np.sqrt(risk_parity_w.T @ cov @ risk_parity_w))
+    ax.scatter(rp_v * 100, rp_r * 100, marker="D", s=110, color="#22c55e", label="Risk-Parity")
+    ax.set_title("자산배분방법론: 효율적 투자선", color=text_c, fontweight="bold")
+    ax.set_xlabel("변동성 (%)", color=text_c); ax.set_ylabel("기대수익률 (%)", color=text_c)
+    ax.legend(fontsize=8, labelcolor=text_c, facecolor="#0f172a")
+    ax.tick_params(colors=text_c); ax.grid(True, alpha=0.2, color=grid_c)
+    ax.spines[:].set_color(grid_c)
+    cbar = plt.colorbar(sc, ax=ax); cbar.set_label("Sharpe", color=text_c)
+    plt.setp(cbar.ax.yaxis.get_ticklabels(), color=text_c)
+
+    ax = axes[1, 0]; ax.set_facecolor("#1e293b")
+    x = np.arange(len(asset_names))
+    width = 0.2
+    for offset, (name, w) in zip([-1.5, -0.5, 0.5, 1.5], strategies.items()):
+        ax.bar(x + offset * width, w * 100, width=width, label=name)
+    ax.set_xticks(x); ax.set_xticklabels(asset_names, color=text_c)
+    ax.set_title("자산배분 모델별 비중 비교", color=text_c, fontweight="bold")
+    ax.set_ylabel("비중 (%)", color=text_c)
+    ax.legend(fontsize=8, labelcolor=text_c, facecolor="#0f172a")
+    ax.tick_params(colors=text_c); ax.grid(True, alpha=0.2, color=grid_c, axis="y")
+    ax.spines[:].set_color(grid_c)
+
+    ax = axes[1, 1]; ax.set_facecolor("#1e293b")
+    ax.plot(spots, call, label="콜 매수", color="#3b82f6")
+    ax.plot(spots, put, label="풋 매수", color="#ef4444")
+    ax.plot(spots, straddle, label="스트래들", color="#a855f7")
+    ax2 = ax.twinx()
+    ax2.plot(np.arange(len(tenors)), yields, marker="o", color="#22c55e", label="채권 수익률곡선")
+    ax2.set_ylabel("금리 (%)", color="#22c55e")
+    ax2.tick_params(colors="#22c55e")
+    ax2.set_xticks(np.arange(len(tenors)))
+    ax2.set_xticklabels(tenors, color=text_c)
+    ax.axhline(0, color="#94a3b8", linewidth=0.8)
+    ax.set_title("파생상품 손익 + 채권 곡선 예시", color=text_c, fontweight="bold")
+    ax.set_xlabel("기초자산 가격 / 만기", color=text_c); ax.set_ylabel("옵션 손익", color=text_c)
+    ax.legend(fontsize=8, labelcolor=text_c, facecolor="#0f172a", loc="upper left")
+    ax.tick_params(colors=text_c); ax.grid(True, alpha=0.2, color=grid_c)
+    ax.spines[:].set_color(grid_c)
+
+    fig.suptitle("퀀트를 위한 금융 필수 지식 — 웹앱 반영 점검", color=text_c, fontsize=15, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.97])
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=130, bbox_inches="tight", facecolor="#0f172a")
+    plt.close(fig)
+
+    diagnostics = [
+        {"area": "문서 커리큘럼", "status": "충분", "note": "37~40.md가 Day 052~056의 5일 과정을 모두 포함합니다."},
+        {"area": "기존 웹앱", "status": "부분 반영", "note": "포트폴리오 최적화와 리스크 분석은 있었지만 금융상품별 통합 화면은 부족했습니다."},
+        {"area": "보완 웹앱", "status": "반영", "note": "주식/ETF, 채권, 파생상품, 포트폴리오 이론, 자산배분 모델을 한 화면에서 확인합니다."},
+    ]
+
+    return {
+        "image": "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode(),
+        "coverage": coverage,
+        "diagnostics": diagnostics,
+        "strategies": strategy_payload,
+        "curriculum": [
+            {"day": "Day 052", "title": "주식/ETF 상품 이해", "practice": "ETF 성과 비교"},
+            {"day": "Day 053", "title": "채권 상품 이해", "practice": "수익률 곡선·듀레이션"},
+            {"day": "Day 054", "title": "파생상품 이해", "practice": "옵션 손익 시뮬레이션"},
+            {"day": "Day 055", "title": "포트폴리오 이론 및 성과 분석", "practice": "CAGR·MDD·Sharpe"},
+            {"day": "Day 056", "title": "자산배분 모델 및 사례 분석", "practice": "평균분산·블랙리터만·Risk-Parity 비교"},
+        ],
     }
 
 

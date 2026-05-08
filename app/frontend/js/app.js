@@ -23,6 +23,7 @@ import { financialStatementView } from './views/financialStatement.js';
 import { dartCompanySearchView } from './views/dartCompanySearch.js';
 import { valuationView }        from './views/valuation.js';
 import { technicalChartView }  from './views/technicalChart.js';
+import { financialKnowledgeView } from './views/financialKnowledge.js';
 import { api }                 from './api.js';
 
 const app        = document.getElementById('app');
@@ -54,6 +55,7 @@ const routes = {
   'dart-company-search': { label: 'DART 상장기업 검색',        render: () => dartCompanySearchView(app) },
   'valuation':           { label: '밸류에이션 실습',            render: () => valuationView(app) },
   'technical-chart':     { label: '기술적 분석 실습',            render: () => technicalChartView(app) },
+  'financial-knowledge': { label: '금융상품·자산배분',           render: () => financialKnowledgeView(app) },
 };
 
 let currentView = null;

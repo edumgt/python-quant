@@ -30,6 +30,16 @@ export function homeView(container, navigate) {
       ],
     },
     {
+      title: '퀀트를 위한 금융 필수 지식',
+      desc: '주식/ETF, 채권, 파생상품과 포트폴리오 이론, 자산배분 모델을 5일 과정으로 점검합니다.',
+      icon: 'fa-solid fa-layer-group',
+      items: [
+        { icon: 'fa-solid fa-layer-group', name: '금융상품·자산배분', tag: '37~41.md · 5일 커리큘럼', view: 'financial-knowledge' },
+        { icon: 'fa-solid fa-briefcase', name: '자산배분 최적화', tag: '평균분산 · Risk-Parity', view: 'portfolio' },
+        { icon: 'fa-solid fa-shield-halved', name: '리스크 지표 실습', tag: 'VaR · CVaR · 손실위험', view: 'risk' },
+      ],
+    },
+    {
       title: '기술적 분석',
       desc: '가격, 추세, 지표, 백테스트를 통해 매매 전략의 동작을 검증합니다.',
       icon: 'fa-solid fa-chart-line',

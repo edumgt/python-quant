@@ -12,7 +12,7 @@ export function portfolioView(container) {
       <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin-bottom:20px;">
         <div>
           <label class="param-label">자산 수</label>
-          <input id="pf-assets" type="number" value="5" min="2" max="10" class="param-input"/>
+          <input id="pf-assets" type="number" value="5" min="5" max="5" class="param-input" disabled/>
         </div>
         <div>
           <label class="param-label">시뮬레이션 수</label>
@@ -34,8 +34,7 @@ export function portfolioView(container) {
     result.innerHTML = '<p style="color:#94a3b8;">효율적 프론티어 계산 중...</p>';
     try {
       const data = await api.portfolio({
-        n_assets:    +container.querySelector('#pf-assets').value,
-        n_sims:      +container.querySelector('#pf-sims').value,
+        n_simulations: +container.querySelector('#pf-sims').value,
         risk_free:   +container.querySelector('#pf-rf').value,
       });
       let html = '';
