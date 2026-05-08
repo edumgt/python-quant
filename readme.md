@@ -1,5 +1,48 @@
 ## 투자분석 기초 방법론
 
+---
+
+# 투자 분석 관련 영어 표현 정리
+
+주식 및 금융 시장에서 '투자 분석'과 관련된 주요 영어 표현들을 정리해 드립니다.
+
+## 1. 핵심 용어 (Core Terms)
+
+* **Investment Analysis**: '투자 분석'의 가장 직역적인 표현입니다.
+* **Equity Research**: (주식) 투자 분석. 주로 증권사(Sell-side)에서 발행하는 기업 분석 보고서를 의미할 때 많이 쓰입니다.
+* **Security Analysis**: 증권 분석. 주식, 채권 등 유가증권의 가치를 분석하는 것을 뜻합니다.
+* **Financial Analysis**: 재무 분석. 기업의 재무제표를 바탕으로 수익성과 안정성을 분석하는 포괄적인 의미입니다.
+
+## 2. 분석 방식에 따른 표현
+
+* **Fundamental Analysis (기본적 분석)**: 기업의 내재 가치(매출, 이익, 자산 등)를 분석하는 방법.
+* **Technical Analysis (기술적 분석)**: 차트, 거래량 등 과거 데이터를 통해 주가 흐름을 분석하는 방법.
+* **Quantitative Analysis (계량 분석 / 퀀트)**: 통계적 모델과 수학적 기법을 활용한 데이터 중심 분석.
+
+## 3. 실무에서 자주 쓰는 표현
+
+* **Valuation (가치 평가)**: 기업의 적정 주가를 산출하는 과정.
+* **Due Diligence (실사)**: 투자 결정 전 해당 기업에 대해 철저히 조사하고 분석하는 과정.
+* **Deep Dive**: 특정 종목이나 산업에 대해 아주 깊이 있게 분석하는 것.
+* **Peer Analysis**: 동종 업계 경쟁사들과 비교 분석하는 것.
+
+## 4. 분석 결과(의견) 관련 표현
+
+* **Buy / Hold / Sell**: 매수 / 보유 / 매도 의견.
+* **Outperform / Underperform**: 시장 수익률 상회 / 하회 예상.
+* **Price Target / Target Price**: 목표 주가.
+* **Bullish / Bearish**: 강세론(상승 전망) / 약세론(하락 전망).
+
+---
+
+## 💡 예문
+* "We are conducting a **fundamental analysis** of the tech sector."
+    (우리는 기술 섹터에 대한 **기본적 분석**을 진행하고 있습니다.)
+* "The **equity research** report suggests a 'Buy' rating for Samsung Electronics."
+    (**주식 분석** 보고서는 삼성전자에 대해 '매수' 등급을 제안합니다.)
+
+---
+
 - 매크로 분석: 경제지표 분석(금리, 물가, 유가 등 주요 지표 보는 법), 거시경제상황 분석 실습
 
 <img alt="투자분석 개요" src="./docs/images/image.png" />
