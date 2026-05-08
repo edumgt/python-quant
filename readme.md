@@ -44,9 +44,6 @@
 ---
 
 - 매크로 분석: 경제지표 분석(금리, 물가, 유가 등 주요 지표 보는 법), 거시경제상황 분석 실습
-
-<img alt="투자분석 개요" src="./docs/images/image.png" />
-
 - 산업 분석: 산업 경쟁력 분석(산업경쟁력 개념/분석모형, 산업별 분석방법), 산업 분석 실습
 - 기본적 분석:
   - 재무제표분석(손익계산서/대차대조표/현금흐름표)
@@ -190,20 +187,4 @@ pkill -f uvicorn
 - API 문서: `http://localhost:8000/docs`
 - 기본 헬스체크: `GET /api/health`
 
-### 2) 대표 스크립트 실행
 
-```bash
-cd /path/to/python-quant
-python3 app/src/QuantPipeline.py
-python3 app/src/Backtest.py
-python3 app/src/RiskManager.py
-python3 app/src/PortfolioOptimizer.py
-```
-
----
-
-## 📘 문서
-
-- `docs/01.md` ~ `docs/80.md`: 일차별 학습 문서
-
----
