@@ -1,56 +1,99 @@
-import { homeView } from './views/home.js';
+import { homeView }            from './views/home.js';
 import { crossValidationView } from './views/crossValidation.js';
 import { decisionBoundaryView } from './views/decisionBoundary.js';
-import { randomForestView } from './views/randomForest.js';
-import { kmeansView } from './views/kmeans.js';
-import { svmView } from './views/svm.js';
-import { mlpView } from './views/mlp.js';
+import { randomForestView }    from './views/randomForest.js';
+import { kmeansView }          from './views/kmeans.js';
+import { svmView }             from './views/svm.js';
+import { mlpView }             from './views/mlp.js';
 import { linearRegressionView } from './views/linearRegression.js';
-import { sentimentView } from './views/sentiment.js';
-import { opencvView } from './views/opencv.js';
-import { huggingfaceView } from './views/huggingface.js';
+import { textClassifyView }    from './views/textClassify.js';
+import { opencvView }          from './views/opencv.js';
+import { cnnTimeseriesView }   from './views/cnnTimeseries.js';
+import { lstmView }            from './views/lstm.js';
+import { transformerView }     from './views/transformer.js';
+import { backtestView }        from './views/backtest.js';
+import { portfolioView }       from './views/portfolio.js';
+import { pipelineView }        from './views/pipeline.js';
+import { riskView }            from './views/risk.js';
+import { huggingfaceView }     from './views/huggingface.js';
+import { macroRealtimeView }    from './views/macroRealtime.js';
+import { macroSimulationView }  from './views/macroSimulation.js';
+import { industryAnalysisView } from './views/industryAnalysis.js';
+import { api }                 from './api.js';
 
-const menu = document.querySelector('#menu');
-const app = document.querySelector('#app');
+const app        = document.getElementById('app');
+const breadcrumb = document.getElementById('breadcrumb');
 
 const routes = {
-  '🏠 홈': () => { app.innerHTML = homeView(); attachHomeCardListeners(); },
-  'Cross Validation': () => crossValidationView(app),
-  'Decision Boundary': () => decisionBoundaryView(app),
-  'Random Forest': () => randomForestView(app),
-  'KMeans': () => kmeansView(app),
-  'SVM': () => svmView(app),
-  'MLP Neural Net': () => mlpView(app),
-  'Regression': () => linearRegressionView(app),
-  'NLP Classify': () => sentimentView(app),
-  'OpenCV': () => opencvView(app),
-  'HuggingFace': () => huggingfaceView(app),
+  'home':              { label: '홈',                     render: () => homeView(app, navigate) },
+  'cross-validation':  { label: 'Cross Validation',       render: () => crossValidationView(app) },
+  'decision-boundary': { label: 'Decision Boundary',      render: () => decisionBoundaryView(app) },
+  'random-forest':     { label: 'Random Forest',          render: () => randomForestView(app) },
+  'kmeans':            { label: 'KMeans 클러스터링',       render: () => kmeansView(app) },
+  'svm':               { label: 'SVM 분류기',             render: () => svmView(app) },
+  'mlp':               { label: 'MLP 신경망',             render: () => mlpView(app) },
+  'linear-regression': { label: '선형 회귀',              render: () => linearRegressionView(app) },
+  'text-classify':     { label: '텍스트 분류 (TF-IDF)',   render: () => textClassifyView(app) },
+  'opencv':            { label: 'OpenCV 애니메이션',      render: () => opencvView(app) },
+  'cnn-timeseries':    { label: '1D CNN 시계열',          render: () => cnnTimeseriesView(app) },
+  'lstm':              { label: 'LSTM 예측기',            render: () => lstmView(app) },
+  'transformer':       { label: 'Transformer',            render: () => transformerView(app) },
+  'backtest':          { label: '백테스트 엔진',          render: () => backtestView(app) },
+  'portfolio':         { label: '포트폴리오 최적화',      render: () => portfolioView(app) },
+  'pipeline':          { label: '퀀트 파이프라인',        render: () => pipelineView(app) },
+  'risk':              { label: '리스크 분석 (VaR)',       render: () => riskView(app) },
+  'huggingface':       { label: 'HuggingFace 이미지 생성', render: () => huggingfaceView(app) },
+  'macro-realtime':    { label: '거시경제현황 1 (실시간)',    render: () => macroRealtimeView(app) },
+  'macro-simulation':  { label: '거시경제현황 2 (시뮬레이션)', render: () => macroSimulationView(app) },
+  'industry-analysis': { label: '산업 경쟁력 분석',           render: () => industryAnalysisView(app) },
 };
 
-let activeBtn = null;
+let currentView = null;
 
-Object.entries(routes).forEach(([name, render]) => {
-  const button = document.createElement('button');
-  button.textContent = name;
-  button.addEventListener('click', () => {
-    if (activeBtn) activeBtn.classList.remove('active');
-    button.classList.add('active');
-    activeBtn = button;
-    render();
-  });
-  menu.appendChild(button);
-});
+function navigate(view) {
+  const route = routes[view] || routes['home'];
+  currentView = view;
 
-function attachHomeCardListeners() {
-  document.querySelectorAll('.module-card[data-route]').forEach(card => {
-    card.addEventListener('click', () => {
-      const routeName = card.dataset.route;
-      const btn = [...menu.querySelectorAll('button')].find(b => b.textContent === routeName);
-      if (btn) btn.click();
-    });
+  // Update active sidebar link
+  document.querySelectorAll('.sidebar-link').forEach(a => {
+    a.classList.toggle('active', a.dataset.view === view);
   });
+
+  // Update breadcrumb
+  if (breadcrumb) breadcrumb.textContent = route.label;
+
+  route.render();
+
+  // Close mobile sidebar
+  if (window.innerWidth < 1024) {
+    if (typeof closeSidebar === 'function') closeSidebar();
+  }
 }
 
-// Default: home
-menu.querySelector('button').click();
+// Wire up sidebar links
+document.querySelectorAll('.sidebar-link[data-view]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigate(a.dataset.view);
+  });
+});
 
+// Health check
+async function checkHealth() {
+  const dot  = document.getElementById('health-dot');
+  const text = document.getElementById('health-text');
+  try {
+    await api.health();
+    if (dot)  dot.style.background  = '#22c55e';
+    if (text) text.textContent = '백엔드 연결됨';
+  } catch {
+    if (dot)  dot.style.background  = '#ef4444';
+    if (text) text.textContent = '백엔드 오프라인';
+  }
+}
+
+checkHealth();
+setInterval(checkHealth, 30000);
+
+// Boot
+navigate('home');

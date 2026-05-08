@@ -843,4 +843,1135 @@ def transformer_timeseries(req: TransformerTSRequest) -> dict[str, object]:
     }
 
 
+# ─── Quant Strategy Models ────────────────────────────────────────────────────
+
+class BacktestRequest(BaseModel):
+    fast_ma: int = Field(default=20, ge=5, le=60)
+    slow_ma: int = Field(default=60, ge=20, le=200)
+    n_days: int = Field(default=1260, ge=252, le=5040)
+
+
+class PortfolioRequest(BaseModel):
+    n_simulations: int = Field(default=3000, ge=500, le=10000)
+
+
+class RiskRequest(BaseModel):
+    confidence: float = Field(default=0.95, ge=0.90, le=0.99)
+    n_scenarios: int = Field(default=10000, ge=1000, le=100000)
+    portfolio_value: float = Field(default=100_000_000, ge=1_000_000)
+
+
+class PipelineRequest(BaseModel):
+    ticker: str = Field(default="SPY")
+    fast_ma: int = Field(default=20, ge=5, le=60)
+    slow_ma: int = Field(default=60, ge=20, le=200)
+
+
+# ─── Quant Endpoints ──────────────────────────────────────────────────────────
+
+@app.post("/api/quant/backtest")
+def quant_backtest(req: BacktestRequest) -> dict[str, object]:
+    """MA 크로스오버 전략 백테스트 (Day041·57 대응)"""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as gridspec
+    import numpy as np
+    import pandas as pd
+
+    rng = np.random.default_rng(42)
+    dt = 1 / 252
+    mu, sigma = 0.08, 0.20
+    daily_r = rng.normal((mu - 0.5 * sigma**2) * dt, sigma * np.sqrt(dt), req.n_days)
+    prices = pd.Series(
+        100 * np.exp(np.cumsum(daily_r)),
+        index=pd.date_range("2020-01-01", periods=req.n_days, freq="B"),
+        name="Close",
+    )
+
+    df = pd.DataFrame({"Close": prices})
+    df["MA_fast"] = df["Close"].rolling(req.fast_ma).mean()
+    df["MA_slow"] = df["Close"].rolling(req.slow_ma).mean()
+    df["Signal"] = (df["MA_fast"] > df["MA_slow"]).astype(float)
+    df["Position"] = df["Signal"].shift(1).fillna(0)
+    df["Ret"] = df["Close"].pct_change()
+    df["Strat_Ret"] = df["Position"] * df["Ret"]
+    df["BH_Ret"] = df["Ret"]
+    df["Strat_Cum"] = (1 + df["Strat_Ret"]).cumprod()
+    df["BH_Cum"] = (1 + df["BH_Ret"]).cumprod()
+    df = df.dropna()
+
+    ret = df["Strat_Ret"]
+    n_years = len(ret) / 252
+    cum = df["Strat_Cum"]
+    cagr = float(cum.iloc[-1] ** (1 / n_years) - 1) if n_years > 0 else 0
+    excess = ret - 0.03 / 252
+    sharpe = float(excess.mean() / excess.std() * np.sqrt(252)) if excess.std() > 0 else 0
+    rolling_max = cum.cummax()
+    dd = (cum - rolling_max) / rolling_max
+    mdd = float(dd.min())
+    wins = ret[ret > 0]
+    losses = ret[ret < 0]
+    win_rate = len(wins) / max(len(ret[ret != 0]), 1)
+    pf = float(wins.sum() / abs(losses.sum())) if len(losses) > 0 and losses.sum() != 0 else 9.99
+    n_trades = int(df["Position"].diff().abs()[lambda x: x > 0].count())
+    total_ret = float(cum.iloc[-1] - 1)
+    bh_ret = float(df["BH_Cum"].iloc[-1] - 1)
+
+    fig = plt.figure(figsize=(14, 9), facecolor="#0f172a")
+    gs = gridspec.GridSpec(3, 2, figure=fig, hspace=0.45, wspace=0.3)
+    text_c = "#e2e8f0"
+    grid_c = "#1e293b"
+
+    for ax in [fig.add_subplot(gs[r, c]) for r in range(3) for c in range(2)]:
+        ax.set_facecolor("#1e293b")
+    plt.clf()
+
+    ax1 = fig.add_subplot(gs[0, :])
+    ax1.set_facecolor("#1e293b")
+    ax1.plot(df.index, df["Close"], color="#64748b", lw=0.8, label="주가")
+    ax1.plot(df.index, df["MA_fast"], color="#3b82f6", lw=1.5, label=f"MA{req.fast_ma}")
+    ax1.plot(df.index, df["MA_slow"], color="#f97316", lw=1.5, label=f"MA{req.slow_ma}")
+    buy_m = (df["Position"] == 1) & (df["Position"].shift(1) == 0)
+    sell_m = (df["Position"] == 0) & (df["Position"].shift(1) == 1)
+    ax1.scatter(df.index[buy_m], df["Close"][buy_m], marker="^", color="#22c55e", s=50, zorder=5, label="매수")
+    ax1.scatter(df.index[sell_m], df["Close"][sell_m], marker="v", color="#ef4444", s=50, zorder=5, label="매도")
+    ax1.set_title(f"MA 크로스오버 전략 (MA{req.fast_ma}/MA{req.slow_ma})", color=text_c, fontsize=11, fontweight="bold")
+    ax1.legend(fontsize=8, ncol=5, labelcolor=text_c, facecolor="#0f172a")
+    ax1.tick_params(colors=text_c); ax1.spines[:].set_color(grid_c)
+    ax1.grid(True, alpha=0.2, color=grid_c)
+
+    ax2 = fig.add_subplot(gs[1, :])
+    ax2.set_facecolor("#1e293b")
+    ax2.plot(df.index, df["Strat_Cum"], color="#3b82f6", lw=2, label=f"전략 ({total_ret:+.1%})")
+    ax2.plot(df.index, df["BH_Cum"], color="#94a3b8", lw=2, ls="--", label=f"Buy & Hold ({bh_ret:+.1%})")
+    ax2.axhline(1.0, color="#475569", lw=0.6)
+    ax2.set_title("누적 수익률 비교", color=text_c, fontsize=11)
+    ax2.legend(fontsize=9, labelcolor=text_c, facecolor="#0f172a")
+    ax2.tick_params(colors=text_c); ax2.spines[:].set_color(grid_c)
+    ax2.grid(True, alpha=0.2, color=grid_c)
+
+    ax3 = fig.add_subplot(gs[2, 0])
+    ax3.set_facecolor("#1e293b")
+    ax3.fill_between(df.index, dd * 100, 0, color="#ef4444", alpha=0.5)
+    ax3.set_title("낙폭 Drawdown (%)", color=text_c, fontsize=11)
+    ax3.tick_params(colors=text_c); ax3.spines[:].set_color(grid_c)
+    ax3.grid(True, alpha=0.2, color=grid_c)
+
+    ax4 = fig.add_subplot(gs[2, 1])
+    ax4.set_facecolor("#1e293b")
+    ax4.axis("off")
+    rows = [
+        ["전략 총수익률", f"{total_ret:+.1%}"],
+        ["B&H 수익률", f"{bh_ret:+.1%}"],
+        ["CAGR", f"{cagr:+.2%}"],
+        ["Sharpe", f"{sharpe:.2f}"],
+        ["MDD", f"{mdd:.1%}"],
+        ["승률", f"{win_rate:.1%}"],
+        ["손익비", f"{pf:.2f}"],
+        ["거래횟수", f"{n_trades}회"],
+    ]
+    tbl = ax4.table(cellText=rows, colLabels=["지표", "값"], loc="center", bbox=[0, 0, 1, 1])
+    tbl.auto_set_font_size(False); tbl.set_fontsize(9)
+    for (r, c), cell in tbl.get_celld().items():
+        cell.set_facecolor("#0f172a" if r == 0 else "#1e293b")
+        cell.set_text_props(color=text_c)
+        cell.set_edgecolor(grid_c)
+    ax4.set_title("성과 요약", color=text_c, fontsize=11)
+
+    fig.patch.set_facecolor("#0f172a")
+    plt.suptitle("백테스트 결과 — MA 크로스오버 전략", color=text_c, fontsize=13, fontweight="bold", y=1.01)
+
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=130, bbox_inches="tight", facecolor="#0f172a")
+    plt.close(fig)
+    return {
+        "image": "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode(),
+        "metrics": {"cagr": round(cagr, 4), "sharpe": round(sharpe, 2), "mdd": round(mdd, 4),
+                    "win_rate": round(win_rate, 4), "profit_factor": round(pf, 2),
+                    "n_trades": n_trades, "total_return": round(total_ret, 4), "bh_return": round(bh_ret, 4)},
+    }
+
+
+@app.post("/api/quant/portfolio")
+def quant_portfolio(req: PortfolioRequest) -> dict[str, object]:
+    """포트폴리오 최적화 — 효율적 프론티어 + Sharpe 극대화 (Day57·76·77 대응)"""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    tickers = ["KOSPI", "S&P500", "국채10Y", "금(Gold)", "BTC"]
+    mu_ann = np.array([0.10, 0.12, 0.04, 0.07, 0.30])
+    vol_ann = np.array([0.18, 0.17, 0.06, 0.15, 0.70])
+    corr = np.array([
+        [1.00, 0.75, 0.10, 0.10, 0.20],
+        [0.75, 1.00, 0.05, 0.05, 0.25],
+        [0.10, 0.05, 1.00, 0.20, 0.00],
+        [0.10, 0.05, 0.20, 1.00, 0.05],
+        [0.20, 0.25, 0.00, 0.05, 1.00],
+    ])
+    cov = np.outer(vol_ann, vol_ann) * corr
+    n = len(tickers)
+    rng = np.random.default_rng(42)
+    rf = 0.03
+
+    port_rets, port_vols, port_sharpes = [], [], []
+    all_weights = []
+    for _ in range(req.n_simulations):
+        w = rng.random(n); w /= w.sum()
+        r = float(w @ mu_ann)
+        v = float(np.sqrt(w @ cov @ w))
+        port_rets.append(r); port_vols.append(v)
+        port_sharpes.append((r - rf) / v)
+        all_weights.append(w)
+
+    port_rets = np.array(port_rets)
+    port_vols = np.array(port_vols)
+    port_sharpes = np.array(port_sharpes)
+    all_weights = np.array(all_weights)
+
+    best_i = int(np.argmax(port_sharpes))
+    best_w = all_weights[best_i]
+
+    # Risk-parity weights (equal risk contribution approx)
+    inv_vol = 1 / vol_ann; rp_w = inv_vol / inv_vol.sum()
+    rp_r = float(rp_w @ mu_ann); rp_v = float(np.sqrt(rp_w @ cov @ rp_w))
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), facecolor="#0f172a")
+    text_c = "#e2e8f0"; grid_c = "#1e293b"
+
+    ax = axes[0]; ax.set_facecolor("#1e293b")
+    sc = ax.scatter(port_vols * 100, port_rets * 100, c=port_sharpes, cmap="RdYlGn",
+                    s=4, alpha=0.6)
+    ax.scatter(port_vols[best_i] * 100, port_rets[best_i] * 100,
+               marker="*", color="#fbbf24", s=300, zorder=10, label=f"최적(Sharpe={port_sharpes[best_i]:.2f})")
+    ax.scatter(rp_v * 100, rp_r * 100, marker="D", color="#22d3ee", s=120, zorder=10, label="Risk-Parity")
+    for i, tk in enumerate(tickers):
+        ax.scatter(vol_ann[i] * 100, mu_ann[i] * 100, marker="o", s=80, zorder=10)
+        ax.annotate(tk, (vol_ann[i] * 100, mu_ann[i] * 100), textcoords="offset points",
+                    xytext=(5, 3), color=text_c, fontsize=8)
+    cbar = plt.colorbar(sc, ax=ax); cbar.set_label("Sharpe Ratio", color=text_c)
+    cbar.ax.yaxis.set_tick_params(color=text_c)
+    plt.setp(cbar.ax.yaxis.get_ticklabels(), color=text_c)
+    ax.set_xlabel("리스크 (변동성 %)", color=text_c); ax.set_ylabel("기대수익률 (%)", color=text_c)
+    ax.set_title("효율적 프론티어", color=text_c, fontsize=12, fontweight="bold")
+    ax.legend(fontsize=8, labelcolor=text_c, facecolor="#0f172a")
+    ax.tick_params(colors=text_c); ax.spines[:].set_color(grid_c)
+    ax.grid(True, alpha=0.2, color=grid_c)
+
+    ax2 = axes[1]; ax2.set_facecolor("#1e293b")
+    colors = ["#3b82f6", "#22c55e", "#f97316", "#fbbf24", "#a78bfa"]
+    bars = ax2.bar(tickers, best_w * 100, color=colors, alpha=0.85, edgecolor=grid_c)
+    for bar, val in zip(bars, best_w):
+        ax2.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.5,
+                 f"{val:.1%}", ha="center", va="bottom", color=text_c, fontsize=9, fontweight="bold")
+    ax2.set_title(f"최적 포트폴리오 비중 (Sharpe={port_sharpes[best_i]:.2f})", color=text_c, fontsize=12, fontweight="bold")
+    ax2.set_ylabel("비중 (%)", color=text_c)
+    ax2.tick_params(colors=text_c); ax2.spines[:].set_color(grid_c)
+    ax2.set_facecolor("#1e293b"); ax2.grid(True, alpha=0.2, color=grid_c, axis="y")
+
+    fig.patch.set_facecolor("#0f172a")
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=130, bbox_inches="tight", facecolor="#0f172a")
+    plt.close(fig)
+
+    return {
+        "image": "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode(),
+        "optimal_weights": {tk: round(float(w), 4) for tk, w in zip(tickers, best_w)},
+        "optimal_return": round(float(port_rets[best_i]), 4),
+        "optimal_vol": round(float(port_vols[best_i]), 4),
+        "optimal_sharpe": round(float(port_sharpes[best_i]), 4),
+        "riskparity_weights": {tk: round(float(w), 4) for tk, w in zip(tickers, rp_w)},
+    }
+
+
+@app.post("/api/quant/risk")
+def quant_risk(req: RiskRequest) -> dict[str, object]:
+    """VaR / CVaR 리스크 분석 (Day39·55 대응)"""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    rng = np.random.default_rng(42)
+    mu, sigma = 0.0004, 0.012
+    daily_ret = rng.normal(mu, sigma, req.n_scenarios).astype(float)
+
+    alpha = 1 - req.confidence
+    var_pct = float(np.percentile(daily_ret, alpha * 100))
+    cvar_pct = float(daily_ret[daily_ret <= var_pct].mean())
+    var_amt = abs(var_pct) * req.portfolio_value
+    cvar_amt = abs(cvar_pct) * req.portfolio_value
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5), facecolor="#0f172a")
+    text_c = "#e2e8f0"; grid_c = "#1e293b"
+
+    ax = axes[0]; ax.set_facecolor("#1e293b")
+    ax.hist(daily_ret * 100, bins=80, color="#3b82f6", alpha=0.75, edgecolor="none", label="수익률 분포")
+    ax.axvline(var_pct * 100, color="#f97316", lw=2, linestyle="--", label=f"VaR ({req.confidence:.0%}): {var_pct:.2%}")
+    ax.axvline(cvar_pct * 100, color="#ef4444", lw=2, linestyle="-", label=f"CVaR: {cvar_pct:.2%}")
+    ax.fill_betweenx([0, ax.get_ylim()[1] if ax.get_ylim()[1] > 0 else 500],
+                     daily_ret.min() * 100, var_pct * 100, color="#ef4444", alpha=0.15)
+    ax.set_xlabel("일간 수익률 (%)", color=text_c); ax.set_ylabel("빈도", color=text_c)
+    ax.set_title(f"수익률 분포 & VaR/CVaR ({req.confidence:.0%} 신뢰수준)", color=text_c, fontsize=11, fontweight="bold")
+    ax.legend(fontsize=8, labelcolor=text_c, facecolor="#0f172a")
+    ax.tick_params(colors=text_c); ax.spines[:].set_color(grid_c)
+    ax.grid(True, alpha=0.2, color=grid_c)
+
+    ax2 = axes[1]; ax2.set_facecolor("#1e293b")
+    labels = ["VaR 예상 손실", "CVaR 예상 손실", "포트폴리오 가치"]
+    values = [var_amt / 1e6, cvar_amt / 1e6, req.portfolio_value / 1e6]
+    colors2 = ["#f97316", "#ef4444", "#22c55e"]
+    bars = ax2.barh(labels, values, color=colors2, alpha=0.85, edgecolor=grid_c)
+    for bar, val in zip(bars, values):
+        ax2.text(val + req.portfolio_value / 1e6 * 0.01, bar.get_y() + bar.get_height() / 2,
+                 f"{val:.1f}M", va="center", color=text_c, fontsize=10, fontweight="bold")
+    ax2.set_xlabel("금액 (백만원)", color=text_c)
+    ax2.set_title("리스크 금액 비교", color=text_c, fontsize=11, fontweight="bold")
+    ax2.tick_params(colors=text_c); ax2.spines[:].set_color(grid_c)
+    ax2.set_facecolor("#1e293b"); ax2.grid(True, alpha=0.2, color=grid_c, axis="x")
+
+    fig.patch.set_facecolor("#0f172a")
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=130, bbox_inches="tight", facecolor="#0f172a")
+    plt.close(fig)
+
+    return {
+        "image": "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode(),
+        "var_pct": round(var_pct, 6),
+        "cvar_pct": round(cvar_pct, 6),
+        "var_amount": round(var_amt, 0),
+        "cvar_amount": round(cvar_amt, 0),
+        "confidence": req.confidence,
+        "portfolio_value": req.portfolio_value,
+    }
+
+
+@app.post("/api/quant/pipeline")
+def quant_pipeline(req: PipelineRequest) -> dict[str, object]:
+    """퀀트 실전 4단계 파이프라인 시각화 (Day43·61 대응)"""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as gridspec
+    import numpy as np
+    import pandas as pd
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.model_selection import TimeSeriesSplit
+    from sklearn.metrics import accuracy_score
+
+    rng = np.random.default_rng(42)
+    n = 1260
+    daily_r = rng.normal(0.0003, 0.015, n)
+    prices = pd.Series(
+        100 * np.exp(np.cumsum(daily_r)),
+        index=pd.date_range("2020-01-01", periods=n, freq="B"),
+    )
+
+    df = pd.DataFrame({"Close": prices})
+    df["MA_fast"] = df["Close"].rolling(req.fast_ma).mean()
+    df["MA_slow"] = df["Close"].rolling(req.slow_ma).mean()
+    df["RSI"] = _calc_rsi(df["Close"])
+    df["BB_upper"] = df["Close"].rolling(20).mean() + 2 * df["Close"].rolling(20).std()
+    df["BB_lower"] = df["Close"].rolling(20).mean() - 2 * df["Close"].rolling(20).std()
+    df["BB_pct"] = (df["Close"] - df["BB_lower"]) / (df["BB_upper"] - df["BB_lower"])
+    df["MACD"] = df["Close"].ewm(span=12).mean() - df["Close"].ewm(span=26).mean()
+    df["ATR"] = (df["Close"].rolling(14).max() - df["Close"].rolling(14).min())
+    df["Signal"] = (df["MA_fast"] > df["MA_slow"]).astype(float)
+    df["Position"] = df["Signal"].shift(1).fillna(0)
+    df["Ret"] = df["Close"].pct_change()
+    df["Strat_Ret"] = df["Position"] * df["Ret"]
+    df["Strat_Cum"] = (1 + df["Strat_Ret"]).cumprod()
+    df["BH_Cum"] = (1 + df["Ret"]).cumprod()
+    df = df.dropna()
+
+    features = ["MA_fast", "MA_slow", "RSI", "BB_pct", "MACD", "ATR"]
+    target = (df["Ret"].shift(-1) > 0).astype(int)
+    feat_df = df[features].iloc[:-1]
+    tgt = target.iloc[:-1]
+    tscv = TimeSeriesSplit(n_splits=3)
+    accs = []
+    for tr_i, te_i in tscv.split(feat_df):
+        rf = RandomForestClassifier(n_estimators=50, random_state=42, n_jobs=-1)
+        rf.fit(feat_df.iloc[tr_i], tgt.iloc[tr_i])
+        accs.append(accuracy_score(tgt.iloc[te_i], rf.predict(feat_df.iloc[te_i])))
+    ml_acc = float(np.mean(accs))
+
+    ret = df["Strat_Ret"]
+    n_years = len(ret) / 252
+    cum = df["Strat_Cum"]
+    cagr = float(cum.iloc[-1] ** (1 / n_years) - 1) if n_years > 0 else 0
+    excess = ret - 0.03 / 252
+    sharpe = float(excess.mean() / excess.std() * np.sqrt(252)) if excess.std() > 0 else 0
+    rolling_max = cum.cummax()
+    mdd = float(((cum - rolling_max) / rolling_max).min())
+
+    fig = plt.figure(figsize=(15, 10), facecolor="#0f172a")
+    gs = gridspec.GridSpec(2, 2, figure=fig, hspace=0.4, wspace=0.3)
+    text_c = "#e2e8f0"; grid_c = "#1e293b"
+
+    ax1 = fig.add_subplot(gs[0, :])
+    ax1.set_facecolor("#1e293b")
+    ax1.plot(df.index, df["Close"], color="#64748b", lw=0.8, label="주가")
+    ax1.plot(df.index, df["MA_fast"], color="#3b82f6", lw=1.5, label=f"MA{req.fast_ma}")
+    ax1.plot(df.index, df["MA_slow"], color="#f97316", lw=1.5, label=f"MA{req.slow_ma}")
+    ax1.fill_between(df.index, df["BB_upper"], df["BB_lower"], alpha=0.07, color="#8b5cf6")
+    ax1.set_title(f"1단계+2단계: 주가 & 기술지표 — {req.ticker}", color=text_c, fontsize=11, fontweight="bold")
+    ax1.legend(fontsize=8, ncol=4, labelcolor=text_c, facecolor="#0f172a")
+    ax1.tick_params(colors=text_c); ax1.spines[:].set_color(grid_c)
+    ax1.grid(True, alpha=0.2, color=grid_c)
+
+    ax2 = fig.add_subplot(gs[1, 0])
+    ax2.set_facecolor("#1e293b")
+    ax2.plot(df.index, df["Strat_Cum"], color="#3b82f6", lw=2, label=f"전략")
+    ax2.plot(df.index, df["BH_Cum"], color="#94a3b8", lw=2, ls="--", label="Buy&Hold")
+    ax2.set_title(f"3단계: 백테스트 | CAGR {cagr:+.1%} | Sharpe {sharpe:.2f} | MDD {mdd:.1%}",
+                  color=text_c, fontsize=10, fontweight="bold")
+    ax2.legend(fontsize=8, labelcolor=text_c, facecolor="#0f172a")
+    ax2.tick_params(colors=text_c); ax2.spines[:].set_color(grid_c)
+    ax2.grid(True, alpha=0.2, color=grid_c)
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    ax3.set_facecolor("#1e293b")
+    fi = rf.feature_importances_
+    sorted_idx = np.argsort(fi)
+    bars = ax3.barh([features[i] for i in sorted_idx], fi[sorted_idx],
+                    color=["#3b82f6", "#22c55e", "#f97316", "#a78bfa", "#f472b6", "#fbbf24"][::-1],
+                    alpha=0.85, edgecolor=grid_c)
+    ax3.set_title(f"4단계: ML 특징 중요도 | 방향 정확도 {ml_acc:.1%}", color=text_c, fontsize=10, fontweight="bold")
+    ax3.tick_params(colors=text_c); ax3.spines[:].set_color(grid_c)
+    ax3.grid(True, alpha=0.2, color=grid_c, axis="x")
+
+    fig.patch.set_facecolor("#0f172a")
+    plt.suptitle(f"퀀트 실전 4단계 파이프라인 — {req.ticker}", color=text_c, fontsize=13, fontweight="bold", y=1.01)
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", dpi=130, bbox_inches="tight", facecolor="#0f172a")
+    plt.close(fig)
+
+    return {
+        "image": "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode(),
+        "metrics": {"cagr": round(cagr, 4), "sharpe": round(sharpe, 2), "mdd": round(mdd, 4), "ml_accuracy": round(ml_acc, 4)},
+        "ticker": req.ticker,
+    }
+
+
+def _calc_rsi(series: "pd.Series", period: int = 14) -> "pd.Series":
+    import pandas as pd
+    delta = series.diff()
+    gain = delta.clip(lower=0).rolling(period).mean()
+    loss = (-delta.clip(upper=0)).rolling(period).mean()
+    rs = gain / loss.replace(0, 1e-9)
+    return 100 - (100 / (1 + rs))
+
+
+# ── 산업 경쟁력 분석 ─────────────────────────────────────────────────────────
+
+class PorterRequest(BaseModel):
+    industry: str = "반도체"
+    scores: dict[str, float] = {
+        "경쟁강도":       8.0,
+        "신규진입 위협":  6.0,
+        "대체재 위협":    4.0,
+        "구매자 교섭력":  5.0,
+        "공급자 교섭력":  7.0,
+    }
+
+class SectorRequest(BaseModel):
+    tickers: list[str] = ["SOXX", "XLE", "XLF", "XLV", "XLK", "XLI"]
+    period:  str       = "1y"
+
+class LifecycleRequest(BaseModel):
+    stage:    str = "성장기"   # 도입기 성장기 성숙기 쇠퇴기
+    industry: str = "전기차"
+
+
+@app.post("/api/industry/porter")
+def industry_porter(req: PorterRequest) -> dict[str, object]:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as gridspec
+    import numpy as np
+    import io, base64
+
+    DARK, SURF, BORDER, TEXT, MUTED = "#0f172a","#1e293b","#334155","#e2e8f0","#64748b"
+    ACCENT = "#3b82f6"
+    C_HIGH  = "#ef4444"   # 위협 강함
+    C_MED   = "#f59e0b"
+    C_LOW   = "#22c55e"   # 위협 약함
+
+    forces = list(req.scores.keys())
+    values = [max(0.0, min(10.0, float(v))) for v in req.scores.values()]
+    N = len(forces)
+
+    def force_color(v):
+        if v >= 7: return C_HIGH
+        if v >= 4: return C_MED
+        return C_LOW
+
+    fig = plt.figure(figsize=(14, 8), facecolor=DARK)
+    gs  = gridspec.GridSpec(1, 2, figure=fig, wspace=0.35,
+                            left=0.05, right=0.97, top=0.88, bottom=0.1)
+
+    # ── Panel 1: Radar (polar) ──────────────────────────────────────────────
+    ax_r = fig.add_subplot(gs[0, 0], polar=True, facecolor=SURF)
+    angles = [n / N * 2 * np.pi for n in range(N)]
+    angles += angles[:1]
+    vals_plot = values + values[:1]
+
+    ax_r.set_theta_offset(np.pi / 2)
+    ax_r.set_theta_direction(-1)
+    ax_r.set_ylim(0, 10)
+    ax_r.set_yticks([2, 4, 6, 8, 10])
+    ax_r.set_yticklabels(["2","4","6","8","10"], color=MUTED, fontsize=7)
+    ax_r.set_xticks(angles[:-1])
+    ax_r.set_xticklabels(forces, color=TEXT, fontsize=9)
+    ax_r.spines["polar"].set_color(BORDER)
+    ax_r.tick_params(colors=MUTED)
+    ax_r.grid(color=BORDER, linewidth=0.8)
+
+    # 배경 zone 색칠 (위험 등급)
+    for thresh, col in [(10, "#ef444411"), (7, "#f59e0b11"), (4, "#22c55e11")]:
+        zone = [thresh] * N + [thresh]
+        ax_r.fill(angles, zone, color=col)
+
+    ax_r.plot(angles, vals_plot, color=ACCENT, lw=2.2, zorder=3)
+    ax_r.fill(angles, vals_plot, color=ACCENT, alpha=0.25, zorder=2)
+    for a, v in zip(angles[:-1], values):
+        ax_r.plot(a, v, "o", color=force_color(v), ms=8, zorder=4)
+        ax_r.text(a, v + 0.8, f"{v:.1f}", ha="center", va="center",
+                  fontsize=8, color=TEXT, fontweight="bold")
+
+    ax_r.set_title(f"Porter 5 Forces\n{req.industry} 산업",
+                   color=TEXT, fontsize=11, fontweight="bold", pad=18)
+
+    # ── Panel 2: 수평 바 + 해석 ─────────────────────────────────────────────
+    ax_b = fig.add_subplot(gs[0, 1], facecolor=SURF)
+    bars = ax_b.barh(forces, values, color=[force_color(v) for v in values],
+                     height=0.5, zorder=2)
+    ax_b.set_xlim(0, 10)
+    ax_b.axvline(4, color=MUTED, lw=0.8, ls="--", alpha=0.5)
+    ax_b.axvline(7, color=MUTED, lw=0.8, ls="--", alpha=0.5)
+    ax_b.text(2, -0.8, "약함", ha="center", color=C_LOW, fontsize=8)
+    ax_b.text(5.5, -0.8, "보통", ha="center", color=C_MED, fontsize=8)
+    ax_b.text(8.5, -0.8, "강함", ha="center", color=C_HIGH, fontsize=8)
+
+    INTERP = {
+        "경쟁강도":      {(7,10):"경쟁사 많음 → 가격경쟁↑·수익성↓", (4,7):"과점 구조 → 안정적", (0,4):"독점적 지위"},
+        "신규진입 위협": {(7,10):"진입장벽 낮음 → 점유율 위협", (4,7):"중간 진입장벽", (0,4):"특허·규제·규모 장벽↑"},
+        "대체재 위협":   {(7,10):"대체재 다수 → 가격결정력↓", (4,7):"부분 대체 가능", (0,4):"대체재 없음"},
+        "구매자 교섭력": {(7,10):"구매자 협상력↑ → 마진압박", (4,7):"균형 협상", (0,4):"공급자 우위"},
+        "공급자 교섭력": {(7,10):"원재료 공급 불안정·비용↑", (4,7):"복수 공급선 확보", (0,4):"공급 안정"},
+    }
+
+    for i, (bar, force, val) in enumerate(zip(bars, forces, values)):
+        ax_b.text(val + 0.15, bar.get_y() + bar.get_height()/2,
+                  f"{val:.1f}", va="center", fontsize=9,
+                  color=TEXT, fontweight="bold")
+        for (lo, hi), msg in INTERP.get(force, {}).items():
+            if lo <= val <= hi:
+                ax_b.text(10.2, bar.get_y() + bar.get_height()/2,
+                          msg, va="center", fontsize=7, color=MUTED)
+                break
+
+    ax_b.set_xlabel("위협 강도 (0 = 낮음, 10 = 높음)", color=MUTED, fontsize=8)
+    ax_b.tick_params(colors=TEXT, labelsize=9)
+    ax_b.spines[:].set_color(BORDER)
+    ax_b.set_title("5 Forces 위협 강도 분석", color=TEXT, fontsize=11,
+                   fontweight="bold", pad=10)
+    ax_b.set_xlim(0, 16)   # 오른쪽 텍스트 공간
+
+    # 종합 점수
+    avg = sum(values) / N
+    grade = "고위험" if avg >= 7 else "중위험" if avg >= 4 else "저위험"
+    grade_col = C_HIGH if avg >= 7 else C_MED if avg >= 4 else C_LOW
+    fig.suptitle(
+        f"산업 경쟁력 분석  |  {req.industry}  |  종합 위협 지수: {avg:.1f}/10  [{grade}]",
+        color=TEXT, fontsize=12, fontweight="bold", y=0.97)
+    fig.text(0.5, 0.01,
+             "■ 녹색: 약함(0-4)  ■ 주황: 보통(4-7)  ■ 빨강: 강함(7-10)",
+             ha="center", fontsize=8, color=MUTED)
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=130, facecolor=DARK, bbox_inches="tight")
+    plt.close(fig)
+    buf.seek(0)
+    img = "data:image/png;base64," + base64.b64encode(buf.read()).decode()
+
+    result = {f: {"score": v, "level": "강함" if v>=7 else "보통" if v>=4 else "약함"}
+              for f, v in zip(forces, values)}
+    return {"image": img, "industry": req.industry,
+            "avg_score": round(avg, 2), "grade": grade, "forces": result}
+
+
+SECTOR_LABELS = {
+    "SOXX": "반도체 (SOXX)", "XLE": "에너지 (XLE)", "XLF": "금융 (XLF)",
+    "XLV":  "헬스케어 (XLV)", "XLK": "기술 (XLK)",  "XLI": "산업재 (XLI)",
+    "XLY":  "소비재경기 (XLY)","XLP": "소비재필수 (XLP)","XLB": "소재 (XLB)",
+    "XLRE": "부동산 (XLRE)",  "XLU": "유틸리티 (XLU)","IBB": "바이오 (IBB)",
+}
+
+@app.post("/api/industry/sector")
+def industry_sector(req: SectorRequest) -> dict[str, object]:
+    import yfinance as yf
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as gridspec
+    import numpy as np
+    import pandas as pd
+    import io, base64
+
+    DARK, SURF, BORDER, TEXT, MUTED = "#0f172a","#1e293b","#334155","#e2e8f0","#64748b"
+    COLORS = ["#3b82f6","#22c55e","#f59e0b","#ef4444","#a855f7",
+              "#06b6d4","#f97316","#84cc16","#ec4899","#14b8a6","#8b5cf6","#fb923c"]
+
+    raw: dict[str, pd.Series] = {}
+    for t in req.tickers:
+        try:
+            df = yf.download(t, period=req.period, progress=False, auto_adjust=True)
+            if df.empty: continue
+            s = df["Close"]
+            if isinstance(s, pd.DataFrame): s = s.iloc[:, 0]
+            s = s.dropna()
+            if len(s) > 5: raw[t] = s
+        except Exception:
+            pass
+
+    if not raw:
+        raise HTTPException(status_code=503, detail="데이터를 가져올 수 없습니다.")
+
+    fig = plt.figure(figsize=(14, 10), facecolor=DARK)
+    gs  = gridspec.GridSpec(2, 2, figure=fig, hspace=0.42, wspace=0.32,
+                            left=0.07, right=0.97, top=0.92, bottom=0.07)
+
+    # Panel 1: 정규화 수익률
+    ax1 = fig.add_subplot(gs[0, :], facecolor=SURF)
+    for i, (t, s) in enumerate(raw.items()):
+        norm = (s / s.iloc[0] - 1) * 100
+        ax1.plot(norm.index, norm.values, color=COLORS[i % len(COLORS)],
+                 lw=1.8, label=SECTOR_LABELS.get(t, t))
+    ax1.axhline(0, color=MUTED, lw=0.8, ls="--")
+    ax1.set_title("섹터 ETF 정규화 누적 수익률 (%)", color=TEXT, fontsize=10, pad=6)
+    ax1.tick_params(colors=TEXT, labelsize=7)
+    ax1.spines[:].set_color(BORDER)
+    ax1.legend(fontsize=7, facecolor=SURF, labelcolor=TEXT,
+               ncol=4, loc="upper left", framealpha=0.7)
+    ax1.tick_params(axis="x", rotation=30)
+    for lbl in ax1.get_xticklabels(): lbl.set_fontsize(6)
+
+    # Panel 2: 기간 수익률 바
+    ax2 = fig.add_subplot(gs[1, 0], facecolor=SURF)
+    names, returns, cols = [], [], []
+    for i, (t, s) in enumerate(raw.items()):
+        r = (s.iloc[-1] / s.iloc[0] - 1) * 100
+        names.append(SECTOR_LABELS.get(t, t))
+        returns.append(r)
+        cols.append(COLORS[i % len(COLORS)])
+    order = sorted(range(len(returns)), key=lambda x: returns[x], reverse=True)
+    names_s  = [names[i] for i in order]
+    returns_s = [returns[i] for i in order]
+    cols_s   = [cols[i] for i in order]
+    bars = ax2.barh(names_s, returns_s, color=cols_s, height=0.6)
+    ax2.axvline(0, color=MUTED, lw=0.8)
+    for bar, v in zip(bars, returns_s):
+        ax2.text(v + (0.3 if v >= 0 else -0.3), bar.get_y() + bar.get_height()/2,
+                 f"{v:+.1f}%", va="center", ha="left" if v >= 0 else "right",
+                 fontsize=7, color=TEXT)
+    ax2.set_title(f"기간 수익률 순위 ({req.period})", color=TEXT, fontsize=10, pad=6)
+    ax2.tick_params(colors=TEXT, labelsize=7)
+    ax2.spines[:].set_color(BORDER)
+
+    # Panel 3: 변동성 vs 수익률 (리스크-리턴 산점도)
+    ax3 = fig.add_subplot(gs[1, 1], facecolor=SURF)
+    for i, (t, s) in enumerate(raw.items()):
+        ret  = (s.iloc[-1] / s.iloc[0] - 1) * 100
+        vol  = s.pct_change().std() * (252**0.5) * 100
+        ax3.scatter(vol, ret, color=COLORS[i % len(COLORS)], s=100, zorder=3)
+        ax3.text(vol + 0.3, ret, SECTOR_LABELS.get(t, t).split("(")[0].strip(),
+                 fontsize=6.5, color=TEXT)
+    ax3.axhline(0, color=MUTED, lw=0.8, ls="--")
+    ax3.set_xlabel("연환산 변동성 (%)", color=MUTED, fontsize=8)
+    ax3.set_ylabel(f"수익률 ({req.period}) %", color=MUTED, fontsize=8)
+    ax3.set_title("리스크-리턴 산점도", color=TEXT, fontsize=10, pad=6)
+    ax3.tick_params(colors=TEXT, labelsize=7)
+    ax3.spines[:].set_color(BORDER)
+    ax3.grid(color=BORDER, lw=0.5, alpha=0.5)
+
+    fig.suptitle(f"섹터 주가 비교 분석  |  {req.period}",
+                 color=TEXT, fontsize=12, fontweight="bold", y=0.97)
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=130, facecolor=DARK, bbox_inches="tight")
+    plt.close(fig)
+    buf.seek(0)
+    img = "data:image/png;base64," + base64.b64encode(buf.read()).decode()
+
+    summary = {}
+    for t, s in raw.items():
+        summary[SECTOR_LABELS.get(t, t)] = {
+            "return_pct": round((s.iloc[-1]/s.iloc[0]-1)*100, 2),
+            "annual_vol":  round(s.pct_change().std()*(252**0.5)*100, 2),
+        }
+    return {"image": img, "summary": summary}
+
+
+LIFECYCLE_DATA = {
+    "도입기": {
+        "idx": 0, "color": "#3b82f6",
+        "chars": ["매출 낮음·손실 가능", "높은 R&D 비용", "선도자 이점 확보 기회"],
+        "strategy": ["성장주 투자", "VC/초기 투자", "기술 모멘텀 추종"],
+        "examples": ["양자컴퓨터", "뇌-컴퓨터 인터페이스", "핵융합"],
+    },
+    "성장기": {
+        "idx": 1, "color": "#22c55e",
+        "chars": ["매출 급증", "경쟁자 진입 시작", "규모의 경제 달성"],
+        "strategy": ["성장주 비중 확대", "시장점유율 1위 기업 주목", "PEG 지표 활용"],
+        "examples": ["AI 반도체", "전기차", "클라우드"],
+    },
+    "성숙기": {
+        "idx": 2, "color": "#f59e0b",
+        "chars": ["성장 둔화", "가격경쟁 심화", "배당·자사주 매입 증가"],
+        "strategy": ["가치주·배당주 투자", "PER·PBR 저평가 선별", "FCF 중심 분석"],
+        "examples": ["스마트폰", "자동차", "은행"],
+    },
+    "쇠퇴기": {
+        "idx": 3, "color": "#ef4444",
+        "chars": ["매출 감소", "구조조정·M&A", "대체재에 시장 잠식"],
+        "strategy": ["Short 전략 고려", "방어주 비중 축소", "Exit 타이밍 관리"],
+        "examples": ["인쇄매체", "유선전화", "DVD 렌탈"],
+    },
+}
+
+@app.post("/api/industry/lifecycle")
+def industry_lifecycle(req: LifecycleRequest) -> dict[str, object]:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
+    import numpy as np
+    import io, base64
+
+    DARK, SURF, BORDER, TEXT, MUTED = "#0f172a","#1e293b","#334155","#e2e8f0","#64748b"
+
+    stage_info = LIFECYCLE_DATA.get(req.stage, LIFECYCLE_DATA["성장기"])
+    cur_idx    = stage_info["idx"]
+
+    # S-curve (logistic)
+    x = np.linspace(-6, 10, 400)
+    y = 100 / (1 + np.exp(-x * 0.9))          # 도입~성숙
+    decline = np.linspace(0, 1, 100)
+    x_full  = np.concatenate([x, x[-1] + decline * 4])
+    y_full  = np.concatenate([y, y[-1] - decline * 35])  # 쇠퇴
+
+    # 각 단계 x 범위
+    stage_x = [(-6, -1.5), (-1.5, 3), (3, 7), (7, x_full[-1])]
+    stage_colors = [d["color"] for d in LIFECYCLE_DATA.values()]
+    stage_names  = list(LIFECYCLE_DATA.keys())
+
+    fig, (ax_main, ax_info) = plt.subplots(1, 2, figsize=(14, 7),
+                                           gridspec_kw={"width_ratios": [3, 2]},
+                                           facecolor=DARK)
+
+    # ── 메인: S-curve ────────────────────────────────────────────────────────
+    ax_main.set_facecolor(SURF)
+    for i, ((x0, x1), col, name) in enumerate(zip(stage_x, stage_colors, stage_names)):
+        mask = (x_full >= x0) & (x_full <= x1)
+        alpha = 0.9 if i == cur_idx else 0.35
+        lw    = 3.5 if i == cur_idx else 1.5
+        ax_main.plot(x_full[mask], y_full[mask], color=col, lw=lw, alpha=alpha, zorder=3)
+        mid_x = (x0 + x1) / 2
+        mid_y = np.interp(mid_x, x_full, y_full)
+        ax_main.text(mid_x, mid_y + (8 if i != 3 else -8), name,
+                     ha="center", fontsize=10, color=col,
+                     fontweight="bold" if i == cur_idx else "normal",
+                     bbox=dict(boxstyle="round,pad=0.3",
+                               facecolor=SURF if i != cur_idx else col + "33",
+                               edgecolor=col, linewidth=1.5 if i == cur_idx else 0.8))
+        # 단계 구분선
+        if i < 3:
+            ax_main.axvline(x1, color=BORDER, lw=1, ls=":", alpha=0.7)
+
+    # 현재 위치 표시
+    cur_x0, cur_x1 = stage_x[cur_idx]
+    cur_mid = (cur_x0 + cur_x1) / 2
+    cur_y   = np.interp(cur_mid, x_full, y_full)
+    ax_main.scatter([cur_mid], [cur_y], color=stage_info["color"],
+                    s=200, zorder=5, edgecolors=TEXT, linewidths=1.5)
+    ax_main.annotate(f"▶ {req.industry}\n({req.stage})",
+                     xy=(cur_mid, cur_y), xytext=(cur_mid + 0.5, cur_y - 18),
+                     fontsize=9, color=stage_info["color"], fontweight="bold",
+                     arrowprops=dict(arrowstyle="->", color=stage_info["color"], lw=1.5))
+
+    ax_main.set_xlabel("시간 →", color=MUTED, fontsize=10)
+    ax_main.set_ylabel("시장 규모 / 매출", color=MUTED, fontsize=10)
+    ax_main.set_title("산업 생애주기 (Industry Life Cycle)", color=TEXT,
+                      fontsize=11, fontweight="bold", pad=10)
+    ax_main.tick_params(colors=MUTED, labelsize=7)
+    ax_main.set_xticklabels([])
+    ax_main.spines[:].set_color(BORDER)
+    ax_main.set_ylim(-5, 115)
+
+    # ── 사이드: 단계별 특성표 ────────────────────────────────────────────────
+    ax_info.set_facecolor(DARK)
+    ax_info.axis("off")
+
+    y_pos = 0.97
+    ax_info.text(0.5, y_pos, f"{req.industry}  |  {req.stage}", ha="center",
+                 fontsize=12, fontweight="bold", color=stage_info["color"],
+                 transform=ax_info.transAxes)
+    y_pos -= 0.08
+
+    sections = [
+        ("📋 특징", stage_info["chars"], "#e2e8f0"),
+        ("💡 투자 전략", stage_info["strategy"], "#3b82f6"),
+        ("🏭 예시 산업", stage_info["examples"], "#a855f7"),
+    ]
+    for title, items, col in sections:
+        ax_info.text(0.05, y_pos, title, fontsize=9, fontweight="bold",
+                     color=col, transform=ax_info.transAxes)
+        y_pos -= 0.06
+        for item in items:
+            ax_info.text(0.08, y_pos, f"• {item}", fontsize=8.5, color=TEXT,
+                         transform=ax_info.transAxes)
+            y_pos -= 0.065
+        y_pos -= 0.02
+
+    # 4단계 요약 타임라인
+    y_pos -= 0.02
+    ax_info.text(0.5, y_pos, "── 4단계 흐름 ──", ha="center",
+                 fontsize=8, color=MUTED, transform=ax_info.transAxes)
+    y_pos -= 0.065
+    for i, (name, data) in enumerate(LIFECYCLE_DATA.items()):
+        marker = "●" if i == cur_idx else "○"
+        weight = "bold" if i == cur_idx else "normal"
+        ax_info.text(0.1 + i * 0.22, y_pos, f"{marker}\n{name}", ha="center",
+                     fontsize=8, color=data["color"], fontweight=weight,
+                     transform=ax_info.transAxes)
+
+    fig.suptitle("산업 생애주기 분석  |  단계별 투자 전략",
+                 color=TEXT, fontsize=12, fontweight="bold", y=0.99)
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=130, facecolor=DARK, bbox_inches="tight")
+    plt.close(fig)
+    buf.seek(0)
+    img = "data:image/png;base64," + base64.b64encode(buf.read()).decode()
+
+    return {"image": img, "stage": req.stage, "industry": req.industry,
+            "characteristics": stage_info["chars"],
+            "strategies": stage_info["strategy"]}
+
+
+# ── 거시경제현황 1: yfinance 실시간 ──────────────────────────────────────────
+
+class MacroRealtimeRequest(BaseModel):
+    tickers: list[str] = ["^TNX", "CL=F", "^GSPC", "^KS11", "GC=F", "EURUSD=X"]
+    period:  str       = "1y"   # 1mo 3mo 6mo 1y 2y 5y
+
+TICKER_LABELS = {
+    "^TNX":     "미국 10년물 금리",
+    "CL=F":     "WTI 유가",
+    "^GSPC":    "S&P 500",
+    "^KS11":    "KOSPI",
+    "GC=F":     "금 (Gold)",
+    "EURUSD=X": "EUR/USD",
+    "BTC-USD":  "Bitcoin",
+    "^IRX":     "미국 단기금리(3M)",
+    "^VIX":     "VIX 공포지수",
+    "DX-Y.NYB": "달러 인덱스",
+}
+
+@app.post("/api/macro/realtime")
+def macro_realtime(req: MacroRealtimeRequest) -> dict[str, object]:
+    import yfinance as yf
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as gridspec
+    import numpy as np
+    import pandas as pd
+    import io, base64
+
+    DARK   = "#0f172a"
+    SURF   = "#1e293b"
+    BORDER = "#334155"
+    TEXT   = "#e2e8f0"
+    MUTED  = "#64748b"
+    COLORS = ["#3b82f6","#22c55e","#f59e0b","#ef4444","#a855f7","#06b6d4","#f97316","#84cc16"]
+
+    if not req.tickers:
+        raise HTTPException(status_code=400, detail="최소 1개 종목을 선택하세요.")
+
+    # ── 데이터 fetch ──────────────────────────────────────────────────────────
+    raw: dict[str, pd.Series] = {}
+    for t in req.tickers:
+        try:
+            df = yf.download(t, period=req.period, progress=False, auto_adjust=True)
+            if df.empty:
+                continue
+            close = df["Close"]
+            if isinstance(close, pd.DataFrame):
+                close = close.iloc[:, 0]
+            close = close.dropna()
+            if len(close) > 0:
+                raw[t] = close
+        except Exception:
+            pass
+
+    if not raw:
+        raise HTTPException(status_code=503, detail="데이터를 가져올 수 없습니다. 잠시 후 다시 시도하세요.")
+
+    labels_used = [TICKER_LABELS.get(t, t) for t in raw]
+
+    # ── 정규화 수익률 ─────────────────────────────────────────────────────────
+    norm: dict[str, pd.Series] = {}
+    for t, s in raw.items():
+        norm[t] = (s / s.iloc[0] - 1) * 100
+
+    # ── 공통 날짜로 상관관계 DataFrame ────────────────────────────────────────
+    combined = pd.DataFrame({TICKER_LABELS.get(t, t): s for t, s in raw.items()})
+    combined = combined.dropna()
+    corr = combined.pct_change().dropna().corr()
+
+    # ── Figure ────────────────────────────────────────────────────────────────
+    n = len(raw)
+    fig = plt.figure(figsize=(14, 11), facecolor=DARK)
+    gs  = gridspec.GridSpec(2, 2, figure=fig, hspace=0.4, wspace=0.35,
+                            left=0.07, right=0.97, top=0.93, bottom=0.07)
+
+    # Panel 1: 원시 가격 추세
+    ax1 = fig.add_subplot(gs[0, 0])
+    ax1.set_facecolor(SURF)
+    for i, (t, s) in enumerate(raw.items()):
+        ax2_ = ax1.twinx() if i > 0 else ax1
+        col  = COLORS[i % len(COLORS)]
+        lbl  = TICKER_LABELS.get(t, t)
+        if i == 0:
+            ax1.plot(s.index, s.values, color=col, lw=1.5, label=lbl)
+        # 정규화 차트가 더 유용하므로 여기선 첫 종목만 왼쪽 축에 표시
+    ax1.tick_params(colors=TEXT, labelsize=7)
+    ax1.set_title("가격 추이 (첫 번째 종목 기준)", color=TEXT, fontsize=9, pad=6)
+    ax1.spines[:].set_color(BORDER)
+    ax1.set_xlabel("")
+    ax1.tick_params(axis='x', rotation=30)
+    for label in ax1.get_xticklabels(): label.set_fontsize(6)
+
+    # Panel 2: 정규화 수익률 (누적 %)
+    ax2 = fig.add_subplot(gs[0, 1])
+    ax2.set_facecolor(SURF)
+    for i, (t, s) in enumerate(norm.items()):
+        ax2.plot(s.index, s.values, color=COLORS[i % len(COLORS)],
+                 lw=1.5, label=TICKER_LABELS.get(t, t))
+    ax2.axhline(0, color=MUTED, lw=0.8, ls="--")
+    ax2.set_title("정규화 누적 수익률 (%)", color=TEXT, fontsize=9, pad=6)
+    ax2.tick_params(colors=TEXT, labelsize=7)
+    ax2.spines[:].set_color(BORDER)
+    ax2.legend(fontsize=6, facecolor=SURF, labelcolor=TEXT,
+               loc="upper left", framealpha=0.7)
+    ax2.tick_params(axis='x', rotation=30)
+    for label in ax2.get_xticklabels(): label.set_fontsize(6)
+
+    # Panel 3: 상관관계 히트맵
+    ax3 = fig.add_subplot(gs[1, 0])
+    ax3.set_facecolor(SURF)
+    if len(corr) > 1:
+        cmat = corr.values
+        im = ax3.imshow(cmat, cmap="RdYlGn", vmin=-1, vmax=1, aspect="auto")
+        ax3.set_xticks(range(len(corr.columns)))
+        ax3.set_yticks(range(len(corr.columns)))
+        ax3.set_xticklabels(corr.columns, rotation=45, ha="right",
+                            fontsize=7, color=TEXT)
+        ax3.set_yticklabels(corr.columns, fontsize=7, color=TEXT)
+        for ii in range(len(cmat)):
+            for jj in range(len(cmat)):
+                v = cmat[ii, jj]
+                ax3.text(jj, ii, f"{v:.2f}", ha="center", va="center",
+                         fontsize=7, color="white" if abs(v) > 0.5 else TEXT)
+        plt.colorbar(im, ax=ax3, fraction=0.04, pad=0.02).ax.tick_params(
+            labelcolor=TEXT, labelsize=7)
+    else:
+        ax3.text(0.5, 0.5, "2개 이상 선택 시\n상관관계 표시", ha="center",
+                 va="center", color=MUTED, transform=ax3.transAxes, fontsize=9)
+    ax3.set_title("수익률 상관관계 히트맵", color=TEXT, fontsize=9, pad=6)
+    ax3.spines[:].set_color(BORDER)
+
+    # Panel 4: 최근 수익률 바 차트 (1M / 3M / 기간 전체)
+    ax4 = fig.add_subplot(gs[1, 1])
+    ax4.set_facecolor(SURF)
+    period_returns = {}
+    for t, s in raw.items():
+        lbl = TICKER_LABELS.get(t, t)
+        period_returns[lbl] = (s.iloc[-1] / s.iloc[0] - 1) * 100
+    names  = list(period_returns.keys())
+    values = list(period_returns.values())
+    bar_colors = [COLORS[i % len(COLORS)] for i in range(len(names))]
+    bars = ax4.barh(names, values, color=bar_colors, height=0.55)
+    ax4.axvline(0, color=MUTED, lw=0.8)
+    for bar, v in zip(bars, values):
+        ax4.text(v + (0.5 if v >= 0 else -0.5), bar.get_y() + bar.get_height()/2,
+                 f"{v:+.1f}%", va="center", ha="left" if v >= 0 else "right",
+                 fontsize=7, color=TEXT)
+    ax4.set_title(f"기간 전체 수익률 ({req.period})", color=TEXT, fontsize=9, pad=6)
+    ax4.tick_params(colors=TEXT, labelsize=7)
+    ax4.spines[:].set_color(BORDER)
+
+    fig.suptitle("거시경제현황 — 실시간 데이터 (Yahoo Finance)", color=TEXT,
+                 fontsize=12, fontweight="bold", y=0.97)
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=130, facecolor=DARK)
+    plt.close(fig)
+    buf.seek(0)
+    img_b64 = "data:image/png;base64," + base64.b64encode(buf.read()).decode()
+
+    # ── 요약 통계 ─────────────────────────────────────────────────────────────
+    summary = {}
+    for t, s in raw.items():
+        lbl = TICKER_LABELS.get(t, t)
+        ret  = (s.iloc[-1] / s.iloc[0] - 1) * 100
+        vol  = s.pct_change().std() * (252 ** 0.5) * 100
+        summary[lbl] = {
+            "current": round(float(s.iloc[-1]), 4),
+            "return_pct": round(ret, 2),
+            "annual_vol_pct": round(vol, 2),
+        }
+
+    return {"image": img_b64, "summary": summary, "period": req.period,
+            "n_tickers": len(raw)}
+
+
+# ── 거시경제현황 2: GBM 시뮬레이션 대시보드 ──────────────────────────────────
+
+class MacroSimRequest(BaseModel):
+    n_days:    int   = 252
+    seed:      int   = 42
+
+@app.post("/api/macro/simulation")
+def macro_simulation(req: MacroSimRequest) -> dict[str, object]:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as gridspec
+    import numpy as np
+    import io, base64
+
+    DARK   = "#0f172a"
+    SURF   = "#1e293b"
+    BORDER = "#334155"
+    TEXT   = "#e2e8f0"
+    MUTED  = "#64748b"
+    COLORS = ["#3b82f6","#f59e0b","#ef4444","#22c55e","#a855f7","#06b6d4"]
+
+    rng = np.random.default_rng(req.seed)
+    T   = max(60, min(req.n_days, 1260))
+    dt  = 1 / 252
+
+    def gbm(s0, mu, sigma, n, rng):
+        shocks = rng.standard_normal(n)
+        log_r  = (mu - 0.5 * sigma**2) * dt + sigma * np.sqrt(dt) * shocks
+        return s0 * np.exp(np.cumsum(log_r))
+
+    indicators = {
+        "기준금리 (%)" :   {"s0": 3.50,  "mu":  0.05, "sigma": 0.08,  "fmt": ".2f"},
+        "CPI (전년비 %)":  {"s0": 3.20,  "mu":  0.02, "sigma": 0.12,  "fmt": ".2f"},
+        "WTI 유가 ($)":    {"s0": 78.0,  "mu":  0.03, "sigma": 0.30,  "fmt": ".1f"},
+        "USD/KRW":         {"s0": 1320,  "mu": -0.01, "sigma": 0.07,  "fmt": ".0f"},
+        "KOSPI":           {"s0": 2650,  "mu":  0.06, "sigma": 0.18,  "fmt": ".0f"},
+        "S&P 500":         {"s0": 5200,  "mu":  0.08, "sigma": 0.16,  "fmt": ".0f"},
+    }
+
+    # macro regime: 경기 사이클 phase 추가 (상승/둔화/침체/회복)
+    phase_len  = T // 4
+    phases     = ["상승기", "과열기", "침체기", "회복기"]
+    phase_muls = [1.0, 0.5, -0.5, 1.2]
+
+    series_dict = {}
+    for name, cfg in indicators.items():
+        mu_adj = cfg["mu"]
+        vals = []
+        for ph_i, mul in enumerate(phase_muls):
+            seg = gbm(cfg["s0"] if not vals else vals[-1],
+                      mu_adj * mul, cfg["sigma"],
+                      min(phase_len, T - len(vals)), rng)
+            vals.extend(seg.tolist())
+            if len(vals) >= T:
+                break
+        series_dict[name] = np.array(vals[:T])
+
+    days = np.arange(T)
+
+    # ── Figure ────────────────────────────────────────────────────────────────
+    fig = plt.figure(figsize=(14, 12), facecolor=DARK)
+    gs  = gridspec.GridSpec(3, 2, figure=fig, hspace=0.45, wspace=0.35,
+                            left=0.08, right=0.97, top=0.93, bottom=0.05)
+
+    names_list = list(series_dict.keys())
+    for idx, (name, vals) in enumerate(series_dict.items()):
+        row, col = divmod(idx, 2)
+        ax = fig.add_subplot(gs[row, col])
+        ax.set_facecolor(SURF)
+        color = COLORS[idx]
+        cfg   = indicators[name]
+
+        ax.plot(days, vals, color=color, lw=1.5)
+        ax.fill_between(days, vals, vals[0], alpha=0.12, color=color)
+
+        # 경기국면 배경
+        for ph_i, (ph_name, mul) in enumerate(zip(phases, phase_muls)):
+            x0 = ph_i * phase_len
+            x1 = min((ph_i + 1) * phase_len, T)
+            bg = "#22c55e22" if mul > 0.8 else "#f59e0b22" if mul > 0 else "#ef444422"
+            ax.axvspan(x0, x1, color=bg, alpha=0.4)
+            ax.text((x0 + x1) / 2, ax.get_ylim()[0], ph_name,
+                    ha="center", va="bottom", fontsize=6, color=MUTED)
+
+        cur  = vals[-1]
+        chg  = (cur / vals[0] - 1) * 100
+        sign = "+" if chg >= 0 else ""
+        ax.set_title(f"{name}  현재: {cur:{cfg['fmt']}}  ({sign}{chg:.1f}%)",
+                     color=TEXT, fontsize=8.5, pad=5)
+        ax.tick_params(colors=TEXT, labelsize=7)
+        ax.spines[:].set_color(BORDER)
+        ax.set_xlim(0, T)
+
+        # 최고/최저 표시
+        hi, lo = np.argmax(vals), np.argmin(vals)
+        ax.annotate(f"고: {vals[hi]:{cfg['fmt']}}",
+                    xy=(hi, vals[hi]), xytext=(5, 5), textcoords="offset points",
+                    fontsize=6, color="#22c55e", arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.5))
+        ax.annotate(f"저: {vals[lo]:{cfg['fmt']}}",
+                    xy=(lo, vals[lo]), xytext=(5, -12), textcoords="offset points",
+                    fontsize=6, color="#ef4444", arrowprops=dict(arrowstyle="->", color=MUTED, lw=0.5))
+
+    # 경기국면 범례 (우측 상단)
+    from matplotlib.patches import Patch
+    legend_els = [
+        Patch(facecolor="#22c55e44", label="상승기"),
+        Patch(facecolor="#f59e0b44", label="과열기"),
+        Patch(facecolor="#ef444444", label="침체기"),
+        Patch(facecolor="#22c55e44", label="회복기"),
+    ]
+    fig.legend(handles=legend_els, loc="upper right", fontsize=7,
+               facecolor=SURF, labelcolor=TEXT, framealpha=0.8, ncol=4,
+               bbox_to_anchor=(0.97, 0.995))
+
+    fig.suptitle(f"거시경제 시뮬레이션 대시보드 — {T}거래일 GBM 시뮬레이션",
+                 color=TEXT, fontsize=12, fontweight="bold", y=0.975)
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=130, facecolor=DARK)
+    plt.close(fig)
+    buf.seek(0)
+    img_b64 = "data:image/png;base64," + base64.b64encode(buf.read()).decode()
+
+    summary = {name: {"start": round(float(v[0]), 2),
+                      "end":   round(float(v[-1]), 2),
+                      "chg_pct": round((v[-1]/v[0]-1)*100, 2)}
+               for name, v in series_dict.items()}
+
+    return {"image": img_b64, "summary": summary, "n_days": T}
+
+
 app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
