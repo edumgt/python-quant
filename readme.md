@@ -7,84 +7,38 @@
 
 ## 📚 커리큘럼 전체 구성
 
-본 저장소의 `docs/` 디렉터리는 **모듈 7: 투자분석 기초 방법론** 10일 차 강의 자료를 담고 있습니다.  
-각 문서는 이론 설명 → Python 실습 코드 → 웹앱 연계 → 해보기 활동 순서로 구성됩니다.
+본 저장소의 `docs/` 디렉터리는 **모듈 7~8 통합 15일(Day 042~056) 투자분석 커리큘럼**을 담고 있습니다.  
+학습 흐름은 **매크로 → 산업 → 기본적 → 기술적 → 금융상품/자산배분** 순서로 이어집니다.
 
-### 🗺️ 학습 로드맵
+### 🗺️ 15일 학습 로드맵
 
+```text
+[매크로] → [산업] → [기본적] → [기술적] → [금융상품/자산배분]
+Day 042~044   Day 045~046   Day 047~049   Day 050~051    Day 052~056
+27~29.md      30~31.md      32~34.md      35~36.md       37~41.md
 ```
-[매크로 분석] ──► [산업 분석] ──► [기본적 분석] ──► [기술적 분석] ──► [통합 리포트]
-  Day 042~044       Day 045~046     Day 047~049       Day 050~051        Day 051 실습
-  27~29.md          30~31.md        32~34.md           35~36.md           36.md §4
-```
 
----
+### 📋 Day별 학습 내용 상세 (15일)
 
-### 📋 Day별 학습 내용 상세
+| Day | 문서 | 주제 | 핵심 학습 내용 | 웹앱 연계 |
+|---|---|---|---|---|
+| Day 042 | [27.md](docs/27.md) | 매크로 분석 개요 및 금리 분석 | 기준금리·장단기금리차·Yield Curve·거시 지표 해석 | `macro-realtime` |
+| Day 043 | [28.md](docs/28.md) | 경제지표 분석 (물가·유가 등) | CPI/PPI/PCE·유가·환율·상관분석 | `macro-simulation` |
+| Day 044 | [29.md](docs/29.md) | 거시경제 상황 분석 실습 | 경기국면 분류·자산군 대응전략·거시 대시보드 | `macro-realtime`, `macro-simulation` |
+| Day 045 | [30.md](docs/30.md) | 산업 분석 | Porter 5 Forces·PEST·SWOT·산업수명주기 | `industry-analysis` |
+| Day 046 | [31.md](docs/31.md) | 산업 분석 실습 | 섹터 로테이션·Peer 비교·공급망 관점 분석 | `industry-analysis` |
+| Day 047 | [32.md](docs/32.md) | 재무제표 분석 I | 손익계산서·대차대조표·수익성/안정성 지표 | `financial-statement` |
+| Day 048 | [33.md](docs/33.md) | 재무제표 분석 II | 현금흐름표·FCF/EVA/WACC·DCF 기반 가치평가 | `dart-company-search`, `valuation` |
+| Day 049 | [34.md](docs/34.md) | 상대가치 평가 | PER/PBR/PSR/EV/EBITDA 멀티플 비교 | `valuation`, `pipeline` |
+| Day 050 | [35.md](docs/35.md) | 기술적 분석 I | 이동평균·RSI·MACD·볼린저밴드·지지저항 | `technical-chart` |
+| Day 051 | [36.md](docs/36.md) | 기술적 분석 II | 캔들/차트 패턴·엘리어트 파동·통합 리포트 | `technical-chart` |
+| Day 052 | [37.md](docs/37.md#day-052--주식-및-etf-상품-이해) | 주식 및 ETF 상품 이해 | 시장 구조·ETF 유형·ETF 성과 비교 | `financial-knowledge` |
+| Day 053 | [37.md](docs/37.md#day-053--채권-상품-이해) | 채권 상품 이해 | 채권가격-금리 관계·듀레이션·Yield Curve | `financial-knowledge` |
+| Day 054 | [38.md](docs/38.md) | 파생상품 이해 | 선물·옵션·스왑·옵션 손익 구조 분석 | `financial-knowledge` |
+| Day 055 | [39.md](docs/39.md) | 포트폴리오 이론 및 성과 분석 | MPT·Efficient Frontier·CAGR/MDD·샤프/소르티노 | `portfolio`, `risk` |
+| Day 056 | [40.md](docs/40.md) | 자산배분 모델 | 평균분산·블랙리터만·Risk-Parity·60/40/All Weather | `portfolio`, `risk` |
 
-#### 📌 모듈 7-A: 매크로 분석 (거시경제)
-
-| 파일 | Day | 주제 | 핵심 내용 | 웹앱 연계 |
-|------|-----|------|-----------|-----------|
-| [27.md](docs/27.md) | Day 042 | **매크로 분석 개요 및 금리 분석** | 기준금리·장단기 금리차·채권 수익률 곡선(Yield Curve)·GBM 시뮬레이션 | `/api/macro/realtime` |
-| [28.md](docs/28.md) | Day 043 | **경제지표 분석 (물가·유가 등)** | CPI·PPI·PCE 인플레이션, WTI/브렌트 유가, USD/KRW 환율 상관분석 | `/api/macro/simulation` |
-| [29.md](docs/29.md) | Day 044 | **거시경제 상황 분석 실습** | 경기사이클 4단계 분류, 자산군별 대응 전략, 멀티 지표 통합 대시보드 | macroRealtime.js · macroSimulation.js |
-
-> **핵심 Python 라이브러리**: `yfinance`, `pandas`, `matplotlib`, `scipy`, `statsmodels`  
-> **핵심 개념**: 기준금리, 인플레이션, 경기사이클, GBM, 상관관계 분석
-
----
-
-#### 📌 모듈 7-B: 산업 분석
-
-| 파일 | Day | 주제 | 핵심 내용 | 웹앱 연계 |
-|------|-----|------|-----------|-----------|
-| [30.md](docs/30.md) | Day 045 | **산업 분석 이론** | Porter's 5 Forces, PEST 분석, SWOT 분석, 산업 수명주기(Life Cycle), TAM/SAM/SOM | `/api/industry/porter` · `/api/industry/lifecycle` |
-| [31.md](docs/31.md) | Day 046 | **산업 분석 실습** | 섹터 로테이션 전략, 업종별 KPI 비교, Peer Comparison 자동화, 공급망 분석 | `/api/industry/sector` · `/api/industry/peer` · industryAnalysis.js |
-
-> **핵심 Python 라이브러리**: `yfinance`, `pandas`, `matplotlib`, `seaborn`, `plotly`  
-> **핵심 개념**: Porter's 5 Forces, SWOT, 산업 수명주기, 섹터 로테이션, Peer Comparison
-
----
-
-#### 📌 모듈 7-C: 기본적 분석 (Fundamental Analysis)
-
-| 파일 | Day | 주제 | 핵심 내용 | 웹앱 연계 |
-|------|-----|------|-----------|-----------|
-| [32.md](docs/32.md) | Day 047 | **재무제표 분석 I** | 손익계산서(매출·영업이익·순이익), 대차대조표(자산·부채·자본), 수익성·안정성 비율 | `/api/dart/company-search` · financialStatement.js |
-| [33.md](docs/33.md) | Day 048 | **재무제표 분석 II** | 현금흐름표(CFO·CFI·CFF), FCF·EVA·WACC 계산, DCF 내재가치 산출 | dartCompanySearch.js · valuation.js |
-| [34.md](docs/34.md) | Day 049 | **상대가치 평가 (밸류에이션 멀티플)** | PER·PBR·PSR·EV/EBITDA 업종 비교, 목표주가 밴드, Bull/Base/Bear 시나리오 | `/api/quant/pipeline` · pipeline.js |
-
-> **핵심 Python 라이브러리**: `yfinance`, `pykrx`, `pandas`, `matplotlib`, `reportlab`, `openpyxl`  
-> **핵심 개념**: 손익계산서, 현금흐름표, DCF, EVA, FCF, WACC, PER, PBR, EV/EBITDA, 안전마진  
-> **외부 API**: [DART Open API](https://opendart.fss.or.kr) (한국 기업 공시 데이터)
-
----
-
-#### 📌 모듈 7-D: 기술적 분석 (Technical Analysis)
-
-| 파일 | Day | 주제 | 핵심 내용 | 웹앱 연계 |
-|------|-----|------|-----------|-----------|
-| [35.md](docs/35.md) | Day 050 | **기술적 분석 I — 추세 & 지표** | 이동평균선(MA5·20·60·120), 골든/데드크로스, RSI·MACD·볼린저밴드, 지지선·저항선 | technicalChart.js (Tab 1~3·5) |
-| [36.md](docs/36.md) | Day 051 | **기술적 분석 II — 패턴 & 엘리어트 파동** | 캔들 패턴(도지·망치·엔걸핑), 차트 패턴(H&S·이중천장·삼각수렴), 엘리어트 파동 이론 | technicalChart.js (Tab 4·6·7) |
-
-> **핵심 Python 라이브러리**: `yfinance`, `mplfinance`, `pandas-ta`, `matplotlib`  
-> **핵심 개념**: 캔들패턴, 헤드앤숄더, 이중천장·바닥, 엘리어트 파동, 피보나치 되돌림
-
----
-
-#### 📌 모듈 7-E: 통합 리포트 (Integrated Report) — [36.md §4](docs/36.md)
-
-Day 051 문서의 §4는 기본적·기술적 분석을 결합한 **실제 증권사 수준의 통합 투자 분석 리포트** 생성 실습입니다.
-
-| 단계 | 내용 |
-|------|------|
-| Step 1 — 종목 선정 | 3단계 스크리닝 Funnel (시가총액·ROE·MA 필터) |
-| Step 2 — 기본적 분석 | 5-Block 구조: 기업개요·재무제표·수익성·밸류에이션·리스크 |
-| Step 3 — 기술적 분석 | 7항목 체크리스트: MA·RSI·MACD·BB·거래량·캔들·차트패턴 |
-| Step 4 — 통합 스코어링 | 100점 매트릭스 → 강력매수/매수/중립/비중축소/매도 |
-| Step 5 — 리포트 자동 생성 | `integrated_report()` 함수로 18×22 멀티패널 PNG 출력 |
-| UI 제안 | Bloomberg Terminal 수준 3-패널 대시보드 (좌:FA / 중:차트 / 우:의견) |
+> 커리큘럼 재정리 문서: [41.md](docs/41.md)
 
 ---
 
@@ -413,3 +367,40 @@ pkill -f uvicorn
 - 기본 헬스체크: `GET /api/health`
 
 
+
+
+---
+
+## 🖼️ 웹앱 주요 화면 캡쳐 (실행 검증)
+
+> 실행 환경: FastAPI 서버(`uvicorn main:app`) 구동 후 캡쳐
+
+### 1) 홈
+![홈 화면](docs/images/screenshots/screen-01-home.png)
+
+### 2) 거시경제현황 1 (실시간)
+![거시경제현황 1](docs/images/screenshots/screen-02-macro-realtime.png)
+
+### 3) 거시경제현황 2 (시뮬레이션)
+![거시경제현황 2](docs/images/screenshots/screen-03-macro-simulation.png)
+
+### 4) 산업 경쟁력 분석
+![산업 경쟁력 분석](docs/images/screenshots/screen-04-industry-analysis.png)
+
+### 5) DART 상장기업 검색
+![DART 상장기업 검색](docs/images/screenshots/screen-05-dart-company-search.png)
+
+### 6) 재무제표분석
+![재무제표분석](docs/images/screenshots/screen-06-financial-statement.png)
+
+### 7) 밸류에이션 실습
+![밸류에이션 실습](docs/images/screenshots/screen-07-valuation.png)
+
+### 8) 기술적 분석 실습
+![기술적 분석 실습](docs/images/screenshots/screen-08-technical-chart.png)
+
+### 9) 백테스트 엔진
+![백테스트 엔진](docs/images/screenshots/screen-09-backtest.png)
+
+### 10) 포트폴리오 최적화
+![포트폴리오 최적화](docs/images/screenshots/screen-10-portfolio.png)
