@@ -86,8 +86,8 @@ export function financialKnowledgeView(container) {
     const preset = STYLE_PRESETS[style] || STYLE_PRESETS.balanced;
     const expected = calcExpectedReturn(preset.weights) + (SCENARIO_ADJUST[scenario] || 0);
     const risk = calcRisk(preset.weights);
-    const growth = Math.max(MIN_GROWTH_MULTIPLIER, 1 + expected);
-    const futureMoney = money * (growth ** years);
+    const growthMultiplier = getGrowthMultiplier(expected);
+    const futureMoney = money * (growthMultiplier ** years);
 
     container.querySelector('#fk-result').innerHTML = `
       ${renderSummary(preset, money, years, expected, risk, futureMoney)}
@@ -127,13 +127,14 @@ function renderSummary(preset, money, years, expected, risk, futureMoney) {
 }
 
 function renderAllocations(weights, money, expected, years) {
+  const growthMultiplier = getGrowthMultiplier(expected);
   return `
     <section style="border:1px solid #d9e1ec; border-radius:8px; padding:12px; background:#fff;">
       <h2 style="font-size:0.95rem; color:#131722; margin:0 0 8px;">${formatWon(money)} 자산배분 결과</h2>
       <div style="display:grid; gap:8px;">
         ${Object.entries(weights).map(([asset, weight]) => {
           const nowMoney = money * weight;
-          const futureMoney = nowMoney * (Math.max(MIN_GROWTH_MULTIPLIER, 1 + expected) ** years);
+          const futureMoney = nowMoney * (growthMultiplier ** years);
           return `
             <div style="border:1px solid #e5edf5; border-radius:8px; padding:10px; background:#f8fafc;">
               <div style="display:flex; justify-content:space-between; gap:8px; font-size:0.8rem; margin-bottom:4px;">
@@ -161,6 +162,10 @@ function calcExpectedReturn(weights) {
 
 function calcRisk(weights) {
   return Object.entries(weights).reduce((acc, [asset, weight]) => acc + (ASSET_RISK[asset] || 0) * weight, 0);
+}
+
+function getGrowthMultiplier(expected) {
+  return Math.max(MIN_GROWTH_MULTIPLIER, 1 + expected);
 }
 
 function formatWon(value) {
