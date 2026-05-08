@@ -55,7 +55,9 @@ export const api = {
   pipeline:         (body)  => apiFetch('/api/quant/pipeline',             { method: 'POST', body: JSON.stringify(body) }),
   macroRealtime:    (body)  => apiFetch('/api/macro/realtime',              { method: 'POST', body: JSON.stringify(body) }),
   macroSimulation:  (body)  => apiFetch('/api/macro/simulation',            { method: 'POST', body: JSON.stringify(body) }),
+  dartCompanySearch:(body)  => apiFetch('/api/dart/company-search',         { method: 'POST', body: JSON.stringify(body) }),
   industryPorter:   (body)  => apiFetch('/api/industry/porter',             { method: 'POST', body: JSON.stringify(body) }),
   industrySector:   (body)  => apiFetch('/api/industry/sector',             { method: 'POST', body: JSON.stringify(body) }),
+  industryPeer:     (body)  => apiFetch('/api/industry/peer',               { method: 'POST', body: JSON.stringify(body) }),
   industryLifecycle:(body)  => apiFetch('/api/industry/lifecycle',          { method: 'POST', body: JSON.stringify(body) }),
 };

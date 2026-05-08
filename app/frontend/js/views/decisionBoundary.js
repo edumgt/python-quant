@@ -3,7 +3,7 @@ import { apiGet, withLoading, renderImage, renderError } from '../api.js';
 export function decisionBoundaryView(container) {
   container.innerHTML = `
     <section class="card">
-      <h2>🗺️ Decision Boundary</h2>
+      <h2><i class="fa-solid fa-draw-polygon"></i> Decision Boundary</h2>
       <p class="desc">
         로지스틱 회귀 모델이 2D 공간을 어떻게 나누는지 시각화합니다.<br/>
         Visualizes how a Logistic Regression model partitions 2D feature space.
@@ -24,4 +24,3 @@ export function decisionBoundaryView(container) {
     }
   });
 }
-

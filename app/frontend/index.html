@@ -4,231 +4,124 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Python Quant Lab</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            sidebar: '#0f172a',
-            surface: '#1e293b',
-            accent:  '#3b82f6',
-            muted:   '#64748b',
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-    * { font-family: 'Inter', sans-serif; }
-    code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
-    .sidebar-link {
-      display: flex; align-items: center; gap: 8px;
-      padding: 7px 12px; border-radius: 8px;
-      font-size: 0.875rem; color: #94a3b8; cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-      text-decoration: none;
-    }
-    .sidebar-link:hover { background: #334155; color: #fff; }
-    .sidebar-link.active  { background: #2563eb; color: #fff; font-weight: 500; }
-    .sec-hdr {
-      display: flex; align-items: center; gap: 6px;
-      padding: 6px 12px; font-size: 0.7rem; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.08em;
-      color: #64748b; margin-top: 16px; margin-bottom: 2px;
-      cursor: pointer; user-select: none; transition: color 0.15s;
-    }
-    .sec-hdr:hover { color: #cbd5e1; }
-    .run-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 10px 20px; background: #2563eb; color: #fff;
-      font-size: 0.875rem; font-weight: 600; border-radius: 8px;
-      border: none; cursor: pointer; transition: background 0.15s;
-    }
-    .run-btn:hover { background: #1d4ed8; }
-    .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .param-label { display: block; font-size: 0.75rem; font-weight: 500; color: #94a3b8; margin-bottom: 4px; }
-    .param-input {
-      width: 100%; background: #334155; border: 1px solid #475569;
-      border-radius: 8px; padding: 8px 12px; font-size: 0.875rem; color: #fff;
-      outline: none; transition: border-color 0.15s;
-    }
-    .param-input:focus { border-color: #3b82f6; }
-    .metric-box {
-      background: #334155; border-radius: 10px; padding: 12px 16px;
-      text-align: center; min-width: 90px;
-    }
-    #sidebar { transition: transform 0.25s ease; }
-    #overlay { transition: opacity 0.25s ease; }
-  </style>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body style="background:#0f172a; color:#e2e8f0; min-height:100vh; display:flex;">
+<body>
+  <div id="overlay" class="app-overlay" onclick="closeSidebar()"></div>
 
-  <!-- Overlay (mobile) -->
-  <div id="overlay" onclick="closeSidebar()"
-       style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:20; opacity:0;"></div>
+  <header class="topbar">
+    <button class="brand" type="button" data-view="home" aria-label="홈으로 이동">
+      <span class="brand-mark">Q</span>
+      <span>
+        <strong>Python Quant Lab</strong>
+        <small>FastAPI quant workspace</small>
+      </span>
+    </button>
 
-  <!-- ── Sidebar ── -->
-  <aside id="sidebar" style="position:fixed; top:0; left:0; height:100%; width:256px;
-         background:#0f172a; display:flex; flex-direction:column; z-index:30;
-         box-shadow:4px 0 24px rgba(0,0,0,0.4); transform:translateX(-100%);">
-
-    <!-- Logo -->
-    <div style="padding:20px 16px; border-bottom:1px solid #1e293b; display:flex; align-items:center; gap:12px;">
-      <div style="width:36px; height:36px; background:#2563eb; border-radius:8px;
-                  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem;">Q</div>
-      <div>
-        <div style="font-size:0.875rem; font-weight:600; color:#fff;">Python Quant Lab</div>
-        <div style="font-size:0.7rem; color:#64748b;">FastAPI · ML · Quant 실습</div>
-      </div>
-      <button onclick="closeSidebar()" style="margin-left:auto; background:none; border:none; color:#64748b; cursor:pointer; display:none;" id="close-btn">✕</button>
+    <div class="ticker-strip" aria-label="시장 요약">
+      <span>KOSPI</span><b>2,735.40</b><em class="up">+0.82%</em>
+      <span>NASDAQ</span><b>18,112.70</b><em class="down">-0.18%</em>
+      <span>USD/KRW</span><b>1,362.5</b><em class="up">+0.21%</em>
     </div>
 
-    <!-- Nav -->
-    <nav style="flex:1; overflow-y:auto; padding:12px;" id="nav-root">
+    <button class="menu-toggle" type="button" onclick="openSidebar()" aria-label="메뉴 열기">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
 
-      <a class="sidebar-link" data-view="home">🏠 &nbsp;홈</a>
+  <div class="workspace">
+    <main class="content-shell">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow">Workspace</div>
+          <h1 id="breadcrumb">홈</h1>
+        </div>
+        <div id="health-indicator" class="health">
+          <span id="health-dot"></span>
+          <span id="health-text">연결 확인 중...</span>
+        </div>
+      </div>
+      <section id="app" class="app-surface"></section>
+    </main>
+  </div>
 
-      <!-- ML -->
-      <div class="sec-hdr" onclick="toggleSec('ml')">
-        📊 ML 기초 <span id="ml-chev" style="margin-left:auto;">▾</span>
+  <aside id="sidebar" class="right-drawer" aria-label="실습 메뉴" aria-hidden="true">
+    <div class="drawer-head">
+      <div>
+        <div class="drawer-title">실습 메뉴</div>
+        <div class="drawer-subtitle">Python backend only</div>
       </div>
-      <div id="ml-sec">
-        <a class="sidebar-link" style="padding-left:24px;" data-view="cross-validation">Cross Validation</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="decision-boundary">Decision Boundary</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="random-forest">Random Forest</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="kmeans">KMeans 클러스터링</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="svm">SVM 분류기</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="mlp">MLP 신경망</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="linear-regression">선형 회귀</a>
-      </div>
+      <button class="drawer-close" type="button" onclick="closeSidebar()" aria-label="메뉴 닫기">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
 
-      <!-- NLP -->
-      <div class="sec-hdr" onclick="toggleSec('nlp')">
-        💬 NLP <span id="nlp-chev" style="margin-left:auto;">▾</span>
-      </div>
-      <div id="nlp-sec">
-        <a class="sidebar-link" style="padding-left:24px;" data-view="text-classify">텍스트 분류 (TF-IDF)</a>
-      </div>
+    <nav id="nav-root" class="drawer-nav">
+      <a class="sidebar-link" data-view="home"><i class="fa-solid fa-house"></i>홈</a>
 
-      <!-- CV -->
-      <div class="sec-hdr" onclick="toggleSec('cv')">
-        🎥 Computer Vision <span id="cv-chev" style="margin-left:auto;">▾</span>
-      </div>
-      <div id="cv-sec">
-        <a class="sidebar-link" style="padding-left:24px;" data-view="opencv">OpenCV 애니메이션</a>
-      </div>
-
-      <!-- DL -->
-      <div class="sec-hdr" onclick="toggleSec('dl')">
-        🧠 딥러닝 <span id="dl-chev" style="margin-left:auto;">▾</span>
-      </div>
-      <div id="dl-sec">
-        <a class="sidebar-link" style="padding-left:24px;" data-view="cnn-timeseries">1D CNN 시계열</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="lstm">LSTM 예측기</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="transformer">Transformer</a>
-      </div>
-
-      <!-- Quant -->
-      <div class="sec-hdr" onclick="toggleSec('quant')">
-        📈 퀀트 전략 <span id="quant-chev" style="margin-left:auto;">▾</span>
-      </div>
-      <div id="quant-sec">
-        <a class="sidebar-link" style="padding-left:24px;" data-view="backtest">백테스트 엔진</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="portfolio">포트폴리오 최적화</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="pipeline">퀀트 파이프라인</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="risk">리스크 분석 (VaR)</a>
-      </div>
-
-      <!-- 거시경제 -->
       <div class="sec-hdr" onclick="toggleSec('macro')">
-        🌐 거시경제 분석 <span id="macro-chev" style="margin-left:auto;">▾</span>
+        <span><i class="fa-solid fa-globe"></i> 매크로 분석</span><span id="macro-chev">▾</span>
       </div>
       <div id="macro-sec">
-        <a class="sidebar-link" style="padding-left:24px;" data-view="macro-realtime">거시경제현황 1 (실시간)</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="macro-simulation">거시경제현황 2 (시뮬레이션)</a>
-        <a class="sidebar-link" style="padding-left:24px;" data-view="industry-analysis">산업 경쟁력 분석</a>
+        <a class="sidebar-link" data-view="macro-realtime"><i class="fa-solid fa-satellite-dish"></i>거시경제현황 1 (실시간)</a>
+        <a class="sidebar-link" data-view="macro-simulation"><i class="fa-solid fa-chart-area"></i>거시경제현황 2 (시뮬레이션)</a>
       </div>
 
-      <!-- GenAI -->
-      <div class="sec-hdr" onclick="toggleSec('ai')">
-        🤖 GenAI <span id="ai-chev" style="margin-left:auto;">▾</span>
+      <div class="sec-hdr" onclick="toggleSec('industry')">
+        <span><i class="fa-solid fa-industry"></i> 산업적 분석</span><span id="industry-chev">▾</span>
       </div>
-      <div id="ai-sec">
-        <a class="sidebar-link" style="padding-left:24px;" data-view="huggingface">HuggingFace 이미지 생성</a>
+      <div id="industry-sec">
+        <a class="sidebar-link" data-view="industry-analysis"><i class="fa-solid fa-industry"></i>산업 경쟁력 분석</a>
       </div>
 
+      <div class="sec-hdr" onclick="toggleSec('fundamental')">
+        <span><i class="fa-solid fa-file-invoice-dollar"></i> 기본적 분석</span><span id="fundamental-chev">▾</span>
+      </div>
+      <div id="fundamental-sec">
+        <a class="sidebar-link" data-view="dart-company-search"><i class="fa-solid fa-magnifying-glass-chart"></i>DART 상장기업 검색</a>
+        <a class="sidebar-link" data-view="financial-statement"><i class="fa-solid fa-scale-balanced"></i>재무제표분석</a>
+        <a class="sidebar-link" data-view="portfolio"><i class="fa-solid fa-briefcase"></i>포트폴리오 최적화</a>
+        <a class="sidebar-link" data-view="risk"><i class="fa-solid fa-shield-halved"></i>리스크 분석 (VaR)</a>
+        <span class="sidebar-link is-disabled"><i class="fa-solid fa-calculator"></i>밸류에이션 실습</span>
+      </div>
+
+      <div class="sec-hdr" onclick="toggleSec('technical')">
+        <span><i class="fa-solid fa-chart-line"></i> 기술적 분석</span><span id="technical-chev">▾</span>
+      </div>
+      <div id="technical-sec">
+        <a class="sidebar-link" data-view="backtest"><i class="fa-solid fa-clock-rotate-left"></i>백테스트 엔진</a>
+        <a class="sidebar-link" data-view="pipeline"><i class="fa-solid fa-diagram-project"></i>퀀트 파이프라인</a>
+      </div>
     </nav>
-
-    <!-- Health -->
-    <div style="padding:12px 16px; border-top:1px solid #1e293b;">
-      <div id="health-indicator" style="display:flex; align-items:center; gap:8px; font-size:0.7rem; color:#64748b;">
-        <span id="health-dot" style="width:8px; height:8px; border-radius:50%; background:#64748b; display:inline-block;"></span>
-        <span id="health-text">연결 확인 중...</span>
-      </div>
-    </div>
   </aside>
-
-  <!-- ── Main ── -->
-  <div style="flex:1; display:flex; flex-direction:column; margin-left:256px; min-height:100vh;" id="main-wrap">
-
-    <!-- Topbar -->
-    <header style="position:sticky; top:0; z-index:10; background:rgba(15,23,42,0.85);
-                   backdrop-filter:blur(8px); border-bottom:1px solid #1e293b;
-                   padding:12px 24px; display:flex; align-items:center; gap:12px;">
-      <button onclick="openSidebar()" id="ham-btn"
-              style="display:none; background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1.25rem;">☰</button>
-      <div id="breadcrumb" style="font-size:0.875rem; font-weight:500; color:#cbd5e1;">홈</div>
-      <div style="margin-left:auto; font-size:0.7rem; color:#475569; font-family:monospace;">
-        FastAPI · Tailwind CSS · Vanilla JS
-      </div>
-    </header>
-
-    <!-- Content -->
-    <main id="app" style="flex:1; padding:24px; max-width:1100px; margin:0 auto; width:100%;"></main>
-  </div>
 
   <script type="module" src="js/app.js"></script>
   <script>
-    // Mobile sidebar toggle
     function openSidebar() {
-      const s = document.getElementById('sidebar');
-      const o = document.getElementById('overlay');
-      s.style.transform = 'translateX(0)';
-      o.style.display = 'block';
-      document.getElementById('close-btn').style.display = 'block';
-      setTimeout(() => { o.style.opacity = '1'; }, 10);
+      const drawer = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      drawer.classList.add('open');
+      drawer.setAttribute('aria-hidden', 'false');
+      overlay.classList.add('show');
     }
+
     function closeSidebar() {
-      const s = document.getElementById('sidebar');
-      const o = document.getElementById('overlay');
-      s.style.transform = 'translateX(-100%)';
-      o.style.opacity = '0';
-      document.getElementById('close-btn').style.display = 'none';
-      setTimeout(() => { o.style.display = 'none'; }, 250);
+      const drawer = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      drawer.classList.remove('open');
+      drawer.setAttribute('aria-hidden', 'true');
+      overlay.classList.remove('show');
     }
+
     function toggleSec(id) {
-      const sec  = document.getElementById(id + '-sec');
+      const sec = document.getElementById(id + '-sec');
       const chev = document.getElementById(id + '-chev');
       const hidden = sec.style.display === 'none';
-      sec.style.display  = hidden ? 'block' : 'none';
-      chev.textContent   = hidden ? '▾' : '▸';
+      sec.style.display = hidden ? 'block' : 'none';
+      chev.textContent = hidden ? '▾' : '▸';
     }
-    // Responsive: show hamburger < 1024px
-    function checkWidth() {
-      const isWide = window.innerWidth >= 1024;
-      const wrap   = document.getElementById('main-wrap');
-      const sidebar = document.getElementById('sidebar');
-      document.getElementById('ham-btn').style.display = isWide ? 'none' : 'block';
-      wrap.style.marginLeft = isWide ? '256px' : '0';
-      sidebar.style.transform = isWide ? 'translateX(0)' : 'translateX(-100%)';
-    }
-    window.addEventListener('resize', checkWidth);
-    checkWidth();
   </script>
 </body>
 </html>

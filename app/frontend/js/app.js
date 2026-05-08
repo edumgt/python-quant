@@ -19,6 +19,8 @@ import { huggingfaceView }     from './views/huggingface.js';
 import { macroRealtimeView }    from './views/macroRealtime.js';
 import { macroSimulationView }  from './views/macroSimulation.js';
 import { industryAnalysisView } from './views/industryAnalysis.js';
+import { financialStatementView } from './views/financialStatement.js';
+import { dartCompanySearchView } from './views/dartCompanySearch.js';
 import { api }                 from './api.js';
 
 const app        = document.getElementById('app');
@@ -46,6 +48,8 @@ const routes = {
   'macro-realtime':    { label: '거시경제현황 1 (실시간)',    render: () => macroRealtimeView(app) },
   'macro-simulation':  { label: '거시경제현황 2 (시뮬레이션)', render: () => macroSimulationView(app) },
   'industry-analysis': { label: '산업 경쟁력 분석',           render: () => industryAnalysisView(app) },
+  'financial-statement': { label: '재무제표분석',              render: () => financialStatementView(app) },
+  'dart-company-search': { label: 'DART 상장기업 검색',        render: () => dartCompanySearchView(app) },
 };
 
 let currentView = null;
@@ -64,10 +68,7 @@ function navigate(view) {
 
   route.render();
 
-  // Close mobile sidebar
-  if (window.innerWidth < 1024) {
-    if (typeof closeSidebar === 'function') closeSidebar();
-  }
+  if (typeof closeSidebar === 'function') closeSidebar();
 }
 
 // Wire up sidebar links
@@ -76,6 +77,10 @@ document.querySelectorAll('.sidebar-link[data-view]').forEach(a => {
     e.preventDefault();
     navigate(a.dataset.view);
   });
+});
+
+document.querySelectorAll('[data-view="home"].brand').forEach((button) => {
+  button.addEventListener('click', () => navigate('home'));
 });
 
 // Health check

@@ -3,7 +3,7 @@ import { api } from '../api.js';
 export function transformerView(container) {
   container.innerHTML = `
     <div style="margin-bottom:24px;">
-      <h1 style="font-size:1.25rem; font-weight:700; color:#fff; margin-bottom:6px;">🤖 Transformer 시계열 예측</h1>
+      <h1 style="font-size:1.25rem; font-weight:700; color:#fff; margin-bottom:6px;"><i class="fa-solid fa-robot"></i> Transformer 시계열 예측</h1>
       <p style="font-size:0.875rem; color:#94a3b8; line-height:1.6;">
         Self-Attention 기반 Transformer 아키텍처로 시계열 패턴을 학습하고 예측합니다.
       </p>

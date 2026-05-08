@@ -12,7 +12,7 @@ function pageShell(title, desc, bodyHtml) {
 
 export function textClassifyView(container) {
   container.innerHTML = pageShell(
-    '💬 텍스트 분류 (TF-IDF)',
+    '<i class="fa-solid fa-comments"></i> 텍스트 분류 (TF-IDF)',
     'TF-IDF 벡터화 + 로지스틱 회귀로 텍스트를 스포츠 / 정치 카테고리로 분류합니다.',
     `<div style="background:#1e293b; border-radius:12px; padding:24px; border:1px solid #334155;">
       <div style="margin-bottom:16px;">

@@ -3,18 +3,62 @@ from __future__ import annotations
 import base64
 import io
 import os
+import urllib.parse
+import urllib.request
+import xml.etree.ElementTree as ET
+import zipfile
+from functools import lru_cache
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+
+try:
+    import orjson
+except ImportError:
+    DEFAULT_RESPONSE_CLASS = JSONResponse
+else:
+    class FastORJSONResponse(Response):
+        media_type = "application/json"
+
+        def render(self, content: object) -> bytes:
+            return orjson.dumps(content)
+
+    DEFAULT_RESPONSE_CLASS = FastORJSONResponse
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 FRONTEND_DIR = ROOT_DIR / "app" / "frontend"
 GENERATED_DIR = ROOT_DIR / "app" / "generated"
 GENERATED_DIR.mkdir(parents=True, exist_ok=True)
+_MATPLOTLIB_FONT_CONFIGURED = False
+
+
+def configure_matplotlib_korean_font(plt) -> None:
+    """Use an installed Korean font when Matplotlib renders Korean labels."""
+    global _MATPLOTLIB_FONT_CONFIGURED
+    if _MATPLOTLIB_FONT_CONFIGURED:
+        return
+
+    import matplotlib.font_manager as fm
+
+    candidates = [
+        Path("/usr/share/fonts/truetype/nanum/NanumGothic.ttf"),
+        Path("/usr/share/fonts/truetype/nanum/NanumBarunGothic.ttf"),
+        Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"),
+    ]
+    for font_path in candidates:
+        if font_path.exists():
+            fm.fontManager.addfont(str(font_path))
+            font_name = fm.FontProperties(fname=str(font_path)).get_name()
+            plt.rcParams["font.family"] = font_name
+            break
+    plt.rcParams["axes.unicode_minus"] = False
+    _MATPLOTLIB_FONT_CONFIGURED = True
+
 
 app = FastAPI(
     title="Python Education Cloud API",
@@ -26,7 +70,10 @@ app = FastAPI(
         "Text Classification (NLP), OpenCV Animation, HuggingFace Diffusion, "
         "1D CNN Time Series, LSTM Predictor, Transformer Time Series."
     ),
+    default_response_class=DEFAULT_RESPONSE_CLASS,
 )
+
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 app.add_middleware(
     CORSMiddleware,
@@ -137,9 +184,118 @@ class TransformerTSRequest(BaseModel):
     epochs: int = Field(default=30, ge=10, le=80, description="학습 에폭 수")
 
 
+class DartCompanySearchRequest(BaseModel):
+    company_name: str = Field(default="삼성전자", min_length=1, max_length=80)
+    limit: int = Field(default=10, ge=1, le=30)
+
+
 @app.get("/api/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
+
+
+def _dart_api_key() -> str:
+    key = os.getenv("DART_API_KEY") or os.getenv("OPENDART_API_KEY")
+    if not key:
+        raise HTTPException(
+            status_code=503,
+            detail="DART_API_KEY 또는 OPENDART_API_KEY 환경변수를 설정하세요.",
+        )
+    return key
+
+
+@lru_cache(maxsize=1)
+def _load_dart_corp_codes() -> list[dict[str, str]]:
+    key = _dart_api_key()
+    url = "https://opendart.fss.or.kr/api/corpCode.xml?" + urllib.parse.urlencode({"crtfc_key": key})
+    try:
+        with urllib.request.urlopen(url, timeout=20) as response:
+            payload = response.read()
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"DART 회사코드 목록 수신 실패: {exc}") from exc
+
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload)) as zf:
+            xml_name = zf.namelist()[0]
+            xml_bytes = zf.read(xml_name)
+    except zipfile.BadZipFile as exc:
+        message = payload[:200].decode("utf-8", errors="ignore")
+        raise HTTPException(status_code=502, detail=f"DART 응답을 해석할 수 없습니다: {message}") from exc
+
+    root = ET.fromstring(xml_bytes)
+    rows: list[dict[str, str]] = []
+    for item in root.findall("list"):
+        corp_code = (item.findtext("corp_code") or "").strip()
+        corp_name = (item.findtext("corp_name") or "").strip()
+        stock_code = (item.findtext("stock_code") or "").strip()
+        modify_date = (item.findtext("modify_date") or "").strip()
+        if corp_code and corp_name:
+            rows.append({
+                "corp_code": corp_code,
+                "corp_name": corp_name,
+                "stock_code": stock_code,
+                "modify_date": modify_date,
+            })
+    return rows
+
+
+@lru_cache(maxsize=4096)
+def _resolve_krx_yahoo_ticker(stock_code: str) -> dict[str, object]:
+    if not stock_code:
+        return {"ticker": None, "candidates": []}
+
+    candidates = [f"{stock_code}.KS", f"{stock_code}.KQ"]
+    found: list[str] = []
+    for ticker in candidates:
+        chart_url = (
+            "https://query1.finance.yahoo.com/v8/finance/chart/"
+            + urllib.parse.quote(ticker)
+            + "?range=5d&interval=1d"
+        )
+        try:
+            with urllib.request.urlopen(chart_url, timeout=4) as response:
+                text = response.read(5000).decode("utf-8", errors="ignore")
+            if '"regularMarketPrice"' in text or '"timestamp"' in text:
+                found.append(ticker)
+        except Exception:
+            continue
+
+    return {"ticker": found[0] if found else f"{stock_code}.KS", "candidates": found or candidates}
+
+
+@app.post("/api/dart/company-search")
+def dart_company_search(req: DartCompanySearchRequest) -> dict[str, object]:
+    query = req.company_name.strip()
+    normalized = query.replace(" ", "").lower()
+    if not normalized:
+        raise HTTPException(status_code=400, detail="회사명을 입력하세요.")
+
+    rows = _load_dart_corp_codes()
+    listed = [row for row in rows if row["stock_code"]]
+    exact = [row for row in listed if row["corp_name"].replace(" ", "").lower() == normalized]
+    partial = [row for row in listed if normalized in row["corp_name"].replace(" ", "").lower()]
+    matches = (exact + [row for row in partial if row not in exact])[: req.limit]
+
+    results = []
+    for row in matches:
+        ticker_info = _resolve_krx_yahoo_ticker(row["stock_code"])
+        results.append({
+            **row,
+            "ticker": ticker_info["ticker"],
+            "ticker_candidates": ticker_info["candidates"],
+            "display": f'{ticker_info["ticker"] or row["stock_code"]}, {row["corp_name"]}',
+        })
+
+    return {
+        "query": query,
+        "count": len(results),
+        "results": results,
+        "source": "OpenDART corpCode.xml",
+        "notes": [
+            "DART 회사코드 목록에서 상장기업(stock_code 보유 기업)만 검색합니다.",
+            "DART는 .KS/.KQ suffix를 제공하지 않아 조회 가능한 Yahoo ticker 후보로 보완 표시합니다.",
+        ],
+    }
 
 
 @app.post("/api/ml/cross-validation")
@@ -1281,6 +1437,14 @@ class SectorRequest(BaseModel):
     tickers: list[str] = ["SOXX", "XLE", "XLF", "XLV", "XLK", "XLI"]
     period:  str       = "1y"
 
+class PeerRequest(BaseModel):
+    tickers: dict[str, str] = {
+        "삼성전자": "005930.KS",
+        "SK하이닉스": "000660.KS",
+        "엔비디아": "NVDA",
+        "인텔": "INTC",
+    }
+
 class LifecycleRequest(BaseModel):
     stage:    str = "성장기"   # 도입기 성장기 성숙기 쇠퇴기
     industry: str = "전기차"
@@ -1294,6 +1458,7 @@ def industry_porter(req: PorterRequest) -> dict[str, object]:
     import matplotlib.gridspec as gridspec
     import numpy as np
     import io, base64
+    configure_matplotlib_korean_font(plt)
 
     DARK, SURF, BORDER, TEXT, MUTED = "#0f172a","#1e293b","#334155","#e2e8f0","#64748b"
     ACCENT = "#3b82f6"
@@ -1422,6 +1587,7 @@ def industry_sector(req: SectorRequest) -> dict[str, object]:
     import numpy as np
     import pandas as pd
     import io, base64
+    configure_matplotlib_korean_font(plt)
 
     DARK, SURF, BORDER, TEXT, MUTED = "#0f172a","#1e293b","#334155","#e2e8f0","#64748b"
     COLORS = ["#3b82f6","#22c55e","#f59e0b","#ef4444","#a855f7",
@@ -1517,6 +1683,91 @@ def industry_sector(req: SectorRequest) -> dict[str, object]:
     return {"image": img, "summary": summary}
 
 
+@app.post("/api/industry/peer")
+def industry_peer(req: PeerRequest) -> dict[str, object]:
+    import math
+
+    import yfinance as yf
+
+    if not req.tickers:
+        raise HTTPException(status_code=400, detail="비교할 종목을 1개 이상 입력하세요.")
+    if len(req.tickers) > 12:
+        raise HTTPException(status_code=400, detail="Peer Comparison은 최대 12개 종목까지 지원합니다.")
+
+    def as_float(value):
+        if value is None:
+            return None
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            return None
+        if math.isnan(number) or math.isinf(number):
+            return None
+        return number
+
+    rows: list[dict[str, object]] = []
+    for name, ticker in req.tickers.items():
+        label = (name or ticker).strip()[:40]
+        symbol = (ticker or "").strip().upper()
+        if not symbol:
+            continue
+        try:
+            info = yf.Ticker(symbol).info
+        except Exception as exc:
+            rows.append({
+                "company": label,
+                "ticker": symbol,
+                "error": f"데이터 수신 실패: {exc}",
+            })
+            continue
+
+        market_cap = as_float(info.get("marketCap"))
+        revenue_growth = as_float(info.get("revenueGrowth"))
+        operating_margin = as_float(info.get("operatingMargins"))
+        debt_to_equity = as_float(info.get("debtToEquity"))
+        roe = as_float(info.get("returnOnEquity"))
+        per = as_float(info.get("trailingPE"))
+        pbr = as_float(info.get("priceToBook"))
+
+        rows.append({
+            "company": label,
+            "ticker": symbol,
+            "market_cap_krw_100m": round(market_cap / 1e8, 0) if market_cap is not None else None,
+            "revenue_growth_pct": round(revenue_growth * 100, 1) if revenue_growth is not None else None,
+            "operating_margin_pct": round(operating_margin * 100, 1) if operating_margin is not None else None,
+            "per": round(per, 1) if per is not None else None,
+            "pbr": round(pbr, 2) if pbr is not None else None,
+            "debt_to_equity_pct": round(debt_to_equity, 1) if debt_to_equity is not None else None,
+            "roe_pct": round(roe * 100, 1) if roe is not None else None,
+            "currency": info.get("currency"),
+            "sector": info.get("sector"),
+        })
+
+    if not rows:
+        raise HTTPException(status_code=400, detail="유효한 종목 코드가 없습니다.")
+
+    valid_rows = [r for r in rows if not r.get("error")]
+    leader = None
+    if valid_rows:
+        leader = max(
+            valid_rows,
+            key=lambda r: (
+                r.get("operating_margin_pct") if r.get("operating_margin_pct") is not None else -999,
+                r.get("roe_pct") if r.get("roe_pct") is not None else -999,
+            ),
+        ).get("company")
+
+    return {
+        "rows": rows,
+        "leader": leader,
+        "notes": [
+            "동종 기업 여부를 먼저 확인한 뒤 멀티플 차이를 해석하세요.",
+            "PER/PBR은 성장률, 수익성, 재무건전성과 함께 봐야 합니다.",
+            "Yahoo Finance 항목 누락 시 일부 값은 빈칸으로 표시됩니다.",
+        ],
+    }
+
+
 LIFECYCLE_DATA = {
     "도입기": {
         "idx": 0, "color": "#3b82f6",
@@ -1552,6 +1803,7 @@ def industry_lifecycle(req: LifecycleRequest) -> dict[str, object]:
     import matplotlib.patches as mpatches
     import numpy as np
     import io, base64
+    configure_matplotlib_korean_font(plt)
 
     DARK, SURF, BORDER, TEXT, MUTED = "#0f172a","#1e293b","#334155","#e2e8f0","#64748b"
 
@@ -1624,9 +1876,9 @@ def industry_lifecycle(req: LifecycleRequest) -> dict[str, object]:
     y_pos -= 0.08
 
     sections = [
-        ("📋 특징", stage_info["chars"], "#e2e8f0"),
-        ("💡 투자 전략", stage_info["strategy"], "#3b82f6"),
-        ("🏭 예시 산업", stage_info["examples"], "#a855f7"),
+        ("특징", stage_info["chars"], "#e2e8f0"),
+        ("투자 전략", stage_info["strategy"], "#3b82f6"),
+        ("예시 산업", stage_info["examples"], "#a855f7"),
     ]
     for title, items, col in sections:
         ax_info.text(0.05, y_pos, title, fontsize=9, fontweight="bold",

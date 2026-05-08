@@ -3,7 +3,7 @@ import { apiPost, withLoading, renderMetrics, renderError } from '../api.js';
 export function randomForestView(container) {
   container.innerHTML = `
     <section class="card">
-      <h2>🌳 Random Forest</h2>
+      <h2><i class="fa-solid fa-tree"></i> Random Forest</h2>
       <p class="desc">
         앙상블 트리 분류기로 고객 이탈 예측을 수행합니다.<br/>
         Ensemble tree classifier for churn prediction.
@@ -33,4 +33,3 @@ export function randomForestView(container) {
     }
   });
 }
-

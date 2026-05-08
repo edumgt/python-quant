@@ -20,7 +20,7 @@
   - API: `/api/macro/realtime`, `/api/macro/simulation`
 - **산업 분석 실습**
   - 프론트: `app/frontend/js/views/industryAnalysis.js`
-  - API: `/api/industry/porter`, `/api/industry/sector`, `/api/industry/lifecycle`
+  - API: `/api/industry/porter`, `/api/industry/sector`, `/api/industry/peer`, `/api/industry/lifecycle`
 - **기본적/퀀트 분석 실습**
   - 스크립트: `app/src/Backtest.py`, `app/src/PortfolioOptimizer.py`, `app/src/RiskManager.py`, `app/src/QuantPipeline.py`
   - API: `/api/quant/backtest`, `/api/quant/portfolio`, `/api/quant/risk`, `/api/quant/pipeline`
@@ -40,7 +40,6 @@
 │   ├── frontend
 │   │   ├── index.html
 │   │   ├── styles.css
-│   │   ├── package.json
 │   │   └── js
 │   │       ├── app.js
 │   │       ├── api.js
@@ -73,7 +72,7 @@
 
 ## 🚀 Quick Start
 
-### 1) Python API 서버 실행
+### 1) Python 앱 실행
 
 ```bash
 cd /path/to/python-quant
@@ -81,25 +80,18 @@ pip install -r requirements.txt
 uvicorn app.backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
+- 웹앱: `http://localhost:8000`
 - API 문서: `http://localhost:8000/docs`
 - 기본 헬스체크: `GET /api/health`
 
-### 2) 프론트엔드 실행
-
-```bash
-cd /path/to/python-quant/app/frontend
-npm install
-npm run dev
-```
-
-### 3) 대표 스크립트 실행
+### 2) 대표 스크립트 실행
 
 ```bash
 cd /path/to/python-quant
-python app/src/QuantPipeline.py
-python app/src/Backtest.py
-python app/src/RiskManager.py
-python app/src/PortfolioOptimizer.py
+python3 app/src/QuantPipeline.py
+python3 app/src/Backtest.py
+python3 app/src/RiskManager.py
+python3 app/src/PortfolioOptimizer.py
 ```
 
 ---
@@ -109,4 +101,3 @@ python app/src/PortfolioOptimizer.py
 - `docs/01.md` ~ `docs/80.md`: 일차별 학습 문서
 
 ---
-

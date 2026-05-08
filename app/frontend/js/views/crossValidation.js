@@ -3,7 +3,7 @@ import { apiPost, withLoading, renderMetrics, renderImage, renderError } from '.
 export function crossValidationView(container) {
   container.innerHTML = `
     <section class="card">
-      <h2>📊 Cross Validation</h2>
+      <h2><i class="fa-solid fa-table-cells"></i> Cross Validation</h2>
       <p class="desc">
         K-Fold 교차 검증으로 모델의 안정적인 성능을 측정합니다.<br/>
         K-Fold cross-validation measures stable model performance by averaging across multiple folds.
@@ -49,4 +49,3 @@ export function crossValidationView(container) {
     }
   });
 }
-

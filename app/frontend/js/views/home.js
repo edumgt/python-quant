@@ -1,64 +1,78 @@
 export function homeView(container, navigate) {
-  const modules = [
-    { icon: '📊', name: 'Cross Validation',      tag: 'ML · Scikit-learn',    view: 'cross-validation' },
-    { icon: '🗺️', name: 'Decision Boundary',    tag: 'ML · Visualization',   view: 'decision-boundary' },
-    { icon: '🌳', name: 'Random Forest',          tag: 'ML · Ensemble',        view: 'random-forest' },
-    { icon: '🔵', name: 'KMeans 클러스터링',      tag: 'ML · Clustering',      view: 'kmeans' },
-    { icon: '⚔️', name: 'SVM 분류기',            tag: 'ML · Classification',  view: 'svm' },
-    { icon: '🧠', name: 'MLP 신경망',             tag: 'ML · Neural Network',  view: 'mlp' },
-    { icon: '📈', name: '선형 회귀',              tag: 'ML · Regression',      view: 'linear-regression' },
-    { icon: '💬', name: '텍스트 분류 (TF-IDF)',   tag: 'NLP · Text',           view: 'text-classify' },
-    { icon: '🎥', name: 'OpenCV 애니메이션',      tag: 'CV · Video',           view: 'opencv' },
-    { icon: '📡', name: '1D CNN 시계열',          tag: 'DL · CNN',             view: 'cnn-timeseries' },
-    { icon: '🔁', name: 'LSTM 예측기',            tag: 'DL · RNN',             view: 'lstm' },
-    { icon: '🤖', name: 'Transformer',            tag: 'DL · Attention',       view: 'transformer' },
-    { icon: '📉', name: '백테스트 엔진',          tag: 'Quant · Strategy',     view: 'backtest' },
-    { icon: '💼', name: '포트폴리오 최적화',      tag: 'Quant · Portfolio',    view: 'portfolio' },
-    { icon: '🔬', name: '퀀트 파이프라인',        tag: 'Quant · Pipeline',     view: 'pipeline' },
-    { icon: '⚠️', name: '리스크 분석 (VaR)',     tag: 'Quant · Risk',         view: 'risk' },
-    { icon: '🎨', name: 'HuggingFace 이미지 생성', tag: 'GenAI · Diffusion',  view: 'huggingface' },
-    { icon: '🌐', name: '거시경제현황 1 (실시간)',   tag: '거시경제 · yfinance', view: 'macro-realtime' },
-    { icon: '📊', name: '거시경제현황 2 (시뮬레이션)', tag: '거시경제 · GBM',   view: 'macro-simulation' },
-    { icon: '🏭', name: '산업 경쟁력 분석',          tag: 'Porter·섹터·SWOT', view: 'industry-analysis' },
+  const groups = [
+    {
+      title: '매크로 분석',
+      desc: '금리, 물가, 유가, 환율, 주가지수 같은 거시 지표의 흐름을 확인합니다.',
+      icon: 'fa-solid fa-globe',
+      items: [
+        { icon: 'fa-solid fa-satellite-dish', name: '거시경제현황 1 (실시간)', tag: 'yfinance · 추세/상관관계', view: 'macro-realtime' },
+        { icon: 'fa-solid fa-chart-area', name: '거시경제현황 2 (시뮬레이션)', tag: 'GBM · 경기국면', view: 'macro-simulation' },
+      ],
+    },
+    {
+      title: '산업적 분석',
+      desc: '산업 경쟁력, KPI, Peer Comparison, PEST, SWOT으로 업종 매력도를 분석합니다.',
+      icon: 'fa-solid fa-industry',
+      items: [
+        { icon: 'fa-solid fa-industry', name: '산업 경쟁력 분석', tag: 'Porter · KPI · PEST · SWOT', view: 'industry-analysis' },
+      ],
+    },
+    {
+      title: '기본적 분석',
+      desc: '기업의 실적, 재무 체력, 가치평가 관점에서 투자 대상을 검토합니다.',
+      icon: 'fa-solid fa-file-invoice-dollar',
+      items: [
+        { icon: 'fa-solid fa-magnifying-glass-chart', name: 'DART 상장기업 검색', tag: '회사명 → 종목코드 · DART 고유번호', view: 'dart-company-search' },
+        { icon: 'fa-solid fa-scale-balanced', name: '재무제표분석', tag: '손익계산서 · 재무상태표 · 현금흐름표', view: 'financial-statement' },
+        { icon: 'fa-solid fa-briefcase', name: '포트폴리오 최적화', tag: '자본 배분 · 샤프 비율', view: 'portfolio' },
+        { icon: 'fa-solid fa-shield-halved', name: '리스크 분석 (VaR)', tag: '손실 위험 · 자본 보전', view: 'risk' },
+        { icon: 'fa-solid fa-calculator', name: '밸류에이션 실습', tag: 'PER/PBR · DCF', disabled: true },
+      ],
+    },
+    {
+      title: '기술적 분석',
+      desc: '가격, 추세, 지표, 백테스트를 통해 매매 전략의 동작을 검증합니다.',
+      icon: 'fa-solid fa-chart-line',
+      items: [
+        { icon: 'fa-solid fa-clock-rotate-left', name: '백테스트 엔진', tag: 'MA 크로스오버 · 성과 분석', view: 'backtest' },
+        { icon: 'fa-solid fa-diagram-project', name: '퀀트 파이프라인', tag: 'MA · RSI · MACD · ML', view: 'pipeline' },
+      ],
+    },
   ];
 
   container.innerHTML = `
-    <div style="margin-bottom:32px;">
-      <h1 style="font-size:1.5rem; font-weight:700; color:#fff; margin-bottom:8px;">Python Quant Lab</h1>
-      <p style="font-size:0.875rem; color:#94a3b8; line-height:1.6;">
-        FastAPI 백엔드 + Vanilla JS 프론트엔드로 구성한 ML/DL/Quant 교육 실습 대시보드입니다.
-        사이드바 또는 아래 카드에서 실습 모듈을 선택하세요.
+    <div style="margin-bottom:28px;">
+      <h1 style="font-size:1.5rem; font-weight:700; color:#131722; margin-bottom:8px;">Python Quant Lab</h1>
+      <p style="font-size:0.875rem; color:#6b7280; line-height:1.6;">
+        투자분석 기초 방법론을 매크로 분석, 산업적 분석, 기본적 분석, 기술적 분석 4개 흐름으로 구성했습니다.
+        우측 메뉴 또는 아래 분류 카드에서 실습을 선택하세요.
       </p>
     </div>
 
-    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:16px; margin-bottom:32px;" id="home-grid">
-      ${modules.map(m => `
-        <div data-view="${m.view}" style="background:#1e293b; border-radius:12px; padding:20px 16px;
-             cursor:pointer; border:1px solid #334155; transition:border-color 0.15s, transform 0.15s;"
-             onmouseover="this.style.borderColor='#3b82f6';this.style.transform='translateY(-2px)'"
-             onmouseout="this.style.borderColor='#334155';this.style.transform='translateY(0)'">
-          <div style="font-size:1.75rem; margin-bottom:10px;">${m.icon}</div>
-          <div style="font-size:0.825rem; font-weight:600; color:#e2e8f0; margin-bottom:4px;">${m.name}</div>
-          <div style="font-size:0.7rem; color:#64748b;">${m.tag}</div>
-        </div>`).join('')}
-    </div>
-
-    <div style="background:#1e293b; border-radius:12px; padding:20px; border:1px solid #334155;">
-      <div style="font-size:0.75rem; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px;">API Endpoints</div>
-      <pre style="font-size:0.75rem; color:#94a3b8; line-height:1.8; overflow-x:auto;">POST /api/ml/cross-validation
-GET  /api/ml/decision-boundary
-POST /api/ml/random-forest      POST /api/ml/kmeans
-POST /api/ml/svm                POST /api/ml/mlp
-POST /api/ml/linear-regression  POST /api/nlp/text-classify
-POST /api/cv/circle-animation   POST /api/dl/cnn-timeseries
-POST /api/dl/lstm-predictor     POST /api/dl/transformer-timeseries
-POST /api/quant/backtest        POST /api/quant/portfolio
-POST /api/quant/risk            POST /api/quant/pipeline
-POST /api/genai/text-to-image</pre>
+    <div class="analysis-group-grid" id="home-grid">
+      ${groups.map(group => `
+        <section class="analysis-group">
+          <div class="analysis-group-head">
+            <div class="analysis-group-icon"><i class="${group.icon}"></i></div>
+            <div>
+              <h2>${group.title}</h2>
+              <p>${group.desc}</p>
+            </div>
+          </div>
+          <div class="home-grid">
+            ${group.items.map(item => `
+              <div class="home-card ${item.disabled ? 'is-disabled' : ''}" ${item.view ? `data-view="${item.view}"` : ''}>
+                <div class="home-icon"><i class="${item.icon}"></i></div>
+                <div class="home-card-title">${item.name}</div>
+                <div class="home-card-tag">${item.disabled ? `${item.tag} · 준비 중` : item.tag}</div>
+              </div>`).join('')}
+          </div>
+        </section>
+      `).join('')}
     </div>
   `;
 
-  document.querySelectorAll('#home-grid [data-view]').forEach(card => {
+  container.querySelectorAll('#home-grid [data-view]').forEach(card => {
     card.addEventListener('click', () => navigate(card.dataset.view));
   });
 }

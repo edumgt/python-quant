@@ -27,7 +27,7 @@ const DEFAULT_TICKERS = ["^TNX", "CL=F", "^GSPC", "^KS11", "GC=F", "EURUSD=X"];
 export function macroRealtimeView(container) {
   container.innerHTML = `
     <div style="margin-bottom:24px;">
-      <h1 style="font-size:1.25rem; font-weight:700; color:#fff; margin-bottom:6px;">🌐 거시경제현황 1 — 실시간 데이터</h1>
+      <h1 style="font-size:1.25rem; font-weight:700; color:#fff; margin-bottom:6px;"><i class="fa-solid fa-globe"></i> 거시경제현황 1 — 실시간 데이터</h1>
       <p style="font-size:0.875rem; color:#94a3b8; line-height:1.6;">
         Yahoo Finance에서 금리·유가·환율·주가지수 등 거시경제 지표를 실시간으로 가져와 추세, 상관관계, 수익률을 분석합니다.
       </p>
