@@ -15,7 +15,10 @@
 <img alt="투자분석 개요" src="image.png" />
 
 - 산업 분석: 산업 경쟁력 분석(산업경쟁력 개념/분석모형, 산업별 분석방법), 산업 분석 실습
-- 기본적 분석: 재무제표분석(손익계산서/대차대조표/현금흐름표), 기업가치분석(상대가치평가 밸류에이션(멀티플), 절대가치평가 밸류에이션(DCF, EVA, FCF 등)), 분석기업선정 및 밸류에이션 실습
+- 기본적 분석:
+  - 재무제표분석(손익계산서/대차대조표/현금흐름표)
+  - 기업가치분석(상대가치평가 밸류에이션(멀티플), 절대가치평가 밸류에이션(DCF, EVA, FCF 등))
+  - 분석기업선정 및 밸류에이션 실습
 - 기술적 분석: 추세 분석(지지선과 저항선, 이동평균선, 갭 반전, 되돌림 분석 등), 패턴 분석, 캔들 차트 분석, 지표 분석, 앨리어트파동이론, 분석기업선정 및 기술적 분석
 
 ---
@@ -83,7 +86,7 @@
 ### 1) Python API 서버 실행
 
 ```bash
-cd /home/runner/work/python-quant/python-quant
+cd /path/to/python-quant
 pip install -r requirements.txt
 uvicorn app.backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
@@ -94,7 +97,7 @@ uvicorn app.backend.main:app --host 0.0.0.0 --port 8000 --reload
 ### 2) 프론트엔드 실행
 
 ```bash
-cd /home/runner/work/python-quant/python-quant/app/frontend
+cd /path/to/python-quant/app/frontend
 npm install
 npm run dev
 ```
@@ -102,7 +105,7 @@ npm run dev
 ### 3) 대표 스크립트 실행
 
 ```bash
-cd /home/runner/work/python-quant/python-quant
+cd /path/to/python-quant
 python app/src/QuantPipeline.py
 python app/src/Backtest.py
 python app/src/RiskManager.py
