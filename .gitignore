@@ -3,8 +3,5 @@
 *.key
 *.log
 *.env
-
-# Python cache
 __pycache__/
-
-
+.claude/
