@@ -1,25 +1,13 @@
 /**
  * quiz.js — 투자자산운용사 시험 퀴즈 뷰
- * 15일 × 30문항, 정오답 표기, 해설, 문항 편집 기능
+ * docs 01·02 통합 30문항, 정오답 표기, 해설, 문항 편집 기능
  */
 
 const DAY_TOPICS = {
-  1:  '법인·세무·회계 기초',
-  2:  '매크로 분석·금리',
-  3:  '경제지표 분석',
-  4:  '거시경제 상황 분석',
-  5:  '산업 분석',
-  6:  '산업 분석 실습',
-  7:  '재무제표 분석 I',
-  8:  '재무제표 분석 II',
-  9:  '상대가치 평가',
-  10: '기술적 분석 I',
-  11: '기술적 분석 II',
-  12: '주식·배당·파생상품',
-  13: '금융상품 구분',
-  14: '파생상품 이해',
-  15: '포트폴리오·자본시장법',
+  1: 'docs 01·02 통합 모의고사',
 };
+const QUESTIONS_PER_DAY = 30;
+const TOTAL_DAYS = Object.keys(DAY_TOPICS).length;
 
 // progress stored per-day in localStorage
 function loadProgress(day) {
@@ -34,23 +22,23 @@ function clearProgress(day) {
   localStorage.removeItem(`quiz_progress_day${day}`);
 }
 
-/* ─── QUIZ HOME (15일 계획) ─────────────────────── */
+/* ─── QUIZ HOME ─────────────────────── */
 export function quizHomeView(app, navigate) {
   const cards = Object.entries(DAY_TOPICS).map(([d, topic]) => {
     const prog = loadProgress(Number(d));
     const done = prog && prog.finished;
     const answered = prog ? Object.keys(prog.answers || {}).length : 0;
-    const pct = prog ? Math.round(answered / 30 * 100) : 0;
+    const pct = prog ? Math.round(answered / QUESTIONS_PER_DAY * 100) : 0;
     return `
       <div class="plan-card${done ? ' done' : ''}" onclick="navigate('quiz-day-${d}')">
         <div class="plan-day">Day ${d}</div>
         <div class="plan-topic">${topic}</div>
         <div class="plan-count">
           ${done
-            ? `<span class="badge badge-green"><i class="fa-solid fa-check"></i> 완료 · ${prog.score}/30</span>`
+            ? `<span class="badge badge-green"><i class="fa-solid fa-check"></i> 완료 · ${prog.score}/${QUESTIONS_PER_DAY}</span>`
             : answered > 0
-              ? `<span class="badge badge-blue">${answered}/30 진행 중</span>`
-              : `<span class="badge badge-gray">30문항</span>`}
+            ? `<span class="badge badge-blue">${answered}/${QUESTIONS_PER_DAY} 진행 중</span>`
+              : `<span class="badge badge-gray">${QUESTIONS_PER_DAY}문항</span>`}
         </div>
         ${answered > 0 && !done ? `
           <div class="plan-prog">
@@ -61,7 +49,7 @@ export function quizHomeView(app, navigate) {
 
   // overall stats
   let totalDone = 0, totalScore = 0;
-  for (let d = 1; d <= 15; d++) {
+  for (let d = 1; d <= TOTAL_DAYS; d++) {
     const p = loadProgress(d);
     if (p && p.finished) { totalDone++; totalScore += p.score || 0; }
   }
@@ -70,29 +58,29 @@ export function quizHomeView(app, navigate) {
     <div style="margin-bottom:24px;">
       <h2 style="margin:0 0 4px;font-size:1.25rem;font-weight:800">
         <i class="fa-solid fa-calendar-check" style="color:var(--primary);margin-right:8px;"></i>
-        15일 투자자산운용사 학습 계획
+        docs 01·02 통합 모의고사
       </h2>
       <p style="font-size:.85rem;color:var(--text-muted);margin:0">
-        매일 30문항씩, 15일간 시험 대비 · 정오답 즉시 확인 · 문항 수정 가능
+        30문항 시험 · 정오답 즉시 확인 · 해설 보기 · 수험자 문항 수정 모드
       </p>
     </div>
 
     <div class="grid-4" style="margin-bottom:28px;">
       <div class="stat-box">
         <div class="stat-label">완료 일차</div>
-        <div class="stat-value">${totalDone}<span style="font-size:1rem;font-weight:500;color:var(--text-muted)"> / 15</span></div>
+        <div class="stat-value">${totalDone}<span style="font-size:1rem;font-weight:500;color:var(--text-muted)"> / ${TOTAL_DAYS}</span></div>
       </div>
       <div class="stat-box">
         <div class="stat-label">전체 정답 수</div>
-        <div class="stat-value">${totalScore}<span style="font-size:1rem;font-weight:500;color:var(--text-muted)"> / ${totalDone*30}</span></div>
+        <div class="stat-value">${totalScore}<span style="font-size:1rem;font-weight:500;color:var(--text-muted)"> / ${totalDone*QUESTIONS_PER_DAY}</span></div>
       </div>
       <div class="stat-box">
         <div class="stat-label">평균 정답률</div>
-        <div class="stat-value">${totalDone > 0 ? Math.round(totalScore/(totalDone*30)*100) : 0}<span style="font-size:1rem;font-weight:500;color:var(--text-muted)">%</span></div>
+        <div class="stat-value">${totalDone > 0 ? Math.round(totalScore/(totalDone*QUESTIONS_PER_DAY)*100) : 0}<span style="font-size:1rem;font-weight:500;color:var(--text-muted)">%</span></div>
       </div>
       <div class="stat-box">
         <div class="stat-label">남은 일차</div>
-        <div class="stat-value">${15 - totalDone}</div>
+        <div class="stat-value">${TOTAL_DAYS - totalDone}</div>
       </div>
     </div>
 
@@ -100,7 +88,7 @@ export function quizHomeView(app, navigate) {
 
   // wire plan card clicks
   app.querySelectorAll('.plan-card').forEach((card, i) => {
-    card.onclick = () => navigate(`quiz-day-${i + 1}`);
+    card.onclick = () => navigate(`quiz-day-${Object.keys(DAY_TOPICS)[i]}`);
   });
 }
 
@@ -157,7 +145,7 @@ function renderQuiz(app, day, questions, navigate) {
             <i class="fa-solid fa-circle-question" style="color:var(--primary);margin-right:7px;"></i>
             Day ${day} · ${topic}
           </h2>
-          <div style="font-size:.78rem;color:var(--text-muted)">30문항 · 투자자산운용사 대비</div>
+          <div style="font-size:.78rem;color:var(--text-muted)">${QUESTIONS_PER_DAY}문항 · 투자자산운용사 대비</div>
         </div>
         <div class="quiz-score-bar">
           <span><i class="fa-solid fa-check" style="color:var(--green)"></i> <span class="score-correct">${correctCount}</span></span>
@@ -300,7 +288,7 @@ function renderQuiz(app, day, questions, navigate) {
           <button class="btn btn-primary" onclick="reviewWrong()">
             <i class="fa-solid fa-list-check"></i> 오답 복습
           </button>
-          ${day < 15
+          ${day < TOTAL_DAYS
             ? `<button class="btn btn-success" onclick="goNextDay()">
                 Day ${day + 1} 시작 <i class="fa-solid fa-arrow-right"></i>
               </button>`
