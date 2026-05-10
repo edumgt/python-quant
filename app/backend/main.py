@@ -2964,12 +2964,24 @@ async def update_quiz_question(question_id: str, payload: QuizQuestionUpdate) ->
     return _serialize_quiz_question(updated) if updated else {}
 
 
+@app.get("/api/quiz/days")
+async def get_quiz_days() -> list[dict]:
+    coll = _quiz_collection()
+    pipeline = [
+        {"$group": {"_id": "$day", "count": {"$sum": 1}}},
+        {"$sort": {"_id": 1}},
+        {"$project": {"day": "$_id", "count": 1, "_id": 0}},
+    ]
+    result = await coll.aggregate(pipeline).to_list(length=100)
+    return result
+
+
 @app.post("/api/quiz/seed")
 async def seed_quiz_questions() -> dict[str, int]:
     inserted = await _seed_quiz_questions()
     coll = _quiz_collection()
-    total = await coll.count_documents({"day": 1})
-    return {"inserted": inserted, "total_day1_questions": total}
+    total = await coll.count_documents({})
+    return {"inserted": inserted, "total_questions": total}
 
 
 @app.get("/api/quiz/seed-script")

@@ -9,9 +9,9 @@
 ## 본인의 경력, 실력과 상관없이 수업중 자신의 스케쥴대로 독립적인 연구를 할 수 있으며, 단, 수업에 방해되지 않게 해야합니다.
 ## md 파일별로 각종 youtube 등의 링크가 있으므로, 헤드셋을 준비하여 개인 실습 시간에 이용 합니다.
 
-## 팀 구성
+## 팀 구성(집단지성)
 
-- PM : 프로젝트를 리드, 회의소집, 비용산정, 프로덕트 오너로서의 기획, 일정관리, slack 구성
+- PM : 프로젝트를 리드, 스크럼 회의 주관, 비용산정, 프로덕트 오너로서의 기획, 일정관리, slack 구성
 - PL : 개발 프레임웍 선정, 업무 설계, 산출물 작업(mermaid 스타일 각종 프로세스 다이어 그램)
 - Architect : 아키텍트 구성(local , dev , prod), on prem , aws serving 인프라 구성, LLM Ops
 - Pipe Liner : RAG 구성을 위한 자료수집, vector db 구성, ML Ops, No SQL RDBMS 구성
@@ -346,102 +346,42 @@ pkill -f uvicorn
 - API 문서: `http://localhost:8000/docs`
 - 기본 헬스체크: `GET /api/health`
 
-### 2) 퀴즈 30문항 MongoDB 적재 (SQL 기반)
 
-```bash
-./scripts/init_quiz_mongodb.sh
-```
+---
 
-- 기본값: `MONGODB_URL=mongodb://localhost:27017`, `MONGODB_DB=investment_db`, `MONGODB_COLLECTION=quiz_questions`
-- SQL 원본: `app/backend/quiz_seed.sql`
-- 2일차(03.md 기반) SQL 적재:
-  
-```bash
-./scripts/init_quiz_mongodb.sh --day2
-```
+# 퀀트 시스템 연동 가능한 증권사 API
 
-- 3일차(04.md 기반) SQL 적재:
+## 주요 증권사 API 비교
 
-```bash
-./scripts/init_quiz_mongodb.sh --day3
-```
+| **증권사** | **API 방식** | **지원 상품** | **특징** |
+|------------|--------------|---------------|-----------|
+| **[한국투자증권](ca://s?q=한국투자증권_Open_API_자동매매)** | REST + WebSocket | 국내·해외주식, 채권, 선물옵션 | 국내 유일 REST API, OS 제약 없음, Python 샘플 제공 |
+| **[키움증권](ca://s?q=키움증권_Open_API_자동매매)** | OCX (Windows 전용) | 국내주식 중심 | 가장 오래된 API, 커뮤니티 자료 풍부 |
+| **[대신증권](ca://s?q=대신증권_CYBOS_API)** | COM (Windows 전용) | 국내주식, 파생상품 | CYBOS Plus 기반, 백테스트 자료 많음 |
+| **[메리츠증권](ca://s?q=메리츠증권_Open_API)** | REST (출시 예정) | 국내주식 | 신규 API 준비 중, 무수수료 ‘슈퍼365’ 계좌와 결합 예정 |
+| **[신한투자증권](ca://s?q=신한투자증권_자동감시주문_API)** | 자동감시주문 시스템 | 국내·해외주식 | 조건 충족 시 자동 주문, 대량 주문 처리 기능 |
 
-- 4일차(05.md 기반) SQL 적재:
+---
 
-```bash
-./scripts/init_quiz_mongodb.sh --day4
-```
+## 선택 시 고려사항
+- **운영체제 호환성**  
+  - Windows 환경 → [키움증권](ca://s?q=키움증권_Open_API_자동매매), [대신증권](ca://s?q=대신증권_CYBOS_API)  
+  - macOS/Linux/클라우드 서버 → [한국투자증권 REST API](ca://s?q=한국투자증권_Open_API_자동매매)  
+- **상품 범위**: 해외주식까지 자동매매하려면 한국투자증권 API가 가장 범위가 넓음  
+- **개발 난이도**: REST 기반은 HTTP 요청만으로 구현 가능해 상대적으로 쉬움  
+- **커뮤니티 지원**: 키움증권은 오래된 API라 자료와 예제가 많음  
 
-- 5일차(06.md 기반) SQL 적재:
+---
 
-```bash
-./scripts/init_quiz_mongodb.sh --day5
-```
+## ⚠️ 주의사항
+- **보안 리스크**: API 키(App Key, Secret)는 계좌 접근 권한이므로 반드시 안전하게 관리해야 함  
+- **호출 제한**: 초당 호출 횟수 제한 존재 → 대량 주문 시 설계 필요  
+- **모의투자 환경**: 대부분 증권사에서 제공 → 실전 적용 전 백테스트 및 모의투자 권장  
+- **법적 규제**: 자동매매 자체는 합법이나, 불공정거래(시세조종 등) 행위는 제재 대상  
 
-- 6일차(07.md 기반) SQL 적재:
+---
 
-```bash
-./scripts/init_quiz_mongodb.sh --day6
-```
+👉 정리하면, **퀀트 시스템을 붙이려면 [한국투자증권 REST API](ca://s?q=한국투자증권_Open_API_자동매매)**가 가장 범용적이고 현대적인 선택지이며, Windows 환경이라면 [키움증권](ca://s?q=키움증권_Open_API_자동매매)이나 [대신증권](ca://s?q=대신증권_CYBOS_API)도 활용 가능합니다.
 
-- 7일차(08.md 기반) SQL 적재:
 
-```bash
-./scripts/init_quiz_mongodb.sh --day7
-```
-
-- 8일차(09.md 기반) SQL 적재:
-
-```bash
-./scripts/init_quiz_mongodb.sh --day8
-```
-
-- 9일차(10.md 기반) SQL 적재:
-
-```bash
-./scripts/init_quiz_mongodb.sh --day9
-```
-
-- 10일차(11.md 기반) SQL 적재:
-
-```bash
-./scripts/init_quiz_mongodb.sh --day10
-```
-
-- 11일차(12.md 기반) SQL 적재:
-
-```bash
-./scripts/init_quiz_mongodb.sh --day11
-```
-
-- 12일차(13.md 기반) SQL 적재:
-
-```bash
-./scripts/init_quiz_mongodb.sh --day12
-```
-
-- 13일차(14.md 기반) SQL 적재:
-
-```bash
-./scripts/init_quiz_mongodb.sh --day13
-```
-
-- 14일차(15.md 기반) SQL 적재:
-
-```bash
-./scripts/init_quiz_mongodb.sh --day14
-```
-
-- 15일차(16.md · 17.md 기반) SQL 적재:
-
-```bash
-./scripts/init_quiz_mongodb.sh --day15
-```
-
-- 임의 SQL 파일 지정:
-
-```bash
-QUIZ_SQL_FILE=app/backend/02.sql ./scripts/init_quiz_mongodb.sh
-# 또는
-./scripts/init_quiz_mongodb.sh --sql-file app/backend/02.sql
-```
+---

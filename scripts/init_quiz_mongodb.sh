@@ -1,48 +1,26 @@
 #!/usr/bin/env bash
+# MongoDB에 퀴즈 데이터(Day 1–15, 총 450문항)를 적재합니다.
+# 이미 존재하는 문항은 건너뜁니다(upsert).
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DEFAULT_SQL_FILE="$ROOT_DIR/app/backend/quiz_seed.sql"
-DAY2_SQL_FILE="$ROOT_DIR/app/backend/02.sql"
-DAY3_SQL_FILE="$ROOT_DIR/app/backend/03.sql"
-DAY4_SQL_FILE="$ROOT_DIR/app/backend/04.sql"
-DAY5_SQL_FILE="$ROOT_DIR/app/backend/05.sql"
-DAY6_SQL_FILE="$ROOT_DIR/app/backend/06.sql"
-DAY7_SQL_FILE="$ROOT_DIR/app/backend/07.sql"
-DAY8_SQL_FILE="$ROOT_DIR/app/backend/08.sql"
-DAY9_SQL_FILE="$ROOT_DIR/app/backend/09.sql"
-DAY10_SQL_FILE="$ROOT_DIR/app/backend/10.sql"
-DAY11_SQL_FILE="$ROOT_DIR/app/backend/11.sql"
-DAY12_SQL_FILE="$ROOT_DIR/app/backend/12.sql"
-DAY13_SQL_FILE="$ROOT_DIR/app/backend/13.sql"
-DAY14_SQL_FILE="$ROOT_DIR/app/backend/14.sql"
-DAY15_SQL_FILE="$ROOT_DIR/app/backend/15.sql"
-SQL_FILE="${QUIZ_SQL_FILE:-$DEFAULT_SQL_FILE}"
+SQL_FILE="${QUIZ_SQL_FILE:-$ROOT_DIR/app/backend/quiz_seed.sql}"
 MONGODB_URL="${MONGODB_URL:-mongodb://localhost:27017}"
 MONGODB_DB="${MONGODB_DB:-investment_db}"
 MONGODB_COLLECTION="${MONGODB_COLLECTION:-quiz_questions}"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") [--sql-file <path>] [--day2] [--day3] [--day4] [--day5] [--day6] [--day7] [--day8] [--day9] [--day10] [--day11] [--day12] [--day13] [--day14] [--day15]
+Usage: $(basename "$0") [--sql-file <path>]
 
 Options:
-  --sql-file <path>   사용할 SQL 파일 경로 지정
-  --day2              app/backend/02.sql 사용
-  --day3              app/backend/03.sql 사용
-  --day4              app/backend/04.sql 사용
-  --day5              app/backend/05.sql 사용
-  --day6              app/backend/06.sql 사용
-  --day7              app/backend/07.sql 사용
-  --day8              app/backend/08.sql 사용
-  --day9              app/backend/09.sql 사용
-  --day10             app/backend/10.sql 사용
-  --day11             app/backend/11.sql 사용
-  --day12             app/backend/12.sql 사용
-  --day13             app/backend/13.sql 사용
-  --day14             app/backend/14.sql 사용
-  --day15             app/backend/15.sql 사용
+  --sql-file <path>   사용할 SQL 파일 경로 (기본: app/backend/quiz_seed.sql)
   -h, --help          도움말 출력
+
+환경 변수:
+  MONGODB_URL         MongoDB 연결 URL (기본: mongodb://localhost:27017)
+  MONGODB_DB          데이터베이스 이름 (기본: investment_db)
+  MONGODB_COLLECTION  컬렉션 이름 (기본: quiz_questions)
 EOF
 }
 
@@ -51,155 +29,63 @@ while [[ $# -gt 0 ]]; do
     --sql-file)
       if [[ $# -lt 2 ]]; then
         echo "[ERROR] --sql-file 옵션에는 경로가 필요합니다."
-        usage
-        exit 1
+        usage; exit 1
       fi
-      SQL_FILE="$2"
-      shift 2
-      ;;
-    --day2)
-      SQL_FILE="$DAY2_SQL_FILE"
-      shift
-      ;;
-    --day3)
-      SQL_FILE="$DAY3_SQL_FILE"
-      shift
-      ;;
-    --day4)
-      SQL_FILE="$DAY4_SQL_FILE"
-      shift
-      ;;
-    --day5)
-      SQL_FILE="$DAY5_SQL_FILE"
-      shift
-      ;;
-    --day6)
-      SQL_FILE="$DAY6_SQL_FILE"
-      shift
-      ;;
-    --day7)
-      SQL_FILE="$DAY7_SQL_FILE"
-      shift
-      ;;
-    --day8)
-      SQL_FILE="$DAY8_SQL_FILE"
-      shift
-      ;;
-    --day9)
-      SQL_FILE="$DAY9_SQL_FILE"
-      shift
-      ;;
-    --day10)
-      SQL_FILE="$DAY10_SQL_FILE"
-      shift
-      ;;
-    --day11)
-      SQL_FILE="$DAY11_SQL_FILE"
-      shift
-      ;;
-    --day12)
-      SQL_FILE="$DAY12_SQL_FILE"
-      shift
-      ;;
-    --day13)
-      SQL_FILE="$DAY13_SQL_FILE"
-      shift
-      ;;
-    --day14)
-      SQL_FILE="$DAY14_SQL_FILE"
-      shift
-      ;;
-    --day15)
-      SQL_FILE="$DAY15_SQL_FILE"
-      shift
-      ;;
+      SQL_FILE="$2"; shift 2 ;;
     -h|--help)
-      usage
-      exit 0
-      ;;
+      usage; exit 0 ;;
     *)
       echo "[ERROR] 알 수 없는 옵션: $1"
-      usage
-      exit 1
-      ;;
+      usage; exit 1 ;;
   esac
 done
 
-if ! command -v mongosh >/dev/null 2>&1; then
-  echo "[ERROR] mongosh 가 설치되어 있지 않습니다."
-  exit 1
-fi
-
-if ! command -v python3 >/dev/null 2>&1; then
-  echo "[ERROR] python3 가 설치되어 있지 않습니다."
-  exit 1
-fi
+for cmd in mongosh python3; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "[ERROR] $cmd 이(가) 설치되어 있지 않습니다."; exit 1
+  fi
+done
 
 if [[ ! -f "$SQL_FILE" ]]; then
-  echo "[ERROR] SQL 파일이 없습니다: $SQL_FILE"
-  exit 1
+  echo "[ERROR] SQL 파일이 없습니다: $SQL_FILE"; exit 1
 fi
 
 TMP_JSON="$(mktemp)"
 trap 'rm -f "$TMP_JSON"' EXIT
 
 python3 - "$SQL_FILE" "$TMP_JSON" <<'PY'
-import json
-import sqlite3
-import sys
+import json, sqlite3, sys
 from pathlib import Path
 
-sql_file = Path(sys.argv[1])
-out_file = Path(sys.argv[2])
-
+sql_file, out_file = Path(sys.argv[1]), Path(sys.argv[2])
 conn = sqlite3.connect(":memory:")
 try:
     conn.executescript(sql_file.read_text(encoding="utf-8"))
     rows = conn.execute(
-        """
-        SELECT day, question_no, source_doc, topic, question,
-               choice_1, choice_2, choice_3, choice_4,
-               answer, explanation
-          FROM quiz_questions
-         ORDER BY day, question_no
-        """
+        "SELECT day, question_no, source_doc, topic, question,"
+        " choice_1, choice_2, choice_3, choice_4, answer, explanation"
+        " FROM quiz_questions ORDER BY day, question_no"
     ).fetchall()
 finally:
     conn.close()
 
-docs = []
-for (
-    day,
-    question_no,
-    source_doc,
-    topic,
-    question,
-    choice_1,
-    choice_2,
-    choice_3,
-    choice_4,
-    answer,
-    explanation,
-) in rows:
-    docs.append(
-        {
-            "day": int(day),
-            "question_no": int(question_no),
-            "source_doc": source_doc,
-            "topic": topic,
-            "question": question,
-            "choices": [choice_1, choice_2, choice_3, choice_4],
-            "answer": int(answer),
-            "explanation": explanation,
-        }
-    )
-
+docs = [
+    {
+        "day": int(r[0]), "question_no": int(r[1]),
+        "source_doc": r[2], "topic": r[3], "question": r[4],
+        "choices": [r[5], r[6], r[7], r[8]],
+        "answer": int(r[9]), "explanation": r[10],
+    }
+    for r in rows
+]
 out_file.write_text(json.dumps(docs, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"prepared_docs={len(docs)}")
 PY
 
-mongosh "$MONGODB_URL/$MONGODB_DB" --quiet --eval "db.createCollection('$MONGODB_COLLECTION');" >/dev/null 2>&1 || true
-mongosh "$MONGODB_URL/$MONGODB_DB" --quiet --eval "db.getCollection('$MONGODB_COLLECTION').createIndex({day:1,question_no:1},{unique:true});" >/dev/null
+mongosh "$MONGODB_URL/$MONGODB_DB" --quiet \
+  --eval "db.createCollection('$MONGODB_COLLECTION');" >/dev/null 2>&1 || true
+mongosh "$MONGODB_URL/$MONGODB_DB" --quiet \
+  --eval "db.getCollection('$MONGODB_COLLECTION').createIndex({day:1,question_no:1},{unique:true});" >/dev/null
 
 mongosh "$MONGODB_URL/$MONGODB_DB" --quiet --eval "
 const fs = require('fs');
@@ -207,14 +93,14 @@ const docs = JSON.parse(fs.readFileSync('$TMP_JSON', 'utf8'));
 const coll = db.getCollection('$MONGODB_COLLECTION');
 let inserted = 0;
 for (const doc of docs) {
-  const result = coll.updateOne(
+  const r = coll.updateOne(
     { day: doc.day, question_no: doc.question_no },
     { \$setOnInsert: doc },
     { upsert: true }
   );
-  if (result.upsertedCount > 0) inserted += 1;
+  if (r.upsertedCount > 0) inserted++;
 }
 printjson({ inserted, total: coll.countDocuments({}) });
 "
 
-echo "[OK] MongoDB 초기화/데이터 적재 완료"
+echo "[OK] MongoDB 초기화/데이터 적재 완료 (Day 1–15, 총 450문항)"
