@@ -355,9 +355,15 @@ pkill -f uvicorn
 - 기본값: `MONGODB_URL=mongodb://localhost:27017`, `MONGODB_DB=investment_db`, `MONGODB_COLLECTION=quiz_questions`
 - SQL 원본: `app/backend/quiz_seed.sql`
 - 2일차(03.md 기반) SQL 적재:
-
+  
 ```bash
 ./scripts/init_quiz_mongodb.sh --day2
+```
+
+- 3일차(04.md 기반) SQL 적재:
+
+```bash
+./scripts/init_quiz_mongodb.sh --day3
 ```
 
 - 임의 SQL 파일 지정:
