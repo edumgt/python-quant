@@ -1,39 +1,13 @@
-## 📚 커리큘럼 전체 구성
+# 학습내용 정리
+
+## 본 저장소의 `docs/` 디렉터리에 Vector DB 구축을 위한 RAG 용 자산운용 관련 내용이 있습니다.
+
+- 이 내용은 전공여부, 본인의 지식, 경험여부와 무관하게, 자산운용 시스템을 만들기 위한 자료 입니다.
+- 따라서, 쉬운 기초 내용 위주로 계속 문서를 보완 추가하면서, 차후 시스템 개발의 지식 배경을 목적으로 하며,
+- 각자 이 repo 를 fork 하고, 별도 본인 repo 를 만들어 계속 본인의 repo 에 md 포맷으로 knowledge 를 축적합니다.
+- 금융자산 knowledge 를 취업 목적으로 serving 시스템 만드는 과정 입니다.
 
 ### 선수 repo - https://github.com/edumgt/edumgt-lab-init
-
-본 저장소의 `docs/` 디렉터리는 **모듈 7~8 통합 15일(Day 042~056) 투자분석 커리큘럼**을 담고 있습니다.  
-학습 흐름은 **매크로 → 산업 → 기본적 → 기술적 → 금융상품/자산배분** 순서로 이어집니다.
-
-### 🗺️ 15일 학습 로드맵
-
-```text
-[매크로] → [산업] → [기본적] → [기술적] → [금융상품/자산배분]
-Day 042~044   Day 045~046   Day 047~049   Day 050~051    Day 052~056
-27~29.md      30~31.md      32~34.md      35~36.md       37~41.md
-```
-
-### 📋 Day별 학습 내용 상세 (15일)
-
-| Day | 문서 | 주제 | 핵심 학습 내용 | 웹앱 연계 |
-|---|---|---|---|---|
-| Day 042 | [27.md](docs/27.md) | 매크로 분석 개요 및 금리 분석 | 기준금리·장단기금리차·Yield Curve·거시 지표 해석 | `macro-realtime` |
-| Day 043 | [28.md](docs/28.md) | 경제지표 분석 (물가·유가 등) | CPI/PPI/PCE·유가·환율·상관분석 | `macro-simulation` |
-| Day 044 | [29.md](docs/29.md) | 거시경제 상황 분석 실습 | 경기국면 분류·자산군 대응전략·거시 대시보드 | `macro-realtime`, `macro-simulation` |
-| Day 045 | [30.md](docs/30.md) | 산업 분석 | Porter 5 Forces·PEST·SWOT·산업수명주기 | `industry-analysis` |
-| Day 046 | [31.md](docs/31.md) | 산업 분석 실습 | 섹터 로테이션·Peer 비교·공급망 관점 분석 | `industry-analysis` |
-| Day 047 | [32.md](docs/32.md) | 재무제표 분석 I | 손익계산서·대차대조표·수익성/안정성 지표 | `financial-statement` |
-| Day 048 | [33.md](docs/33.md) | 재무제표 분석 II | 현금흐름표·FCF/EVA/WACC·DCF 기반 가치평가 | `dart-company-search`, `valuation` |
-| Day 049 | [34.md](docs/34.md) | 상대가치 평가 | PER/PBR/PSR/EV/EBITDA 멀티플 비교 | `valuation`, `pipeline` |
-| Day 050 | [35.md](docs/35.md) | 기술적 분석 I | 이동평균·RSI·MACD·볼린저밴드·지지저항 | `technical-chart` |
-| Day 051 | [36.md](docs/36.md) | 기술적 분석 II | 캔들/차트 패턴·엘리어트 파동·통합 리포트 | `technical-chart` |
-| Day 052 | [37.md](docs/37.md#day-052--주식-및-etf-상품-이해) | 주식 및 ETF 상품 이해 | 시장 구조·ETF 유형·ETF 성과 비교 | `financial-knowledge` |
-| Day 053 | [37.md](docs/37.md#day-053--채권-상품-이해) | 채권 상품 이해 | 채권가격-금리 관계·듀레이션·Yield Curve | `financial-knowledge` |
-| Day 054 | [38.md](docs/38.md) | 파생상품 이해 | 선물·옵션·스왑·옵션 손익 구조 분석 | `financial-knowledge` |
-| Day 055 | [39.md](docs/39.md) | 포트폴리오 이론 및 성과 분석 | MPT·Efficient Frontier·CAGR/MDD·샤프/소르티노 | `portfolio`, `risk` |
-| Day 056 | [40.md](docs/40.md) | 자산배분 모델 | 평균분산·블랙리터만·Risk-Parity·60/40/All Weather | `portfolio`, `risk` |
-
-> 커리큘럼 재정리 문서: [41.md](docs/41.md)
 
 ---
 
