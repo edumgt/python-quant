@@ -319,19 +319,13 @@ def _pykrx_market_data(ref_date: str) -> dict[str, dict]:
 
         for mkt in ("KOSPI", "KOSDAQ"):
             try:
-                tickers = krx.get_market_ticker_list(market=mkt)
-                for t in tickers:
-                    result[t] = {"market": mkt, "market_cap": 0, "close": 0}
-            except Exception:
-                pass
-
-        for mkt in ("KOSPI", "KOSDAQ"):
-            try:
                 cap_df = krx.get_market_cap_by_ticker(ref_date, market=mkt)
                 for ticker, row in cap_df.iterrows():
-                    if ticker in result:
-                        result[ticker]["market_cap"] = int(row.get("시가총액", 0))
-                        result[ticker]["close"] = int(row.get("종가", 0))
+                    result[ticker] = {
+                        "market":     mkt,
+                        "market_cap": int(row.get("시가총액", 0)),
+                        "close":      int(row.get("종가", 0)),
+                    }
             except Exception:
                 pass
 
@@ -355,9 +349,10 @@ def dart_group_network(req: GroupNetworkRequest) -> dict[str, object]:
     listed = [row for row in rows if row["stock_code"]]
 
     # Exact name prefix matches first, then partial matches
-    exact = [r for r in listed if r["corp_name"].replace(" ", "").lower().startswith(normalized)]
+    exact_codes = {r["corp_code"] for r in listed if r["corp_name"].replace(" ", "").lower().startswith(normalized)}
+    exact = [r for r in listed if r["corp_code"] in exact_codes]
     partial = [r for r in listed if normalized in r["corp_name"].replace(" ", "").lower()
-               and r not in exact]
+               and r["corp_code"] not in exact_codes]
     matches = (exact + partial)[: req.limit]
 
     # Try today first; fall back to yesterday for weekends / holidays
