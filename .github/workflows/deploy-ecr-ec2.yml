@@ -182,18 +182,19 @@ jobs:
           strip_components: 2
 
       - name: Create ECR login password
+        id: ecr-password
         run: |
           set -euo pipefail
           PASSWORD="$(aws ecr get-login-password --region "$AWS_REGION")"
           echo "::add-mask::$PASSWORD"
-          echo "ECR_PASSWORD=$PASSWORD" >> "$GITHUB_ENV"
+          echo "value=$PASSWORD" >> "$GITHUB_OUTPUT"
 
       - name: Deploy containers on EC2
         uses: appleboy/ssh-action@v1.2.2
         env:
           DEPLOY_PATH: ${{ env.EC2_DEPLOY_PATH }}
           ECR_REGISTRY: ${{ needs.build-and-push.outputs.registry }}
-          ECR_PASSWORD: ${{ env.ECR_PASSWORD }}
+          ECR_PASSWORD: ${{ steps.ecr-password.outputs.value }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
