@@ -345,3 +345,12 @@ pkill -f uvicorn
 - 웹앱: `http://localhost:8000`
 - API 문서: `http://localhost:8000/docs`
 - 기본 헬스체크: `GET /api/health`
+
+### 2) 퀴즈 30문항 MongoDB 적재 (SQL 기반)
+
+```bash
+./scripts/init_quiz_mongodb.sh
+```
+
+- 기본값: `MONGODB_URL=mongodb://localhost:27017`, `MONGODB_DB=investment_db`, `MONGODB_COLLECTION=quiz_questions`
+- SQL 원본: `app/backend/quiz_seed.sql`

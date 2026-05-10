@@ -100,7 +100,12 @@ export function quizDayView(app, day, navigate) {
     .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
     .then(questions => {
       if (!questions.length) {
-        app.innerHTML = `<div class="card"><p style="color:var(--text-muted)">문항이 없습니다. 씨드 데이터를 확인하세요.</p></div>`;
+        app.innerHTML = `<div class="card">
+          <p style="color:var(--text-muted)">문항이 없습니다.</p>
+          <p style="font-size:.82rem;color:var(--text-muted)">
+            루트에서 <code>./scripts/init_quiz_mongodb.sh</code> 실행 후 다시 시도하세요.
+          </p>
+        </div>`;
         return;
       }
       renderQuiz(app, day, questions, navigate);
