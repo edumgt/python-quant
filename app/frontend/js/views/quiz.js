@@ -63,7 +63,7 @@ export function quizHomeView(app, navigate) {
         일자별 통합 모의고사
       </h2>
       <p style="font-size:.85rem;color:var(--text-muted);margin:0">
-        일차별 30문항 시험 · 정오답 즉시 확인 · 해설 보기 · 수험자 문항 수정 모드
+        일자별 30문항 시험 · 정오답 즉시 확인 · 해설 보기 · 수험자 문항 수정 모드
       </p>
     </div>
 

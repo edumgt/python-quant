@@ -97,9 +97,6 @@ function navigate(view) {
 
   if (view?.startsWith('learn-') && typeof window._openNavSection === 'function') window._openNavSection('learn');
   if (view?.startsWith('quiz-') && typeof window._openNavSection === 'function') window._openNavSection('quiz');
-  if (!view?.startsWith('learn-') && !view?.startsWith('quiz-') && typeof window._openNavSection === 'function') {
-    window._openNavSection('practice');
-  }
 
   route.render();
 
