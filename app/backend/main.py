@@ -189,6 +189,11 @@ class DartCompanySearchRequest(BaseModel):
     limit: int = Field(default=10, ge=1, le=30)
 
 
+class GroupNetworkRequest(BaseModel):
+    group_name: str = Field(default="삼성", min_length=1, max_length=50)
+    limit: int = Field(default=80, ge=1, le=100)
+
+
 @app.get("/api/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
@@ -295,6 +300,100 @@ def dart_company_search(req: DartCompanySearchRequest) -> dict[str, object]:
             "DART 회사코드 목록에서 상장기업(stock_code 보유 기업)만 검색합니다.",
             "DART는 .KS/.KQ suffix를 제공하지 않아 조회 가능한 Yahoo ticker 후보로 보완 표시합니다.",
         ],
+    }
+
+
+@lru_cache(maxsize=6)
+def _pykrx_market_data(ref_date: str) -> dict[str, dict]:
+    """Return {stock_code: {market, market_cap, close}} using pykrx.
+
+    ref_date is "YYYYMMDD" and acts as the LRU cache key so that data is
+    refreshed automatically each new trading day.  Failures are silently
+    swallowed so that group-network still returns results even when pykrx
+    cannot reach KRX servers.
+    """
+    try:
+        from pykrx import stock as krx
+
+        result: dict[str, dict] = {}
+
+        for mkt in ("KOSPI", "KOSDAQ"):
+            try:
+                cap_df = krx.get_market_cap_by_ticker(ref_date, market=mkt)
+                for ticker, row in cap_df.iterrows():
+                    result[ticker] = {
+                        "market":     mkt,
+                        "market_cap": int(row.get("시가총액", 0)),
+                        "close":      int(row.get("종가", 0)),
+                    }
+            except Exception:
+                pass
+
+        return result
+    except Exception:
+        return {}
+
+
+@app.post("/api/dart/group-network")
+def dart_group_network(req: GroupNetworkRequest) -> dict[str, object]:
+    """Search DART listed companies by group/conglomerate keyword and enrich
+    each match with live market-cap data from pykrx."""
+    import datetime
+
+    query = req.group_name.strip()
+    normalized = query.replace(" ", "").lower()
+    if not normalized:
+        raise HTTPException(status_code=400, detail="그룹명을 입력하세요.")
+
+    rows = _load_dart_corp_codes()
+    listed = [row for row in rows if row["stock_code"]]
+
+    # Exact name prefix matches first, then partial matches
+    exact_codes = {r["corp_code"] for r in listed if r["corp_name"].replace(" ", "").lower().startswith(normalized)}
+    exact = [r for r in listed if r["corp_code"] in exact_codes]
+    partial = [r for r in listed if normalized in r["corp_name"].replace(" ", "").lower()
+               and r["corp_code"] not in exact_codes]
+    matches = (exact + partial)[: req.limit]
+
+    # Try today first; fall back to yesterday for weekends / holidays
+    today = datetime.date.today()
+    ref_date = today.strftime("%Y%m%d")
+    market_data = _pykrx_market_data(ref_date)
+    if not market_data:
+        yesterday = (today - datetime.timedelta(days=1)).strftime("%Y%m%d")
+        market_data = _pykrx_market_data(yesterday)
+
+    results = []
+    for row in matches:
+        sc = row["stock_code"]
+        mkt_info = market_data.get(sc, {})
+        market_label = mkt_info.get("market", "기타")
+        results.append({
+            "corp_code":   row["corp_code"],
+            "corp_name":   row["corp_name"],
+            "stock_code":  sc,
+            "modify_date": row["modify_date"],
+            "market":      market_label,
+            "market_cap":  mkt_info.get("market_cap", 0),
+            "close":       mkt_info.get("close", 0),
+            "dart_url":    f"https://dart.fss.or.kr/corp/main.do?corp_code={row['corp_code']}",
+        })
+
+    # Sort by market cap descending so flagship companies appear first
+    results.sort(key=lambda x: x["market_cap"], reverse=True)
+
+    total_market_cap = sum(r["market_cap"] for r in results)
+    kospi_count  = sum(1 for r in results if r["market"] == "KOSPI")
+    kosdaq_count = sum(1 for r in results if r["market"] == "KOSDAQ")
+
+    return {
+        "query":            query,
+        "count":            len(results),
+        "total_market_cap": total_market_cap,
+        "kospi_count":      kospi_count,
+        "kosdaq_count":     kosdaq_count,
+        "results":          results,
+        "source":           "OpenDART corpCode.xml + pykrx KRX 시장데이터",
     }
 
 
