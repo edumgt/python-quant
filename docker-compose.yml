@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: investment_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: investment_db
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: investment_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - app/backend/.env
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017
+      - MONGODB_DB=investment_db
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./docs:/app/docs:ro
+
+volumes:
+  mongo_data:
