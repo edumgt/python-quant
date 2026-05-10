@@ -1,10 +1,12 @@
 /**
  * quiz.js — 투자자산운용사 시험 퀴즈 뷰
- * docs 01·02 통합 30문항, 정오답 표기, 해설, 문항 편집 기능
+ * 일자별 30문항, 정오답 표기, 해설, 문항 편집 기능
  */
 
 const DAY_TOPICS = {
   1: 'docs 01·02 통합 모의고사',
+  2: 'docs 03 기반 데일리 퀴즈',
+  3: 'docs 04 기반 데일리 퀴즈',
 };
 const QUESTIONS_PER_DAY = 30;
 const TOTAL_DAYS = Object.keys(DAY_TOPICS).length;
@@ -58,10 +60,10 @@ export function quizHomeView(app, navigate) {
     <div style="margin-bottom:24px;">
       <h2 style="margin:0 0 4px;font-size:1.25rem;font-weight:800">
         <i class="fa-solid fa-calendar-check" style="color:var(--primary);margin-right:8px;"></i>
-        docs 01·02 통합 모의고사
+        일자별 통합 모의고사
       </h2>
       <p style="font-size:.85rem;color:var(--text-muted);margin:0">
-        30문항 시험 · 정오답 즉시 확인 · 해설 보기 · 수험자 문항 수정 모드
+        일차별 30문항 시험 · 정오답 즉시 확인 · 해설 보기 · 수험자 문항 수정 모드
       </p>
     </div>
 

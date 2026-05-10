@@ -43,8 +43,30 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 FRONTEND_DIR = ROOT_DIR / "app" / "frontend"
 GENERATED_DIR = ROOT_DIR / "app" / "generated"
 QUIZ_SQL_PATH = ROOT_DIR / "app" / "backend" / "quiz_seed.sql"
+DOCS_DIR = ROOT_DIR / "docs"
 GENERATED_DIR.mkdir(parents=True, exist_ok=True)
 _MATPLOTLIB_FONT_CONFIGURED = False
+
+LEARN_DOC_MAP: dict[str, str] = {
+    "01": "01.md",
+    "02": "02.md",
+    "03": "03.md",
+    "04": "04.md",
+    "05": "05.md",
+    "06": "06.md",
+    "07": "07.md",
+    "08": "08.md",
+    "09": "09.md",
+    "10": "10.md",
+    "11": "11.md",
+    "12": "12.md",
+    "13": "13.md",
+    "14": "14.md",
+    "15": "15.md",
+    "16": "16.md",
+    "17": "17.md",
+    "voca": "voca.md",
+}
 
 
 def configure_matplotlib_korean_font(plt) -> None:
@@ -207,6 +229,19 @@ class GroupNetworkRequest(BaseModel):
 @app.get("/api/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/api/learn/doc/{doc_id}")
+def get_learn_doc(doc_id: str) -> dict[str, str]:
+    file_name = LEARN_DOC_MAP.get(doc_id)
+    if not file_name:
+        raise HTTPException(status_code=404, detail="지원하지 않는 학습 문서입니다.")
+
+    target = DOCS_DIR / file_name
+    if not target.exists():
+        raise HTTPException(status_code=404, detail=f"문서 파일이 없습니다: {file_name}")
+
+    return {"doc_id": doc_id, "file": file_name, "content": target.read_text(encoding="utf-8")}
 
 
 def _dart_api_key() -> str:
