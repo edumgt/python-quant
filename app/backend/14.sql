@@ -1,4 +1,4 @@
--- Quiz seed SQL for Day 14 (docs/15.md) MongoDB import pipeline
+-- Quiz seed SQL for internal day 14 (docs/15.md, Day 055) MongoDB import pipeline
 DROP TABLE IF EXISTS quiz_questions;
 CREATE TABLE quiz_questions (
   day INTEGER NOT NULL,
