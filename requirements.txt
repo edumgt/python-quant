@@ -6,6 +6,8 @@ aiofiles
 python-multipart
 httpx
 python-dotenv
+motor
+pymongo
 numpy
 pandas
 scipy

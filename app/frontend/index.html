@@ -3,20 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EDUMGT Python Quant Lab</title>
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <title>투자자산운용사 학습 포탈 — EDUMGT</title>
+  <link rel="preload" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div id="overlay" class="app-overlay" onclick="closeSidebar()"></div>
 
+  <!-- ── 모바일 오버레이 ── -->
+  <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
+  <!-- ═══════════════════════════════════════════
+       TOPBAR
+  ═══════════════════════════════════════════ -->
   <header class="topbar">
-    <button class="brand" type="button" data-view="home" aria-label="홈으로 이동">
+    <button class="topbar-toggle" onclick="toggleSidebar()" aria-label="메뉴">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <button class="brand" type="button" onclick="navigate('home')" aria-label="홈">
       <span class="brand-mark">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="1" y="10" width="3" height="9" rx="1" fill="#fff" opacity="0.6"/>
-          <rect x="6" y="6"  width="3" height="13" rx="1" fill="#fff" opacity="0.8"/>
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <rect x="1" y="10" width="3" height="9" rx="1" fill="#fff" opacity=".6"/>
+          <rect x="6" y="6"  width="3" height="13" rx="1" fill="#fff" opacity=".8"/>
           <rect x="11" y="2" width="3" height="17" rx="1" fill="#fff"/>
           <polyline points="1,10 6.5,6.5 11.5,2.5 16,5" stroke="#a5f3fc" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
           <circle cx="16" cy="5" r="1.5" fill="#a5f3fc"/>
@@ -24,152 +34,200 @@
       </span>
       <span class="brand-text">
         <span class="brand-name">EDUMGT</span>
-        <small class="brand-sub">Python Quant Lab</small>
+        <small class="brand-sub">투자자산운용사 학습 포탈</small>
       </span>
     </button>
 
-    <div class="ticker-strip" aria-label="시장 요약">
-      <span>KOSPI</span><b>2,735.40</b><em class="up">+0.82%</em>
-      <span>NASDAQ</span><b>18,112.70</b><em class="down">-0.18%</em>
-      <span>USD/KRW</span><b>1,362.5</b><em class="up">+0.21%</em>
+    <div class="topbar-ticker" aria-label="시장 현황">
+      <span class="ticker-item"><span class="ticker-label">KOSPI</span><b>2,735</b><em class="up">+0.82%</em></span>
+      <span class="ticker-item"><span class="ticker-label">NASDAQ</span><b>18,112</b><em class="dn">-0.18%</em></span>
+      <span class="ticker-item"><span class="ticker-label">USD/KRW</span><b>1,362</b><em class="up">+0.21%</em></span>
     </div>
 
-    <button class="menu-toggle" type="button" onclick="openSidebar()" aria-label="메뉴 열기">
-      <i class="fa-solid fa-bars"></i>
-    </button>
+    <div id="health-indicator" class="health-badge">
+      <span id="health-dot" class="health-dot"></span>
+      <span id="health-text" class="health-text">확인 중</span>
+    </div>
   </header>
 
-  <div class="workspace">
-    <main class="content-shell">
-      <div class="page-head">
-        <div>
-          <div class="eyebrow">Workspace</div>
-          <h1 id="breadcrumb">홈</h1>
-        </div>
-        <div id="health-indicator" class="health">
-          <span id="health-dot"></span>
-          <span id="health-text">연결 확인 중...</span>
-        </div>
-      </div>
-      <section id="app" class="app-surface"></section>
-    </main>
+  <!-- ═══════════════════════════════════════════
+       LAYOUT SHELL
+  ═══════════════════════════════════════════ -->
+  <div class="layout">
 
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <div class="footer-brand">
-          <span class="footer-logo">EDUMGT</span>
-          <p class="footer-tagline">투자분석 교육 플랫폼 · Python Quant Lab</p>
-        </div>
-        <div class="footer-info">
-          <span><strong>(주)에듀엠지티</strong></span>
-          <span class="sep">|</span>
-          <span>대표이사 김대표</span>
-          <span class="sep">|</span>
-          <span>사업자등록번호 000-00-00000</span>
-          <span class="sep">|</span>
-          <span>서울특별시 강남구 테헤란로</span>
-          <span class="sep">|</span>
-          <span>contact@edumgt.co.kr</span>
-        </div>
-        <div class="footer-copy">
-          © 2025 (주)에듀엠지티. All rights reserved. 본 콘텐츠는 교육 목적으로 제작되었으며 투자 권유가 아닙니다.
-        </div>
-      </div>
-    </footer>
-  </div>
+    <!-- ── LEFT SIDEBAR ── -->
+    <aside id="sidebar" class="sidebar" aria-label="메인 메뉴">
 
-  <aside id="sidebar" class="right-drawer" aria-label="실습 메뉴" aria-hidden="true">
-    <div class="drawer-head">
-      <div>
-        <div class="drawer-title">실습 메뉴</div>
-        <div class="drawer-subtitle">Python backend only</div>
+      <nav class="sidebar-nav">
+
+        <!-- 홈 -->
+        <a class="nav-item nav-home" data-view="home">
+          <i class="fa-solid fa-house"></i><span>홈</span>
+        </a>
+
+        <!-- ─────── 학습 ─────── -->
+        <div class="nav-section">
+          <button class="nav-section-hdr" onclick="toggleNav('learn')">
+            <span><i class="fa-solid fa-book-open-reader"></i>학습</span>
+            <i class="fa-solid fa-chevron-down nav-chev" id="chev-learn"></i>
+          </button>
+          <div class="nav-children" id="nav-learn">
+            <a class="nav-item" data-view="learn-01"><i class="fa-solid fa-circle-dot"></i>Day 1 · 법인·세무·회계</a>
+            <a class="nav-item" data-view="learn-02"><i class="fa-solid fa-circle-dot"></i>Day 2 · 매크로·금리 분석</a>
+            <a class="nav-item" data-view="learn-03"><i class="fa-solid fa-circle-dot"></i>Day 3 · 경제지표 분석</a>
+            <a class="nav-item" data-view="learn-04"><i class="fa-solid fa-circle-dot"></i>Day 4 · 거시경제 실습</a>
+            <a class="nav-item" data-view="learn-05"><i class="fa-solid fa-circle-dot"></i>Day 5 · 산업 분석</a>
+            <a class="nav-item" data-view="learn-06"><i class="fa-solid fa-circle-dot"></i>Day 6 · 산업 분석 실습</a>
+            <a class="nav-item" data-view="learn-07"><i class="fa-solid fa-circle-dot"></i>Day 7 · 재무제표 분석 I</a>
+            <a class="nav-item" data-view="learn-08"><i class="fa-solid fa-circle-dot"></i>Day 8 · 재무제표 분석 II</a>
+            <a class="nav-item" data-view="learn-09"><i class="fa-solid fa-circle-dot"></i>Day 9 · 상대가치 평가</a>
+            <a class="nav-item" data-view="learn-10"><i class="fa-solid fa-circle-dot"></i>Day 10 · 기술적 분석 I</a>
+            <a class="nav-item" data-view="learn-11"><i class="fa-solid fa-circle-dot"></i>Day 11 · 기술적 분석 II</a>
+            <a class="nav-item" data-view="learn-12"><i class="fa-solid fa-circle-dot"></i>Day 12 · 주식·배당·파생</a>
+            <a class="nav-item" data-view="learn-13"><i class="fa-solid fa-circle-dot"></i>Day 13 · 금융상품 구분</a>
+            <a class="nav-item" data-view="learn-14"><i class="fa-solid fa-circle-dot"></i>Day 14 · 파생상품</a>
+            <a class="nav-item" data-view="learn-15"><i class="fa-solid fa-circle-dot"></i>Day 15 · 포트폴리오 이론</a>
+            <a class="nav-item" data-view="learn-16"><i class="fa-solid fa-circle-dot"></i>Day 16 · 자산배분 모델</a>
+            <a class="nav-item" data-view="learn-17"><i class="fa-solid fa-circle-dot"></i>Day 17 · 금융 규제·자본시장법</a>
+            <a class="nav-item" data-view="learn-voca"><i class="fa-solid fa-spell-check"></i>핵심 용어집</a>
+          </div>
+        </div>
+
+        <!-- ─────── 실습 ─────── -->
+        <div class="nav-section">
+          <button class="nav-section-hdr" onclick="toggleNav('practice')">
+            <span><i class="fa-solid fa-laptop-code"></i>실습</span>
+            <i class="fa-solid fa-chevron-down nav-chev" id="chev-practice"></i>
+          </button>
+          <div class="nav-children" id="nav-practice">
+            <div class="nav-group-label">매크로 분석</div>
+            <a class="nav-item" data-view="macro-realtime"><i class="fa-solid fa-satellite-dish"></i>거시경제현황 (실시간)</a>
+            <a class="nav-item" data-view="macro-simulation"><i class="fa-solid fa-chart-area"></i>거시경제 시뮬레이션</a>
+
+            <div class="nav-group-label">산업적 분석</div>
+            <a class="nav-item" data-view="industry-analysis"><i class="fa-solid fa-industry"></i>산업 경쟁력 분석</a>
+
+            <div class="nav-group-label">기본적 분석</div>
+            <a class="nav-item" data-view="dart-company-search"><i class="fa-solid fa-magnifying-glass-chart"></i>DART 기업 검색</a>
+            <a class="nav-item" data-view="group-network"><i class="fa-solid fa-sitemap"></i>그룹사 네트워크</a>
+            <a class="nav-item" data-view="financial-statement"><i class="fa-solid fa-file-invoice-dollar"></i>재무제표 분석</a>
+            <a class="nav-item" data-view="valuation"><i class="fa-solid fa-calculator"></i>밸류에이션 실습</a>
+            <a class="nav-item" data-view="portfolio"><i class="fa-solid fa-briefcase"></i>포트폴리오 최적화</a>
+            <a class="nav-item" data-view="risk"><i class="fa-solid fa-shield-halved"></i>리스크 분석 (VaR)</a>
+
+            <div class="nav-group-label">기술적 분석</div>
+            <a class="nav-item" data-view="technical-chart"><i class="fa-solid fa-chart-candlestick"></i>기술적 분석 실습</a>
+            <a class="nav-item" data-view="backtest"><i class="fa-solid fa-clock-rotate-left"></i>백테스트 엔진</a>
+            <a class="nav-item" data-view="pipeline"><i class="fa-solid fa-diagram-project"></i>퀀트 파이프라인</a>
+
+            <div class="nav-group-label">ML / DL</div>
+            <a class="nav-item" data-view="cross-validation"><i class="fa-solid fa-check-double"></i>Cross Validation</a>
+            <a class="nav-item" data-view="random-forest"><i class="fa-solid fa-tree"></i>Random Forest</a>
+            <a class="nav-item" data-view="kmeans"><i class="fa-solid fa-object-group"></i>KMeans 클러스터링</a>
+            <a class="nav-item" data-view="svm"><i class="fa-solid fa-border-all"></i>SVM 분류기</a>
+            <a class="nav-item" data-view="mlp"><i class="fa-solid fa-brain"></i>MLP 신경망</a>
+            <a class="nav-item" data-view="linear-regression"><i class="fa-solid fa-chart-line"></i>선형 회귀</a>
+            <a class="nav-item" data-view="lstm"><i class="fa-solid fa-wave-square"></i>LSTM 예측</a>
+            <a class="nav-item" data-view="transformer"><i class="fa-solid fa-robot"></i>Transformer</a>
+          </div>
+        </div>
+
+        <!-- ─────── 퀴즈 ─────── -->
+        <div class="nav-section">
+          <button class="nav-section-hdr" onclick="toggleNav('quiz')">
+            <span><i class="fa-solid fa-circle-question"></i>퀴즈</span>
+            <i class="fa-solid fa-chevron-down nav-chev" id="chev-quiz"></i>
+          </button>
+          <div class="nav-children" id="nav-quiz">
+            <a class="nav-item" data-view="quiz-home"><i class="fa-solid fa-calendar-check"></i>15일 학습 계획</a>
+            <a class="nav-item" data-view="quiz-day-1"><i class="fa-solid fa-1"></i>Day 1 · 법인·세무·회계</a>
+            <a class="nav-item" data-view="quiz-day-2"><i class="fa-solid fa-2"></i>Day 2 · 매크로·금리</a>
+            <a class="nav-item" data-view="quiz-day-3"><i class="fa-solid fa-3"></i>Day 3 · 경제지표</a>
+            <a class="nav-item" data-view="quiz-day-4"><i class="fa-solid fa-4"></i>Day 4 · 거시경제</a>
+            <a class="nav-item" data-view="quiz-day-5"><i class="fa-solid fa-5"></i>Day 5 · 산업 분석</a>
+            <a class="nav-item" data-view="quiz-day-6"><i class="fa-solid fa-6"></i>Day 6 · 산업 실습</a>
+            <a class="nav-item" data-view="quiz-day-7"><i class="fa-solid fa-7"></i>Day 7 · 재무제표 I</a>
+            <a class="nav-item" data-view="quiz-day-8"><i class="fa-solid fa-8"></i>Day 8 · 재무제표 II</a>
+            <a class="nav-item" data-view="quiz-day-9"><i class="fa-solid fa-9"></i>Day 9 · 상대가치</a>
+            <a class="nav-item" data-view="quiz-day-10"><i class="fa-solid fa-arrow-up-9-1"></i>Day 10 · 기술적 I</a>
+            <a class="nav-item" data-view="quiz-day-11"><i class="fa-solid fa-arrow-up-9-1"></i>Day 11 · 기술적 II</a>
+            <a class="nav-item" data-view="quiz-day-12"><i class="fa-solid fa-arrow-up-9-1"></i>Day 12 · 주식·파생</a>
+            <a class="nav-item" data-view="quiz-day-13"><i class="fa-solid fa-arrow-up-9-1"></i>Day 13 · 금융상품</a>
+            <a class="nav-item" data-view="quiz-day-14"><i class="fa-solid fa-arrow-up-9-1"></i>Day 14 · 포트폴리오</a>
+            <a class="nav-item" data-view="quiz-day-15"><i class="fa-solid fa-arrow-up-9-1"></i>Day 15 · 자본시장법</a>
+          </div>
+        </div>
+
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="sf-logo">EDUMGT</span>
+        <span class="sf-copy">© 2025 (주)에듀엠지티</span>
       </div>
-      <button class="drawer-close" type="button" onclick="closeSidebar()" aria-label="메뉴 닫기">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+    </aside>
+
+    <!-- ── MAIN CONTENT ── -->
+    <div class="content-wrap">
+      <main class="content-main">
+        <div class="page-head">
+          <nav class="breadcrumb" id="breadcrumb-nav">홈</nav>
+        </div>
+        <section id="app" class="app-surface"></section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <div class="footer-row">
+            <span class="footer-logo">EDUMGT</span>
+            <span class="footer-tag">투자자산운용사 학습 포탈 · Python Quant Lab</span>
+          </div>
+          <div class="footer-info">
+            <span><strong>(주)에듀엠지티</strong></span><span class="sep">|</span>
+            <span>대표이사 김대표</span><span class="sep">|</span>
+            <span>사업자등록번호 000-00-00000</span><span class="sep">|</span>
+            <span>contact@edumgt.co.kr</span>
+          </div>
+          <div class="footer-copy">
+            © 2025 (주)에듀엠지티. All rights reserved. 본 콘텐츠는 교육 목적으로 제작되었으며 투자 권유가 아닙니다.
+          </div>
+        </div>
+      </footer>
     </div>
 
-    <nav id="nav-root" class="drawer-nav">
-      <a class="sidebar-link" data-view="home"><i class="fa-solid fa-house"></i>홈</a>
-
-      <div class="sec-hdr" onclick="toggleSec('macro')">
-        <span><i class="fa-solid fa-globe"></i> 매크로 분석</span><span id="macro-chev">▾</span>
-      </div>
-      <div id="macro-sec">
-        <a class="sidebar-link" data-view="macro-realtime"><i class="fa-solid fa-satellite-dish"></i>거시경제현황 1 (실시간)</a>
-        <a class="sidebar-link" data-view="macro-simulation"><i class="fa-solid fa-chart-area"></i>거시경제현황 2 (시뮬레이션)</a>
-      </div>
-
-      <div class="sec-hdr" onclick="toggleSec('industry')">
-        <span><i class="fa-solid fa-industry"></i> 산업적 분석</span><span id="industry-chev">▾</span>
-      </div>
-      <div id="industry-sec">
-        <a class="sidebar-link" data-view="industry-analysis"><i class="fa-solid fa-industry"></i>산업 경쟁력 분석</a>
-      </div>
-
-      <div class="sec-hdr" onclick="toggleSec('fundamental')">
-        <span><i class="fa-solid fa-file-invoice-dollar"></i> 기본적 분석</span><span id="fundamental-chev">▾</span>
-      </div>
-      <div id="fundamental-sec">
-        <a class="sidebar-link" data-view="dart-company-search"><i class="fa-solid fa-magnifying-glass-chart"></i>DART 상장기업 검색</a>
-        <a class="sidebar-link" data-view="group-network"><i class="fa-solid fa-sitemap"></i>그룹사 계열사 네트워크</a>
-        <a class="sidebar-link" data-view="financial-statement"><i class="fa-solid fa-scale-balanced"></i>재무제표분석</a>
-        <a class="sidebar-link" data-view="portfolio"><i class="fa-solid fa-briefcase"></i>포트폴리오 최적화</a>
-        <a class="sidebar-link" data-view="risk"><i class="fa-solid fa-shield-halved"></i>리스크 분석 (VaR)</a>
-        <a class="sidebar-link" data-view="valuation"><i class="fa-solid fa-calculator"></i>밸류에이션 실습</a>
-      </div>
-
-      <div class="sec-hdr" onclick="toggleSec('technical')">
-        <span><i class="fa-solid fa-chart-line"></i> 기술적 분석</span><span id="technical-chev">▾</span>
-      </div>
-      <div id="technical-sec">
-        <a class="sidebar-link" data-view="technical-chart"><i class="fa-solid fa-chart-candlestick"></i>기술적 분석 실습</a>
-        <a class="sidebar-link" data-view="backtest"><i class="fa-solid fa-clock-rotate-left"></i>백테스트 엔진</a>
-        <a class="sidebar-link" data-view="pipeline"><i class="fa-solid fa-diagram-project"></i>퀀트 파이프라인</a>
-      </div>
-
-      <div class="sec-hdr" onclick="toggleSec('financialKnowledge')">
-        <span><i class="fa-solid fa-layer-group"></i> 금융 필수 지식</span><span id="financialKnowledge-chev">▾</span>
-      </div>
-      <div id="financialKnowledge-sec">
-        <a class="sidebar-link" data-view="investment-tree"><i class="fa-solid fa-sitemap"></i>투자 성향 분석</a>
-        <a class="sidebar-link" data-view="financial-knowledge"><i class="fa-solid fa-layer-group"></i>금융상품·자산배분</a>
-        <a class="sidebar-link" data-view="portfolio"><i class="fa-solid fa-briefcase"></i>자산배분 최적화</a>
-        <a class="sidebar-link" data-view="risk"><i class="fa-solid fa-shield-halved"></i>리스크 지표 실습</a>
-      </div>
-
-      <div class="drawer-footer">
-        <div class="drawer-footer-logo">EDUMGT</div>
-        <div class="drawer-footer-copy">© 2025 (주)에듀엠지티</div>
-      </div>
-    </nav>
-  </aside>
+  </div><!-- /.layout -->
 
   <script type="module" src="js/app.js"></script>
   <script>
+    let _sidebarOpen = false;
+
+    function toggleSidebar() {
+      _sidebarOpen ? closeSidebar() : openSidebar();
+    }
     function openSidebar() {
-      const drawer = document.getElementById('sidebar');
-      const overlay = document.getElementById('overlay');
-      drawer.classList.add('open');
-      drawer.setAttribute('aria-hidden', 'false');
-      overlay.classList.add('show');
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('overlay').classList.add('show');
+      _sidebarOpen = true;
     }
-
     function closeSidebar() {
-      const drawer = document.getElementById('sidebar');
-      const overlay = document.getElementById('overlay');
-      drawer.classList.remove('open');
-      drawer.setAttribute('aria-hidden', 'true');
-      overlay.classList.remove('show');
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('show');
+      _sidebarOpen = false;
     }
-
-    function toggleSec(id) {
-      const sec = document.getElementById(id + '-sec');
-      const chev = document.getElementById(id + '-chev');
-      const hidden = sec.style.display === 'none';
-      sec.style.display = hidden ? 'block' : 'none';
-      chev.textContent = hidden ? '▾' : '▸';
+    function toggleNav(id) {
+      const el = document.getElementById('nav-' + id);
+      const chev = document.getElementById('chev-' + id);
+      const open = el.classList.toggle('open');
+      chev.style.transform = open ? 'rotate(180deg)' : '';
     }
+    // auto-open quiz section if quiz view active
+    window._openNavSection = function(id) {
+      const el = document.getElementById('nav-' + id);
+      const chev = document.getElementById('chev-' + id);
+      if (el && !el.classList.contains('open')) {
+        el.classList.add('open');
+        if (chev) chev.style.transform = 'rotate(180deg)';
+      }
+    };
   </script>
 </body>
 </html>
