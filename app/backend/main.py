@@ -4,6 +4,7 @@ import base64
 import io
 import json
 import os
+import sqlite3
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -41,6 +42,7 @@ else:
 ROOT_DIR = Path(__file__).resolve().parents[2]
 FRONTEND_DIR = ROOT_DIR / "app" / "frontend"
 GENERATED_DIR = ROOT_DIR / "app" / "generated"
+QUIZ_SQL_PATH = ROOT_DIR / "app" / "backend" / "quiz_seed.sql"
 GENERATED_DIR.mkdir(parents=True, exist_ok=True)
 _MATPLOTLIB_FONT_CONFIGURED = False
 
@@ -2818,11 +2820,64 @@ def _serialize_quiz_question(doc: dict) -> dict:
     return data
 
 
+@lru_cache(maxsize=1)
+def _quiz_seed_from_sql() -> list[dict[str, object]]:
+    if not QUIZ_SQL_PATH.exists():
+        return []
+
+    conn = sqlite3.connect(":memory:")
+    try:
+        conn.executescript(QUIZ_SQL_PATH.read_text(encoding="utf-8"))
+        rows = conn.execute(
+            """
+            SELECT day, question_no, source_doc, topic, question,
+                   choice_1, choice_2, choice_3, choice_4,
+                   answer, explanation
+              FROM quiz_questions
+             ORDER BY day, question_no
+            """
+        ).fetchall()
+    except sqlite3.Error:
+        return []
+    finally:
+        conn.close()
+
+    seeds: list[dict[str, object]] = []
+    for (
+        day,
+        question_no,
+        source_doc,
+        topic,
+        question,
+        choice_1,
+        choice_2,
+        choice_3,
+        choice_4,
+        answer,
+        explanation,
+    ) in rows:
+        seeds.append(
+            {
+                "day": int(day),
+                "question_no": int(question_no),
+                "source_doc": source_doc,
+                "topic": topic,
+                "question": question,
+                "choices": [choice_1, choice_2, choice_3, choice_4],
+                "answer": int(answer),
+                "explanation": explanation,
+            }
+        )
+
+    return seeds
+
+
 async def _seed_quiz_questions() -> int:
     coll = _quiz_collection()
     await coll.create_index([("day", 1), ("question_no", 1)], unique=True)
+    quiz_seed = _quiz_seed_from_sql() or QUIZ_SEED_01_02
     inserted = 0
-    for q in QUIZ_SEED_01_02:
+    for q in quiz_seed:
         payload = dict(q)
         try:
             result = await coll.update_one(
@@ -2839,7 +2894,6 @@ async def _seed_quiz_questions() -> int:
 
 @app.get("/api/quiz/day/{day}")
 async def get_quiz_by_day(day: int) -> list[dict]:
-    await _seed_quiz_questions()
     coll = _quiz_collection()
     rows = await coll.find({"day": day}).sort("question_no", 1).to_list(length=100)
     return [_serialize_quiz_question(r) for r in rows]
@@ -2885,7 +2939,8 @@ async def seed_quiz_questions() -> dict[str, int]:
 
 @app.get("/api/quiz/seed-script")
 def get_quiz_seed_script() -> dict[str, str]:
-    script = "db.quiz_questions.insertMany(" + json.dumps(QUIZ_SEED_01_02, ensure_ascii=False, indent=2) + ");"
+    quiz_seed = _quiz_seed_from_sql() or QUIZ_SEED_01_02
+    script = "db.quiz_questions.insertMany(" + json.dumps(quiz_seed, ensure_ascii=False, indent=2) + ");"
     return {"script": script}
 
 
