@@ -10,6 +10,7 @@ DAY5_SQL_FILE="$ROOT_DIR/app/backend/05.sql"
 DAY6_SQL_FILE="$ROOT_DIR/app/backend/06.sql"
 DAY7_SQL_FILE="$ROOT_DIR/app/backend/07.sql"
 DAY8_SQL_FILE="$ROOT_DIR/app/backend/08.sql"
+DAY9_SQL_FILE="$ROOT_DIR/app/backend/09.sql"
 SQL_FILE="${QUIZ_SQL_FILE:-$DEFAULT_SQL_FILE}"
 MONGODB_URL="${MONGODB_URL:-mongodb://localhost:27017}"
 MONGODB_DB="${MONGODB_DB:-investment_db}"
@@ -17,7 +18,7 @@ MONGODB_COLLECTION="${MONGODB_COLLECTION:-quiz_questions}"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") [--sql-file <path>] [--day2] [--day3] [--day4] [--day5] [--day6] [--day7] [--day8]
+Usage: $(basename "$0") [--sql-file <path>] [--day2] [--day3] [--day4] [--day5] [--day6] [--day7] [--day8] [--day9]
 
 Options:
   --sql-file <path>   사용할 SQL 파일 경로 지정
@@ -28,6 +29,7 @@ Options:
   --day6              app/backend/06.sql 사용
   --day7              app/backend/07.sql 사용
   --day8              app/backend/08.sql 사용
+  --day9              app/backend/09.sql 사용
   -h, --help          도움말 출력
 EOF
 }
@@ -69,6 +71,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --day8)
       SQL_FILE="$DAY8_SQL_FILE"
+      shift
+      ;;
+    --day9)
+      SQL_FILE="$DAY9_SQL_FILE"
       shift
       ;;
     -h|--help)
