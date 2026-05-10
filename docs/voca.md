@@ -12,6 +12,8 @@
 
 ## 목차
 
+> 📺 [🎬 목차](https://www.youtube.com/results?search_query=목차+한국어)
+
 1. [매크로 분석 용어](#1-매크로-분석-macro-analysis-용어)
 2. [산업적 분석 용어](#2-산업적-분석-industry-analysis-용어)
 3. [기본적 분석 용어](#3-기본적-분석-fundamental-analysis-용어)
@@ -28,6 +30,8 @@
 ---
 
 ## 1. 매크로 분석 (Macro Analysis) 용어
+
+> 📺 [🎬 매크로 분석 용어](https://www.youtube.com/results?search_query=매크로+분석+용어+한국어)
 
 > 금리, 물가, 환율, 유가 같은 경제 전체의 큰 흐름을 읽는 데 필요한 용어
 
@@ -53,6 +57,8 @@
 
 ## 2. 산업적 분석 (Industry Analysis) 용어
 
+> 📺 [🎬 산업적 분석 용어](https://www.youtube.com/results?search_query=산업적+분석+용어+한국어)
+
 > 특정 산업의 경쟁력과 매력도를 평가하는 데 필요한 용어
 
 | 용어 | 한자/약어 | 영어 | 아주 쉬운 뜻 | 실전 예시 |
@@ -74,6 +80,8 @@
 ---
 
 ## 3. 기본적 분석 (Fundamental Analysis) 용어
+
+> 📺 [🎬 기본적 분석 용어](https://www.youtube.com/results?search_query=기본적+분석+용어+한국어)
 
 ### 3-1. 재무제표 (Financial Statements)
 
@@ -126,6 +134,8 @@
 ---
 
 ## 4. 기술적 분석 (Technical Analysis) 용어
+
+> 📺 [🎬 기술적 분석 용어](https://www.youtube.com/results?search_query=기술적+분석+용어+한국어)
 
 ### 4-1. 추세·이동평균
 
@@ -180,6 +190,8 @@
 
 ## 5. 통합 리포트 & 투자의견 용어
 
+> 📺 [🎬 통합 리포트 투자의견 용어](https://www.youtube.com/results?search_query=통합+리포트+투자의견+용어+한국어)
+
 > 기본적 분석 + 기술적 분석을 합친 통합 리포트에서 사용하는 용어
 
 | 용어 | 한자/약어 | 영어 | 아주 쉬운 뜻 | 실전 예시 |
@@ -203,6 +215,8 @@
 ---
 
 ## 6. 퀀트 전략 & 포트폴리오 용어
+
+> 📺 [🎬 퀀트 전략 포트폴리오 용어](https://www.youtube.com/results?search_query=퀀트+전략+포트폴리오+용어+한국어)
 
 > 퀀트 전략 수립, 포트폴리오 최적화, 리스크 관리에서 자주 쓰이는 용어
 
@@ -229,6 +243,8 @@
 
 ## 7. ML/DL 금융 예측 용어
 
+> 📺 [🎬 ML DL 금융 예측](https://www.youtube.com/results?search_query=ML+DL+금융+예측+용어+한국어)
+
 > 머신러닝·딥러닝을 금융 시계열 예측에 적용할 때 필요한 용어
 
 | 용어 | 한자/약어 | 영어 | 아주 쉬운 뜻 | 실전 예시 |
@@ -254,6 +270,8 @@
 
 ## 8. 웹앱 & API 개발 용어
 
+> 📺 [🎬 웹앱 API 개발 용어](https://www.youtube.com/results?search_query=웹앱+API+개발+용어+한국어)
+
 > FastAPI 백엔드와 Vanilla JS 프론트엔드로 구성된 웹앱 개발에서 쓰이는 용어
 
 | 용어 | 한자/약어 | 영어 | 아주 쉬운 뜻 | 실전 예시 |
@@ -278,6 +296,8 @@
 
 ## 9. 통계·수학 기초 (Statistics & Math Basics)
 
+> 📺 [🎬 통계·수학 기초](https://www.youtube.com/results?search_query=통계·수학+기초+한국어)
+
 > 퀀트 분석에서 자주 쓰이는 통계 개념
 
 | 용어 | 한자 | 영어 | 아주 쉬운 뜻 | 실전 예시 |
@@ -296,6 +316,8 @@
 ---
 
 ## 10. 파이썬 실습 — 기초 통계 + 금융 데이터 확인
+
+> 📺 [🎬 파이썬 실습 기초 통계](https://www.youtube.com/results?search_query=파이썬+실습+기초+통계+금융+데이터+확인+한국어)
 
 ```python
 import numpy as np
@@ -339,6 +361,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 
 ## 11. 자주 혼동하는 용어 비교
 
+> 📺 [🎬 자주 혼동하는 용어 비교](https://www.youtube.com/results?search_query=자주+혼동하는+용어+비교+한국어)
+
 | 비교 쌍 | A | B | 핵심 차이 |
 |---|---|---|---|
 | 매출 vs 이익 | 번 총액 | 쓰고 남은 액 | 매출이 커도 비용이 더 크면 적자 |
@@ -362,6 +386,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 ---
 
 ## 12. 금융 규제·산업 구조 용어 (자본시장법 기준)
+
+> 📺 [🎬 금융 규제·산업 구조 용어](https://www.youtube.com/results?search_query=금융+규제·산업+구조+용어+한국어)
 
 > 한국 금융 산업의 법적 구조와 자본시장법에 등장하는 핵심 개념  
 > 자세한 내용은 [docs/42.md](42.md) 참조
@@ -512,6 +538,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 
 ## 13. 벤처캐피탈·사모펀드·신탁·절세 용어
 
+> 📺 [🎬 벤처캐피탈·사모펀드·신탁·절세 용어](https://www.youtube.com/results?search_query=벤처캐피탈·사모펀드·신탁·절세+용어+한국어)
+
 | 용어 | 한자 | 영문 | 정의 | 예시 |
 |------|------|------|------|------|
 | **벤처캐피탈 (VC)** | — | Venture Capital | 고성장 가능성 있는 스타트업에 지분 투자 후, IPO·매각으로 수익을 내는 투자 회사 | 알토스벤처스, 카카오벤처스, 한국투자파트너스 |
@@ -552,6 +580,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 
 ## 📌 읽는 법 — 표기 구분
 
+> 📺 [🎬 읽는 법 표기 구분](https://www.youtube.com/results?search_query=읽는+법+표기+구분+한국어)
+
 | 기호 | 의미 |
 |------|------|
 | 🀄 | 중국 고전(古典)에서 직접 유래한 한자어 |
@@ -569,6 +599,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 
 ## 목차
 
+> 📺 [🎬 목차](https://www.youtube.com/results?search_query=목차+한국어)
+
 1. [경제·거시 용어](#1-경제거시-용어)
 2. [기업·법인 용어](#2-기업법인-용어)
 3. [회계·재무 용어](#3-회계재무-용어)
@@ -581,6 +613,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 ---
 
 ## 1. 경제·거시 용어
+
+> 📺 [🎬 경제·거시 용어](https://www.youtube.com/results?search_query=경제·거시+용어+한국어)
 
 ### 경제 (經濟)
 | 항목 | 내용 |
@@ -688,6 +722,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 
 ## 2. 기업·법인 용어
 
+> 📺 [🎬 기업·법인 용어](https://www.youtube.com/results?search_query=기업·법인+용어+한국어)
+
 ### 법인 (法人)
 | 항목 | 내용 |
 |------|------|
@@ -783,6 +819,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 ---
 
 ## 3. 회계·재무 용어
+
+> 📺 [🎬 회계·재무 용어](https://www.youtube.com/results?search_query=회계·재무+용어+한국어)
 
 ### 재무 (財務)
 | 항목 | 내용 |
@@ -964,6 +1002,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 
 ## 4. 세무·조세 용어
 
+> 📺 [🎬 세무·조세 용어](https://www.youtube.com/results?search_query=세무·조세+용어+한국어)
+
 ### 조세 (租稅)
 | 항목 | 내용 |
 |------|------|
@@ -1085,6 +1125,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 
 ## 5. 금융·은행 용어
 
+> 📺 [🎬 금융·은행 용어](https://www.youtube.com/results?search_query=금융·은행+용어+한국어)
+
 ### 금융 (金融)
 | 항목 | 내용 |
 |------|------|
@@ -1188,6 +1230,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 ---
 
 ## 6. 증권·투자 용어
+
+> 📺 [🎬 증권·투자 용어](https://www.youtube.com/results?search_query=증권·투자+용어+한국어)
 
 ### 증권 (證券)
 | 항목 | 내용 |
@@ -1309,6 +1353,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 
 ## 7. 부동산·등기 용어
 
+> 📺 [🎬 부동산·등기 용어](https://www.youtube.com/results?search_query=부동산·등기+용어+한국어)
+
 ### 부동산 (不動産)
 | 항목 | 내용 |
 |------|------|
@@ -1365,6 +1411,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 ---
 
 ## 8. 분석·리스크 용어
+
+> 📺 [🎬 분석·리스크 용어](https://www.youtube.com/results?search_query=분석·리스크+용어+한국어)
 
 ### 분석 (分析)
 | 항목 | 내용 |
@@ -1457,6 +1505,8 @@ print(f"두 자산 상관계수: {corr:.3f}  (p={p_val:.4f})")
 ---
 
 ## 📚 참고: 일제강점기 주요 유입 한자어 요약
+
+> 📺 [🎬 참고 일제강점기 주요 유입](https://www.youtube.com/results?search_query=참고+일제강점기+주요+유입+한자어+요약+한국어)
 
 일제강점기 동안 일본의 근대 법률·회계·금융 체계가 조선에 이식되면서, 아래 용어들이 이 시기 공식 용어로 자리잡았습니다. 이 중 상당수는 현재도 한국 법령·재무·세무 용어로 사용 중입니다.
 
