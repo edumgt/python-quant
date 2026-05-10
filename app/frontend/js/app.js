@@ -27,10 +27,25 @@ import { technicalChartView }  from './views/technicalChart.js';
 import { financialKnowledgeView } from './views/financialKnowledge.js';
 import { investmentTreeView }   from './views/investmentTree.js';
 import { quizHomeView, quizDayView } from './views/quiz.js';
+import { learnView }            from './views/learn.js';
 import { api }                 from './api.js';
 
 const app        = document.getElementById('app');
 const breadcrumb = document.getElementById('breadcrumb');
+
+const learnDocIds = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', 'voca'];
+const learnRoutes = Object.fromEntries(
+  learnDocIds.map((docId) => [
+    `learn-${docId}`,
+    { label: `학습 · ${docId === 'voca' ? '핵심 용어집' : `Day ${docId}`}`, render: () => learnView(app, docId) },
+  ]),
+);
+
+const quizDayRoutes = {
+  'quiz-day-1': { label: '통합 모의고사 응시 Day 1', render: () => quizDayView(app, 1, navigate) },
+  'quiz-day-2': { label: '통합 모의고사 응시 Day 2', render: () => quizDayView(app, 2, navigate) },
+  'quiz-day-3': { label: '통합 모의고사 응시 Day 3', render: () => quizDayView(app, 3, navigate) },
+};
 
 const routes = {
   'home':              { label: '홈',                     render: () => homeView(app, navigate) },
@@ -62,7 +77,8 @@ const routes = {
   'financial-knowledge': { label: '금융상품·자산배분',           render: () => financialKnowledgeView(app) },
   'investment-tree':     { label: '투자 성향 분석',              render: () => investmentTreeView(app) },
   'quiz-home':           { label: '퀴즈 · 통합 모의고사',        render: () => quizHomeView(app, navigate) },
-  'quiz-day-1':          { label: '통합 모의고사 응시',          render: () => quizDayView(app, 1, navigate) },
+  ...quizDayRoutes,
+  ...learnRoutes,
 };
 
 let currentView = null;
@@ -72,12 +88,15 @@ function navigate(view) {
   currentView = view;
 
   // Update active sidebar link
-  document.querySelectorAll('.sidebar-link').forEach(a => {
+  document.querySelectorAll('.nav-item[data-view], .sidebar-link[data-view]').forEach(a => {
     a.classList.toggle('active', a.dataset.view === view);
   });
 
   // Update breadcrumb
   if (breadcrumb) breadcrumb.textContent = route.label;
+
+  if (view?.startsWith('learn-') && typeof window._openNavSection === 'function') window._openNavSection('learn');
+  if (view?.startsWith('quiz-') && typeof window._openNavSection === 'function') window._openNavSection('quiz');
 
   route.render();
 
@@ -85,7 +104,7 @@ function navigate(view) {
 }
 
 // Wire up sidebar links
-document.querySelectorAll('.sidebar-link[data-view]').forEach(a => {
+document.querySelectorAll('.nav-item[data-view], .sidebar-link[data-view]').forEach(a => {
   a.addEventListener('click', (e) => {
     e.preventDefault();
     navigate(a.dataset.view);
