@@ -396,6 +396,12 @@ pkill -f uvicorn
 ./scripts/init_quiz_mongodb.sh --day8
 ```
 
+- 9일차(10.md 기반) SQL 적재:
+
+```bash
+./scripts/init_quiz_mongodb.sh --day9
+```
+
 - 임의 SQL 파일 지정:
 
 ```bash
