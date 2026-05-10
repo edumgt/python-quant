@@ -2,10 +2,50 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SQL_FILE="${QUIZ_SQL_FILE:-$ROOT_DIR/app/backend/quiz_seed.sql}"
+DEFAULT_SQL_FILE="$ROOT_DIR/app/backend/quiz_seed.sql"
+DAY2_SQL_FILE="$ROOT_DIR/app/backend/02.sql"
+SQL_FILE="${QUIZ_SQL_FILE:-$DEFAULT_SQL_FILE}"
 MONGODB_URL="${MONGODB_URL:-mongodb://localhost:27017}"
 MONGODB_DB="${MONGODB_DB:-investment_db}"
 MONGODB_COLLECTION="${MONGODB_COLLECTION:-quiz_questions}"
+
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [--sql-file <path>] [--day2]
+
+Options:
+  --sql-file <path>   사용할 SQL 파일 경로 지정
+  --day2              app/backend/02.sql 사용
+  -h, --help          도움말 출력
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --sql-file)
+      if [[ $# -lt 2 ]]; then
+        echo "[ERROR] --sql-file 옵션에는 경로가 필요합니다."
+        usage
+        exit 1
+      fi
+      SQL_FILE="$2"
+      shift 2
+      ;;
+    --day2)
+      SQL_FILE="$DAY2_SQL_FILE"
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "[ERROR] 알 수 없는 옵션: $1"
+      usage
+      exit 1
+      ;;
+  esac
+done
 
 if ! command -v mongosh >/dev/null 2>&1; then
   echo "[ERROR] mongosh 가 설치되어 있지 않습니다."
