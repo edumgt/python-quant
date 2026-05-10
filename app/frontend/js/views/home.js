@@ -44,8 +44,9 @@ export function homeView(container, navigate) {
       desc: '주식/ETF, 채권, 파생상품과 포트폴리오 이론, 자산배분 모델을 5일 과정으로 점검합니다.',
       icon: 'fa-solid fa-layer-group',
       items: [
+        { icon: 'fa-solid fa-sitemap',     name: '투자 성향 분석',    tag: 'Canvas 의사결정 트리 · 6가지 전략', view: 'investment-tree' },
         { icon: 'fa-solid fa-layer-group', name: '금융상품·자산배분', tag: '37~41.md · 5일 커리큘럼', view: 'financial-knowledge' },
-        { icon: 'fa-solid fa-briefcase', name: '자산배분 최적화', tag: '평균분산 · Risk-Parity', view: 'portfolio' },
+        { icon: 'fa-solid fa-briefcase',   name: '자산배분 최적화',   tag: '평균분산 · Risk-Parity', view: 'portfolio' },
         { icon: 'fa-solid fa-shield-halved', name: '리스크 지표 실습', tag: 'VaR · CVaR · 손실위험', view: 'risk' },
       ],
     },
