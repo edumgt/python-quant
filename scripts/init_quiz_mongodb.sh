@@ -16,6 +16,7 @@ DAY11_SQL_FILE="$ROOT_DIR/app/backend/11.sql"
 DAY12_SQL_FILE="$ROOT_DIR/app/backend/12.sql"
 DAY13_SQL_FILE="$ROOT_DIR/app/backend/13.sql"
 DAY14_SQL_FILE="$ROOT_DIR/app/backend/14.sql"
+DAY15_SQL_FILE="$ROOT_DIR/app/backend/15.sql"
 SQL_FILE="${QUIZ_SQL_FILE:-$DEFAULT_SQL_FILE}"
 MONGODB_URL="${MONGODB_URL:-mongodb://localhost:27017}"
 MONGODB_DB="${MONGODB_DB:-investment_db}"
@@ -23,7 +24,7 @@ MONGODB_COLLECTION="${MONGODB_COLLECTION:-quiz_questions}"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") [--sql-file <path>] [--day2] [--day3] [--day4] [--day5] [--day6] [--day7] [--day8] [--day9] [--day10] [--day11] [--day12] [--day13] [--day14]
+Usage: $(basename "$0") [--sql-file <path>] [--day2] [--day3] [--day4] [--day5] [--day6] [--day7] [--day8] [--day9] [--day10] [--day11] [--day12] [--day13] [--day14] [--day15]
 
 Options:
   --sql-file <path>   사용할 SQL 파일 경로 지정
@@ -40,6 +41,7 @@ Options:
   --day12             app/backend/12.sql 사용
   --day13             app/backend/13.sql 사용
   --day14             app/backend/14.sql 사용
+  --day15             app/backend/15.sql 사용
   -h, --help          도움말 출력
 EOF
 }
@@ -105,6 +107,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --day14)
       SQL_FILE="$DAY14_SQL_FILE"
+      shift
+      ;;
+    --day15)
+      SQL_FILE="$DAY15_SQL_FILE"
       shift
       ;;
     -h|--help)
