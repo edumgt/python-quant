@@ -349,6 +349,42 @@ pkill -f uvicorn
 
 ---
 
+## 🚢 GitHub Actions → ECR → EC2 배포
+
+새로 추가된 `/home/runner/work/investment-analysis/investment-analysis/.github/workflows/deploy-ecr-ec2.yml` 워크플로우는 아래 순서로 동작합니다.
+
+1. `Dockerfile`로 웹앱 이미지를 빌드해 ECR에 push
+2. `mongo:7` 이미지를 ECR로 복제 push
+3. EC2에 `deploy/docker-compose.ec2.yml`, `deploy.env`, `backend.env` 업로드
+4. EC2에서 `docker compose up -d`로 MongoDB + 웹앱 재기동
+
+### GitHub Secrets
+
+- `AWS_ROLE_ARN` **또는** `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+- `EC2_HOST`
+- `EC2_USERNAME`
+- `EC2_SSH_KEY`
+- `BACKEND_ENV_FILE` : `app/backend/.env` 전체 내용을 멀티라인 secret 으로 저장
+
+### GitHub Variables
+
+- `AWS_REGION` (기본값 `ap-northeast-2`)
+- `WEBAPP_ECR_REPOSITORY` (기본값 `investment-analysis-webapp`)
+- `MONGODB_ECR_REPOSITORY` (기본값 `investment-analysis-mongodb`)
+- `MONGODB_SOURCE_IMAGE` (기본값 `mongo:7`)
+- `EC2_DEPLOY_PATH` (기본값 `/home/ubuntu/investment-analysis`)
+- `WEBAPP_PORT` (기본값 `8000`)
+
+### EC2 사전 준비
+
+- Docker Engine 및 Docker Compose plugin 설치
+- `EC2_USERNAME` 계정이 `docker` 명령을 실행할 수 있어야 함
+- 인바운드 보안그룹에서 `WEBAPP_PORT` 오픈
+
+워크플로우는 `main` 브랜치 push 또는 수동 실행(`workflow_dispatch`) 시 배포됩니다.
+
+---
+
 # 퀀트 시스템 연동 가능한 증권사 API
 
 ## 주요 증권사 API 비교

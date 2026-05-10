@@ -1,0 +1,32 @@
+services:
+  mongo:
+    image: ${MONGO_IMAGE}
+    container_name: investment_mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: investment_db
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: ${WEBAPP_IMAGE}
+    container_name: investment_backend
+    restart: unless-stopped
+    ports:
+      - "${WEBAPP_PORT:-8000}:8000"
+    env_file:
+      - backend.env
+    environment:
+      MONGODB_URL: mongodb://mongo:27017
+      MONGODB_DB: investment_db
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo_data:
