@@ -85,7 +85,7 @@ export function financialKnowledgeView(container) {
         <i class="fa-solid fa-scale-balanced"></i> ETF 2종 비교 (선택 조건 중심)
       </h2>
       <p style="font-size:0.8rem; color:#64748b; margin:0 0 12px; line-height:1.5;">
-        수익률, 괴리율(절대값), 추적오차, 펀드보수를 함께 비교해 학습용 점수를 계산합니다.
+        수익률, 괴리율(절대값), 추적오차, 펀드보수를 함께 비교하고 거래 수수료 차이도 함께 확인합니다.
       </p>
 
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px;">
@@ -101,6 +101,8 @@ export function financialKnowledgeView(container) {
           <input id="etf-a-te" type="number" class="param-input" value="0.35" step="0.01" min="0" />
           <label class="param-label">펀드보수 TER (%)</label>
           <input id="etf-a-fee" type="number" class="param-input" value="0.09" step="0.01" min="0" />
+          <label class="param-label">주식거래 수수료(왕복, %) </label>
+          <input id="etf-a-commission" type="number" class="param-input" value="0.03" step="0.01" min="0" />
         </div>
 
         <div style="border:1px solid #e5edf5; border-radius:8px; padding:12px; background:#f8fafc;">
@@ -115,6 +117,8 @@ export function financialKnowledgeView(container) {
           <input id="etf-b-te" type="number" class="param-input" value="0.60" step="0.01" min="0" />
           <label class="param-label">펀드보수 TER (%)</label>
           <input id="etf-b-fee" type="number" class="param-input" value="0.20" step="0.01" min="0" />
+          <label class="param-label">주식거래 수수료(왕복, %) </label>
+          <input id="etf-b-commission" type="number" class="param-input" value="0.03" step="0.01" min="0" />
         </div>
       </div>
 
@@ -174,6 +178,8 @@ export function financialKnowledgeView(container) {
             ${renderCompareRow('괴리율 절대값(%)', etfA.gap, etfB.gap, false)}
             ${renderCompareRow('추적오차(%)', etfA.te, etfB.te, false)}
             ${renderCompareRow('펀드보수 TER(%)', etfA.fee, etfB.fee, false)}
+            ${renderCompareRow('주식거래 수수료 왕복(%)', etfA.commission, etfB.commission, false)}
+            ${renderCompareRow('1년 총비용 추정(보수+수수료, %)', etfA.fee + etfA.commission, etfB.fee + etfB.commission, false)}
             ${renderScoreRow('수익률 점수', a.retScore, b.retScore)}
             ${renderScoreRow('괴리율 점수', a.gapScore, b.gapScore)}
             ${renderScoreRow('추적오차 점수', a.teScore, b.teScore)}
@@ -184,7 +190,8 @@ export function financialKnowledgeView(container) {
       </div>
       <div style="margin-top:10px; padding:10px; border:1px solid #d9e1ec; border-radius:8px; background:#f8fafc; font-size:0.8rem; color:#334155;">
         <strong>판정:</strong> ${winner === '동점' ? '두 ETF가 동점입니다.' : `${escapeHtml(winner)} 우위`}<br/>
-        가중치: 수익률 ${Math.round(ETF_SCORE_WEIGHTS.ret * 100)}% · 괴리율 ${Math.round(ETF_SCORE_WEIGHTS.gap * 100)}% · 추적오차 ${Math.round(ETF_SCORE_WEIGHTS.te * 100)}% · 보수 ${Math.round(ETF_SCORE_WEIGHTS.fee * 100)}%
+        가중치: 수익률 ${Math.round(ETF_SCORE_WEIGHTS.ret * 100)}% · 괴리율 ${Math.round(ETF_SCORE_WEIGHTS.gap * 100)}% · 추적오차 ${Math.round(ETF_SCORE_WEIGHTS.te * 100)}% · 보수 ${Math.round(ETF_SCORE_WEIGHTS.fee * 100)}%<br/>
+        <span style="color:#64748b;">※ 거래 수수료는 매매 시점 비용, 펀드보수는 보유 기간 비용으로 분리해 해석하세요.</span>
       </div>
     `;
   }
@@ -276,6 +283,7 @@ function readEtfInput(container, suffix) {
     gap: Math.max(0, Number(container.querySelector(`#etf-${suffix}-gap`).value) || 0),
     te: Math.max(0, Number(container.querySelector(`#etf-${suffix}-te`).value) || 0),
     fee: Math.max(0, Number(container.querySelector(`#etf-${suffix}-fee`).value) || 0),
+    commission: Math.max(0, Number(container.querySelector(`#etf-${suffix}-commission`).value) || 0),
   };
 }
 
