@@ -6,6 +6,7 @@ DEFAULT_SQL_FILE="$ROOT_DIR/app/backend/quiz_seed.sql"
 DAY2_SQL_FILE="$ROOT_DIR/app/backend/02.sql"
 DAY3_SQL_FILE="$ROOT_DIR/app/backend/03.sql"
 DAY4_SQL_FILE="$ROOT_DIR/app/backend/04.sql"
+DAY5_SQL_FILE="$ROOT_DIR/app/backend/05.sql"
 SQL_FILE="${QUIZ_SQL_FILE:-$DEFAULT_SQL_FILE}"
 MONGODB_URL="${MONGODB_URL:-mongodb://localhost:27017}"
 MONGODB_DB="${MONGODB_DB:-investment_db}"
@@ -13,13 +14,14 @@ MONGODB_COLLECTION="${MONGODB_COLLECTION:-quiz_questions}"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") [--sql-file <path>] [--day2] [--day3] [--day4]
+Usage: $(basename "$0") [--sql-file <path>] [--day2] [--day3] [--day4] [--day5]
 
 Options:
   --sql-file <path>   사용할 SQL 파일 경로 지정
   --day2              app/backend/02.sql 사용
   --day3              app/backend/03.sql 사용
   --day4              app/backend/04.sql 사용
+  --day5              app/backend/05.sql 사용
   -h, --help          도움말 출력
 EOF
 }
@@ -45,6 +47,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --day4)
       SQL_FILE="$DAY4_SQL_FILE"
+      shift
+      ;;
+    --day5)
+      SQL_FILE="$DAY5_SQL_FILE"
       shift
       ;;
     -h|--help)
