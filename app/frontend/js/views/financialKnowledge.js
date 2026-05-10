@@ -3,6 +3,7 @@ const MIN_MONEY = 100000;
 // 학습용 시뮬레이션에서 과도한 음수 시나리오를 제한하기 위한 연간 최소 성장 배수(-30%).
 const MIN_GROWTH_MULTIPLIER = 0.7;
 const MIN_BAR_WIDTH_PERCENT = 2;
+const ETF_SCORE_WEIGHTS = { ret: 0.4, gap: 0.25, te: 0.2, fee: 0.15 };
 
 const STYLE_PRESETS = {
   safe: {
@@ -78,6 +79,53 @@ export function financialKnowledgeView(container) {
 
       <div id="fk-result" style="margin-top:16px;"></div>
     </section>
+
+    <section style="border:1px solid #d9e1ec; border-radius:8px; padding:16px; background:#fff; margin-top:14px;">
+      <h2 style="font-size:1rem; color:#131722; margin:0 0 8px;">
+        <i class="fa-solid fa-scale-balanced"></i> ETF 2종 비교 (선택 조건 중심)
+      </h2>
+      <p style="font-size:0.8rem; color:#64748b; margin:0 0 12px; line-height:1.5;">
+        수익률, 괴리율(절대값), 추적오차, 펀드보수를 함께 비교해 학습용 점수를 계산합니다.
+      </p>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px;">
+        <div style="border:1px solid #e5edf5; border-radius:8px; padding:12px; background:#f8fafc;">
+          <div style="font-size:0.82rem; font-weight:700; color:#2962ff; margin-bottom:8px;">ETF A</div>
+          <label class="param-label">이름</label>
+          <input id="etf-a-name" class="param-input" value="ETF A" />
+          <label class="param-label">최근 1년 수익률 (%)</label>
+          <input id="etf-a-ret" type="number" class="param-input" value="12" step="0.1" />
+          <label class="param-label">괴리율 절대값 (%)</label>
+          <input id="etf-a-gap" type="number" class="param-input" value="0.20" step="0.01" min="0" />
+          <label class="param-label">추적오차 (%)</label>
+          <input id="etf-a-te" type="number" class="param-input" value="0.35" step="0.01" min="0" />
+          <label class="param-label">펀드보수 TER (%)</label>
+          <input id="etf-a-fee" type="number" class="param-input" value="0.09" step="0.01" min="0" />
+        </div>
+
+        <div style="border:1px solid #e5edf5; border-radius:8px; padding:12px; background:#f8fafc;">
+          <div style="font-size:0.82rem; font-weight:700; color:#7c3aed; margin-bottom:8px;">ETF B</div>
+          <label class="param-label">이름</label>
+          <input id="etf-b-name" class="param-input" value="ETF B" />
+          <label class="param-label">최근 1년 수익률 (%)</label>
+          <input id="etf-b-ret" type="number" class="param-input" value="10" step="0.1" />
+          <label class="param-label">괴리율 절대값 (%)</label>
+          <input id="etf-b-gap" type="number" class="param-input" value="0.35" step="0.01" min="0" />
+          <label class="param-label">추적오차 (%)</label>
+          <input id="etf-b-te" type="number" class="param-input" value="0.60" step="0.01" min="0" />
+          <label class="param-label">펀드보수 TER (%)</label>
+          <input id="etf-b-fee" type="number" class="param-input" value="0.20" step="0.01" min="0" />
+        </div>
+      </div>
+
+      <button class="run-btn" id="etf-compare-run" style="margin-top:12px;">
+        <i class="fa-solid fa-arrows-left-right"></i> ETF 2종 비교하기
+      </button>
+      <div id="etf-compare-result" style="margin-top:12px;"></div>
+      <p style="font-size:0.74rem; color:#64748b; margin:10px 0 0;">
+        ※ 기존 "산업 경쟁력 분석 → 섹터 주가 비교" 화면에서는 다중 ETF(섹터) 수익률·변동성 비교가 가능합니다.
+      </p>
+    </section>
   `;
 
   const render = () => {
@@ -99,7 +147,47 @@ export function financialKnowledgeView(container) {
   };
 
   container.querySelector('#fk-run').addEventListener('click', render);
+  container.querySelector('#etf-compare-run').addEventListener('click', renderEtfCompare);
   render();
+  renderEtfCompare();
+
+  function renderEtfCompare() {
+    const etfA = readEtfInput(container, 'a');
+    const etfB = readEtfInput(container, 'b');
+
+    const a = scoreEtf(etfA);
+    const b = scoreEtf(etfB);
+    const winner = a.total === b.total ? '동점' : (a.total > b.total ? etfA.name : etfB.name);
+
+    container.querySelector('#etf-compare-result').innerHTML = `
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+          <thead>
+            <tr style="background:#f1f5f9;">
+              <th style="padding:8px; border:1px solid #e5edf5; text-align:left;">항목</th>
+              <th style="padding:8px; border:1px solid #e5edf5; text-align:right;">${escapeHtml(etfA.name)}</th>
+              <th style="padding:8px; border:1px solid #e5edf5; text-align:right;">${escapeHtml(etfB.name)}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${renderCompareRow('수익률(%)', etfA.ret, etfB.ret, true)}
+            ${renderCompareRow('괴리율 절대값(%)', etfA.gap, etfB.gap, false)}
+            ${renderCompareRow('추적오차(%)', etfA.te, etfB.te, false)}
+            ${renderCompareRow('펀드보수 TER(%)', etfA.fee, etfB.fee, false)}
+            ${renderScoreRow('수익률 점수', a.retScore, b.retScore)}
+            ${renderScoreRow('괴리율 점수', a.gapScore, b.gapScore)}
+            ${renderScoreRow('추적오차 점수', a.teScore, b.teScore)}
+            ${renderScoreRow('보수 점수', a.feeScore, b.feeScore)}
+            ${renderScoreRow('종합 점수', a.total, b.total, true)}
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:10px; padding:10px; border:1px solid #d9e1ec; border-radius:8px; background:#f8fafc; font-size:0.8rem; color:#334155;">
+        <strong>판정:</strong> ${winner === '동점' ? '두 ETF가 동점입니다.' : `${escapeHtml(winner)} 우위`}<br/>
+        가중치: 수익률 ${Math.round(ETF_SCORE_WEIGHTS.ret * 100)}% · 괴리율 ${Math.round(ETF_SCORE_WEIGHTS.gap * 100)}% · 추적오차 ${Math.round(ETF_SCORE_WEIGHTS.te * 100)}% · 보수 ${Math.round(ETF_SCORE_WEIGHTS.fee * 100)}%
+      </div>
+    `;
+  }
 }
 
 function renderSummary(preset, money, years, expected, risk, futureMoney) {
@@ -178,4 +266,77 @@ function formatWon(value) {
 
 function toPct(value) {
   return `${(Number(value) * 100).toFixed(1)}%`;
+}
+
+function readEtfInput(container, suffix) {
+  const name = (container.querySelector(`#etf-${suffix}-name`).value || `ETF ${suffix.toUpperCase()}`).trim();
+  return {
+    name: name || `ETF ${suffix.toUpperCase()}`,
+    ret: Number(container.querySelector(`#etf-${suffix}-ret`).value) || 0,
+    gap: Math.max(0, Number(container.querySelector(`#etf-${suffix}-gap`).value) || 0),
+    te: Math.max(0, Number(container.querySelector(`#etf-${suffix}-te`).value) || 0),
+    fee: Math.max(0, Number(container.querySelector(`#etf-${suffix}-fee`).value) || 0),
+  };
+}
+
+function scoreEtf(etf) {
+  const retScore = higherBetterScore(etf.ret, -20, 20);
+  const gapScore = lowerBetterScore(etf.gap, 2);
+  const teScore = lowerBetterScore(etf.te, 2);
+  const feeScore = lowerBetterScore(etf.fee, 1);
+  const total =
+    retScore * ETF_SCORE_WEIGHTS.ret +
+    gapScore * ETF_SCORE_WEIGHTS.gap +
+    teScore * ETF_SCORE_WEIGHTS.te +
+    feeScore * ETF_SCORE_WEIGHTS.fee;
+  return { retScore, gapScore, teScore, feeScore, total };
+}
+
+function higherBetterScore(value, minValue, maxValue) {
+  if (maxValue <= minValue) return 0;
+  const scaled = ((value - minValue) / (maxValue - minValue)) * 100;
+  return clamp(scaled, 0, 100);
+}
+
+function lowerBetterScore(value, badThreshold) {
+  if (badThreshold <= 0) return 0;
+  const scaled = 100 - (value / badThreshold) * 100;
+  return clamp(scaled, 0, 100);
+}
+
+function clamp(value, minValue, maxValue) {
+  return Math.min(maxValue, Math.max(minValue, value));
+}
+
+function renderCompareRow(label, a, b, higherBetter) {
+  const aBetter = higherBetter ? a > b : a < b;
+  const bBetter = higherBetter ? b > a : b < a;
+  return `
+    <tr>
+      <td style="padding:8px; border:1px solid #e5edf5; color:#334155;">${label}</td>
+      <td style="padding:8px; border:1px solid #e5edf5; text-align:right; color:${aBetter ? '#089981' : '#334155'};">${Number(a).toFixed(2)}</td>
+      <td style="padding:8px; border:1px solid #e5edf5; text-align:right; color:${bBetter ? '#089981' : '#334155'};">${Number(b).toFixed(2)}</td>
+    </tr>
+  `;
+}
+
+function renderScoreRow(label, a, b, highlight = false) {
+  const aBetter = a > b;
+  const bBetter = b > a;
+  return `
+    <tr style="${highlight ? 'background:#eef2ff;' : ''}">
+      <td style="padding:8px; border:1px solid #e5edf5; color:#334155; font-weight:${highlight ? 700 : 500};">${label}</td>
+      <td style="padding:8px; border:1px solid #e5edf5; text-align:right; color:${aBetter ? '#089981' : '#334155'}; font-weight:${highlight ? 700 : 500};">${Number(a).toFixed(2)}</td>
+      <td style="padding:8px; border:1px solid #e5edf5; text-align:right; color:${bBetter ? '#089981' : '#334155'}; font-weight:${highlight ? 700 : 500};">${Number(b).toFixed(2)}</td>
+    </tr>
+  `;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
