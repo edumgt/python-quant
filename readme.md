@@ -9,11 +9,11 @@
 
 ## 팀 구성
 
-- PM, PO : 프로젝트를 리드, 회의소집, 비용산정, 프로덕트 오너로서의 기획, 일정관리, slack 구성
+- PM : 프로젝트를 리드, 회의소집, 비용산정, 프로덕트 오너로서의 기획, 일정관리, slack 구성
 - PL : 개발 프레임웍 선정, 업무 설계, 산출물 작업(mermaid 스타일 각종 프로세스 다이어 그램)
-- Architect : 아키텍트 구성, local 환경, dev 환경, prod 환경, on prem , aws serving 인프라 구성, LLM Ops
+- Architect : 아키텍트 구성(local , dev , prod), on prem , aws serving 인프라 구성, LLM Ops
 - Pipe Liner : RAG 구성을 위한 자료수집, vector db 구성, ML Ops, No SQL RDBMS 구성
-- QA : 전체 프로세스 검증, 테스터
+- PO, PMO, QA : 전체 프로세스 검증, 테스터
 - 개발자 : Claude , Github Agent , Codex 등 휴먼코딩 배제함 !!!
 
 ### 선수 repo - https://github.com/edumgt/edumgt-lab-init
