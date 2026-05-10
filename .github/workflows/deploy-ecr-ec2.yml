@@ -1,0 +1,210 @@
+name: Deploy webapp and MongoDB to ECR and EC2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/deploy-ecr-ec2.yml
+      - Dockerfile
+      - requirements.txt
+      - app/**
+      - docs/**
+      - deploy/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'ap-northeast-2' }}
+  WEBAPP_ECR_REPOSITORY: ${{ vars.WEBAPP_ECR_REPOSITORY || 'investment-analysis-webapp' }}
+  MONGODB_ECR_REPOSITORY: ${{ vars.MONGODB_ECR_REPOSITORY || 'investment-analysis-mongodb' }}
+  MONGODB_SOURCE_IMAGE: ${{ vars.MONGODB_SOURCE_IMAGE || 'mongo:7' }}
+  EC2_DEPLOY_PATH: ${{ vars.EC2_DEPLOY_PATH || '/home/ubuntu/investment-analysis' }}
+  WEBAPP_PORT: ${{ vars.WEBAPP_PORT || '8000' }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      registry: ${{ steps.login-ecr.outputs.registry }}
+      webapp_image: ${{ steps.image-refs.outputs.webapp_image }}
+      mongo_image: ${{ steps.image-refs.outputs.mongo_image }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials from role
+        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: github-actions-ecr-ec2
+
+      - name: Configure AWS credentials from access keys
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Ensure ECR repositories exist
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          set -euo pipefail
+          for repository in "$WEBAPP_ECR_REPOSITORY" "$MONGODB_ECR_REPOSITORY"; do
+            aws ecr describe-repositories --repository-names "$repository" >/dev/null 2>&1 || \
+              aws ecr create-repository --repository-name "$repository" >/dev/null
+            echo "Using ECR repository: $REGISTRY/$repository"
+          done
+
+      - name: Build and push webapp image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.WEBAPP_ECR_REPOSITORY }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.WEBAPP_ECR_REPOSITORY }}:latest
+
+      - name: Push MongoDB image to ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          set -euo pipefail
+          docker pull "$MONGODB_SOURCE_IMAGE"
+          docker tag "$MONGODB_SOURCE_IMAGE" "$REGISTRY/$MONGODB_ECR_REPOSITORY:${GITHUB_SHA}"
+          docker tag "$MONGODB_SOURCE_IMAGE" "$REGISTRY/$MONGODB_ECR_REPOSITORY:latest"
+          docker push "$REGISTRY/$MONGODB_ECR_REPOSITORY:${GITHUB_SHA}"
+          docker push "$REGISTRY/$MONGODB_ECR_REPOSITORY:latest"
+
+      - name: Export image references
+        id: image-refs
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          echo "webapp_image=$REGISTRY/$WEBAPP_ECR_REPOSITORY:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "mongo_image=$REGISTRY/$MONGODB_ECR_REPOSITORY:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - build-and-push
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials from role
+        if: ${{ secrets.AWS_ROLE_ARN != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: github-actions-ec2-deploy
+
+      - name: Configure AWS credentials from access keys
+        if: ${{ secrets.AWS_ROLE_ARN == '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Validate deployment secrets
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          BACKEND_ENV_FILE: ${{ secrets.BACKEND_ENV_FILE }}
+        run: |
+          set -euo pipefail
+          for key in EC2_HOST EC2_USERNAME EC2_SSH_KEY BACKEND_ENV_FILE; do
+            if [ -z "${!key}" ]; then
+              echo "Missing required secret: $key" >&2
+              exit 1
+            fi
+          done
+
+      - name: Build deployment bundle
+        env:
+          BACKEND_ENV_FILE: ${{ secrets.BACKEND_ENV_FILE }}
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/investment-analysis-deploy
+          mkdir -p /tmp/investment-analysis-deploy
+          cp deploy/docker-compose.ec2.yml /tmp/investment-analysis-deploy/docker-compose.yml
+          cat <<EOF_BUNDLE > /tmp/investment-analysis-deploy/deploy.env
+          WEBAPP_IMAGE=${{ needs.build-and-push.outputs.webapp_image }}
+          MONGO_IMAGE=${{ needs.build-and-push.outputs.mongo_image }}
+          WEBAPP_PORT=${{ env.WEBAPP_PORT }}
+          EOF_BUNDLE
+          printf '%s\n' "$BACKEND_ENV_FILE" > /tmp/investment-analysis-deploy/backend.env
+          chmod 600 /tmp/investment-analysis-deploy/backend.env
+
+      - name: Prepare EC2 target directory
+        uses: appleboy/ssh-action@v1.2.2
+        env:
+          EC2_DEPLOY_PATH: ${{ env.EC2_DEPLOY_PATH }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          envs: EC2_DEPLOY_PATH
+          script: |
+            mkdir -p "$EC2_DEPLOY_PATH"
+
+      - name: Upload deployment bundle
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: /tmp/investment-analysis-deploy/*
+          target: ${{ env.EC2_DEPLOY_PATH }}
+          overwrite: true
+          strip_components: 2
+
+      - name: Create ECR login password
+        id: ecr-password
+        run: |
+          set -euo pipefail
+          PASSWORD="$(aws ecr get-login-password --region "$AWS_REGION")"
+          echo "::add-mask::$PASSWORD"
+          echo "value=$PASSWORD" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy containers on EC2
+        uses: appleboy/ssh-action@v1.2.2
+        env:
+          DEPLOY_PATH: ${{ env.EC2_DEPLOY_PATH }}
+          ECR_REGISTRY: ${{ needs.build-and-push.outputs.registry }}
+          ECR_PASSWORD: ${{ steps.ecr-password.outputs.value }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          envs: DEPLOY_PATH,ECR_REGISTRY,ECR_PASSWORD
+          script: |
+            set -euo pipefail
+            cd "$DEPLOY_PATH"
+            echo "$ECR_PASSWORD" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+            docker compose --env-file deploy.env -f docker-compose.yml pull
+            docker compose --env-file deploy.env -f docker-compose.yml up -d --remove-orphans
+            docker image prune -af --filter "until=24h" || true
