@@ -20,6 +20,8 @@
 
 ### 선수 repo - https://github.com/edumgt/edumgt-lab-init
 
+### 배포 repo - https://github.com/edumgt/aws-ec2-alb-lab
+
 ---
 
 ## 🔗 웹앱 API — 전체 엔드포인트 맵
