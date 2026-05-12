@@ -13,6 +13,17 @@ services:
       timeout: 5s
       retries: 5
 
+  qdrant:
+    # 안정적으로 검증된 태그를 고정 사용하고, 필요 시 테스트 후 버전을 상향합니다.
+    image: qdrant/qdrant:v1.11.0
+    container_name: investment_qdrant
+    restart: unless-stopped
+    ports:
+      - "${VECTORDB_PORT:-6333}:6333"
+      - "${VECTORDB_GRPC_PORT:-6334}:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
   backend:
     image: ${WEBAPP_IMAGE}
     container_name: investment_backend
@@ -24,9 +35,11 @@ services:
     environment:
       MONGODB_URL: mongodb://mongo:27017
       MONGODB_DB: investment_db
+      QDRANT_URL: http://qdrant:6333
     depends_on:
       mongo:
         condition: service_healthy
 
 volumes:
   mongo_data:
+  qdrant_data:
