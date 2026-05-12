@@ -51,6 +51,7 @@ fi
 echo "[OK] Vector DB 조회 성공"
 
 python3 - "$DOCS_DIR" "$QDRANT_URL" "$QDRANT_COLLECTION" "$CHUNK_SIZE" "$CHUNK_OVERLAP" "$BATCH_SIZE" <<'PY'
+# stdin 코드(heredoc) + sys.argv 인자 방식으로 파이썬에 전달합니다.
 import hashlib
 import json
 import math
@@ -59,6 +60,12 @@ import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
+
+class QdrantHTTPError(RuntimeError):
+    def __init__(self, code: int, message: str):
+        super().__init__(message)
+        self.code = code
+
 
 def http_json(method: str, url: str, payload: dict | None = None) -> dict:
     data = None
@@ -73,7 +80,7 @@ def http_json(method: str, url: str, payload: dict | None = None) -> dict:
             return json.loads(body) if body else {}
     except urllib.error.HTTPError as exc:
         err_body = exc.read().decode("utf-8", errors="ignore")
-        raise RuntimeError(f"Qdrant API 오류({exc.code}): {method} {url} :: {err_body[:300]}") from exc
+        raise QdrantHTTPError(exc.code, f"Qdrant API 오류({exc.code}): {method} {url} :: {err_body[:300]}") from exc
     except urllib.error.URLError as exc:
         raise RuntimeError(f"Qdrant 연결 실패: {method} {url} :: {exc.reason}") from exc
 
@@ -83,7 +90,7 @@ def chunk_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
     if not text:
         return []
     if chunk_overlap >= chunk_size:
-        raise ValueError(f"CHUNK_OVERLAP ({chunk_overlap}) must be smaller than CHUNK_SIZE ({chunk_size})")
+        raise ValueError(f"CHUNK_OVERLAP ({chunk_overlap}) must be less than CHUNK_SIZE ({chunk_size})")
     chunks: list[str] = []
     step = chunk_size - chunk_overlap
     start = 0
@@ -105,6 +112,7 @@ def embed_text(text: str, dim: int = 384) -> list[float]:
     """무의존성 베이스라인 해시 임베딩(384차원).
 
     운영 환경에서 의미 기반 검색 품질이 필요하면 전용 임베딩 모델로 교체하는 것을 권장합니다.
+    각 토큰의 sha256 해시로 벡터 인덱스(mod dim)와 부호(bit) 를 정해 누적한 뒤 L2 정규화합니다.
     """
     vec = [0.0] * dim
     tokens = TOKEN_PATTERN.findall(text.lower())
@@ -162,8 +170,9 @@ print(f"[INFO] docs={len(files)}, chunks={len(records)}, dim={dim}")
 
 try:
     http_json("DELETE", f"{base_url}/collections/{collection}")
-except RuntimeError:
-    pass
+except QdrantHTTPError as exc:
+    if exc.code != 404:
+        raise
 
 http_json("PUT", f"{base_url}/collections/{collection}", {"vectors": {"size": dim, "distance": "Cosine"}})
 

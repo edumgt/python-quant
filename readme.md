@@ -358,8 +358,7 @@ pkill -f uvicorn
 1. `Dockerfile`로 웹앱 이미지를 빌드해 ECR에 push
 2. `mongo:7` 이미지를 ECR로 복제 push
 3. EC2에 `deploy/docker-compose.ec2.yml`, `deploy.env`, `backend.env` 업로드
-4. EC2에서 `docker compose up -d`로 MongoDB + 웹앱 재기동
-5. Qdrant(Vector DB) 컨테이너까지 함께 기동
+4. EC2에서 `docker compose up -d`로 MongoDB + Qdrant(Vector DB) + 웹앱 재기동
 
 ### GitHub Secrets
 
