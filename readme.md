@@ -391,7 +391,7 @@ pkill -f uvicorn
 
 ## 🧠 Vector DB(RAG) 업로드 스크립트
 
-`docker compose up -d` 후 아래 스크립트로 `docs/*.md`를 청크/벡터화(TF-IDF)하여 Qdrant에 업로드할 수 있습니다.
+`docker compose up -d` 후 아래 스크립트로 `docs/*.md`를 청크/벡터화(해시 임베딩)하여 Qdrant에 업로드할 수 있습니다.
 
 ```bash
 ./scripts/upload_docs_to_qdrant.sh

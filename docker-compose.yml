@@ -18,6 +18,7 @@ services:
       retries: 5
 
   qdrant:
+    # 안정적으로 검증된 태그를 고정 사용하고, 필요 시 테스트 후 버전을 상향합니다.
     image: qdrant/qdrant:v1.11.0
     container_name: investment_qdrant
     restart: unless-stopped

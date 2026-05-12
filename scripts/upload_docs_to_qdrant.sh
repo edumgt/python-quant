@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# docs/*.md 문서를 청크/벡터화(TF-IDF)하여 Qdrant 컬렉션에 업로드합니다.
+# docs/*.md 문서를 청크/벡터화(해시 임베딩)하여 Qdrant 컬렉션에 업로드합니다.
+# 참고: 해시 임베딩은 경량/무의존성 목적의 베이스라인이며, 고품질 의미 검색은 전용 임베딩 모델 사용을 권장합니다.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -46,13 +47,14 @@ curl -fsS "$QDRANT_URL/collections" >/dev/null
 echo "[OK] Vector DB 조회 성공"
 
 python3 - "$DOCS_DIR" "$QDRANT_URL" "$QDRANT_COLLECTION" "$CHUNK_SIZE" "$CHUNK_OVERLAP" "$BATCH_SIZE" <<'PY'
+import hashlib
 import json
+import math
+import re
 import sys
+import urllib.error
 import urllib.request
 from pathlib import Path
-
-from sklearn.feature_extraction.text import TfidfVectorizer
-
 
 def http_json(method: str, url: str, payload: dict | None = None) -> dict:
     data = None
@@ -61,8 +63,15 @@ def http_json(method: str, url: str, payload: dict | None = None) -> dict:
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         headers["Content-Type"] = "application/json"
     req = urllib.request.Request(url, data=data, method=method, headers=headers)
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            body = resp.read().decode("utf-8")
+            return json.loads(body) if body else {}
+    except urllib.error.HTTPError as exc:
+        err_body = exc.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(f"Qdrant API 오류({exc.code}): {method} {url} :: {err_body[:300]}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"Qdrant 연결 실패: {method} {url} :: {exc.reason}") from exc
 
 
 def chunk_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
@@ -70,7 +79,7 @@ def chunk_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
     if not text:
         return []
     if chunk_overlap >= chunk_size:
-        raise ValueError("CHUNK_OVERLAP must be smaller than CHUNK_SIZE")
+        raise ValueError(f"CHUNK_OVERLAP ({chunk_overlap}) must be smaller than CHUNK_SIZE ({chunk_size})")
     chunks: list[str] = []
     step = chunk_size - chunk_overlap
     start = 0
@@ -83,6 +92,25 @@ def chunk_text(text: str, chunk_size: int, chunk_overlap: int) -> list[str]:
             break
         start += step
     return chunks
+
+
+TOKEN_PATTERN = re.compile(r"[0-9A-Za-z가-힣_]+")
+
+
+def embed_text(text: str, dim: int = 384) -> list[float]:
+    vec = [0.0] * dim
+    tokens = TOKEN_PATTERN.findall(text.lower())
+    if not tokens:
+        return vec
+    for token in tokens:
+        digest = hashlib.sha256(token.encode("utf-8")).digest()
+        idx = int.from_bytes(digest[:4], "big") % dim
+        sign = 1.0 if (digest[4] & 1) == 0 else -1.0
+        vec[idx] += sign
+    norm = math.sqrt(sum(v * v for v in vec))
+    if norm > 0:
+        vec = [v / norm for v in vec]
+    return vec
 
 
 docs_dir = Path(sys.argv[1])
@@ -112,19 +140,19 @@ for file_path in files:
 if not records:
     raise SystemExit("[ERROR] 업로드할 문서 청크가 없습니다.")
 
-vectorizer = TfidfVectorizer(max_features=768)
-matrix = vectorizer.fit_transform([r["text"] for r in records]).toarray().tolist()
-if not matrix or not matrix[0]:
-    raise SystemExit("[ERROR] 벡터 생성 실패: TF-IDF 결과가 비어 있습니다.")
+matrix = [embed_text(r["text"]) for r in records]
+if not matrix or not any(any(v != 0.0 for v in vec) for vec in matrix):
+    raise SystemExit("[ERROR] 벡터 생성 실패: 임베딩 결과가 비어 있습니다.")
 
 dim = len(matrix[0])
 print(f"[INFO] docs={len(files)}, chunks={len(records)}, dim={dim}")
 
-http_json(
-    "PUT",
-    f"{base_url}/collections/{collection}",
-    {"vectors": {"size": dim, "distance": "Cosine"}},
-)
+try:
+    http_json("DELETE", f"{base_url}/collections/{collection}")
+except RuntimeError:
+    pass
+
+http_json("PUT", f"{base_url}/collections/{collection}", {"vectors": {"size": dim, "distance": "Cosine"}})
 
 for start in range(0, len(records), batch_size):
     end = min(len(records), start + batch_size)
