@@ -43,7 +43,10 @@ if [[ ! -d "$DOCS_DIR" ]]; then
 fi
 
 echo "[STEP] Vector DB 연결/컬렉션 조회: $QDRANT_URL"
-curl -fsS "$QDRANT_URL/collections" >/dev/null
+if ! curl -fsS "$QDRANT_URL/collections" >/dev/null; then
+  echo "[ERROR] Qdrant 조회 실패: $QDRANT_URL/collections"
+  exit 1
+fi
 echo "[OK] Vector DB 조회 성공"
 
 python3 - "$DOCS_DIR" "$QDRANT_URL" "$QDRANT_COLLECTION" "$CHUNK_SIZE" "$CHUNK_OVERLAP" "$BATCH_SIZE" <<'PY'
@@ -98,6 +101,10 @@ TOKEN_PATTERN = re.compile(r"[0-9A-Za-z가-힣_]+")
 
 
 def embed_text(text: str, dim: int = 384) -> list[float]:
+    """무의존성 베이스라인 해시 임베딩(384차원).
+
+    운영 환경에서 의미 기반 검색 품질이 필요하면 전용 임베딩 모델로 교체하는 것을 권장합니다.
+    """
     vec = [0.0] * dim
     tokens = TOKEN_PATTERN.findall(text.lower())
     if not tokens:
@@ -111,6 +118,10 @@ def embed_text(text: str, dim: int = 384) -> list[float]:
     if norm > 0:
         vec = [v / norm for v in vec]
     return vec
+
+
+def has_nonzero_vector(vectors: list[list[float]]) -> bool:
+    return any(any(v != 0.0 for v in vec) for vec in vectors)
 
 
 docs_dir = Path(sys.argv[1])
@@ -141,7 +152,7 @@ if not records:
     raise SystemExit("[ERROR] 업로드할 문서 청크가 없습니다.")
 
 matrix = [embed_text(r["text"]) for r in records]
-if not matrix or not any(any(v != 0.0 for v in vec) for vec in matrix):
+if not matrix or not has_nonzero_vector(matrix):
     raise SystemExit("[ERROR] 벡터 생성 실패: 임베딩 결과가 비어 있습니다.")
 
 dim = len(matrix[0])
