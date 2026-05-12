@@ -359,6 +359,7 @@ pkill -f uvicorn
 2. `mongo:7` 이미지를 ECR로 복제 push
 3. EC2에 `deploy/docker-compose.ec2.yml`, `deploy.env`, `backend.env` 업로드
 4. EC2에서 `docker compose up -d`로 MongoDB + 웹앱 재기동
+5. Qdrant(Vector DB) 컨테이너까지 함께 기동
 
 ### GitHub Secrets
 
@@ -376,6 +377,7 @@ pkill -f uvicorn
 - `MONGODB_SOURCE_IMAGE` (기본값 `mongo:7`)
 - `EC2_DEPLOY_PATH` (기본값 `/home/ubuntu/investment-analysis`)
 - `WEBAPP_PORT` (기본값 `8000`)
+- `VECTORDB_PORT` (기본값 `6333`)
 
 ### EC2 사전 준비
 
@@ -384,6 +386,31 @@ pkill -f uvicorn
 - 인바운드 보안그룹에서 `WEBAPP_PORT` 오픈
 
 워크플로우는 `main` 브랜치 push 또는 수동 실행(`workflow_dispatch`) 시 배포됩니다.
+
+---
+
+## 🧠 Vector DB(RAG) 업로드 스크립트
+
+`docker compose up -d` 후 아래 스크립트로 `docs/*.md`를 청크/벡터화(TF-IDF)하여 Qdrant에 업로드할 수 있습니다.
+
+```bash
+./scripts/upload_docs_to_qdrant.sh
+```
+
+옵션(환경 변수):
+
+- `QDRANT_URL` (기본 `http://localhost:6333`)
+- `QDRANT_COLLECTION` (기본 `investment_docs`)
+- `DOCS_DIR` (기본 `./docs`)
+- `CHUNK_SIZE` (기본 `1200`)
+- `CHUNK_OVERLAP` (기본 `200`)
+- `BATCH_SIZE` (기본 `128`)
+
+예시:
+
+```bash
+QDRANT_URL=http://localhost:6333 QDRANT_COLLECTION=finance_docs ./scripts/upload_docs_to_qdrant.sh
+```
 
 ---
 

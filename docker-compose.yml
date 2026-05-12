@@ -17,6 +17,16 @@ services:
       timeout: 5s
       retries: 5
 
+  qdrant:
+    image: qdrant/qdrant:v1.11.0
+    container_name: investment_qdrant
+    restart: unless-stopped
+    ports:
+      - "${VECTORDB_PORT:-6333}:6333"
+      - "${VECTORDB_GRPC_PORT:-6334}:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
   backend:
     build:
       context: .
@@ -30,6 +40,7 @@ services:
     environment:
       - MONGODB_URL=mongodb://mongo:27017
       - MONGODB_DB=investment_db
+      - QDRANT_URL=http://qdrant:6333
     depends_on:
       mongo:
         condition: service_healthy
@@ -38,3 +49,4 @@ services:
 
 volumes:
   mongo_data:
+  qdrant_data:
