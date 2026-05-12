@@ -5,7 +5,8 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DOCS_DIR="${DOCS_DIR:-$ROOT_DIR/docs}"
-QDRANT_URL="${QDRANT_URL:-http://localhost:${VECTORDB_PORT:-6333}}"
+VECTORDB_PORT="${VECTORDB_PORT:-6333}"
+QDRANT_URL="${QDRANT_URL:-http://localhost:${VECTORDB_PORT}}"
 QDRANT_COLLECTION="${QDRANT_COLLECTION:-investment_docs}"
 CHUNK_SIZE="${CHUNK_SIZE:-1200}"
 CHUNK_OVERLAP="${CHUNK_OVERLAP:-200}"
@@ -110,6 +111,7 @@ def embed_text(text: str, dim: int = 384) -> list[float]:
     if not tokens:
         return vec
     for token in tokens:
+        # sha256 digest는 항상 32바이트이므로 digest[:4], digest[4] 접근이 안전합니다.
         digest = hashlib.sha256(token.encode("utf-8")).digest()
         idx = int.from_bytes(digest[:4], "big") % dim
         sign = 1.0 if (digest[4] & 1) == 0 else -1.0
