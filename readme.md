@@ -28,7 +28,7 @@
 
 | 항목 | 최소 사양(학습/문서 위주) | 권장 사양(로컬 실습 + Docker) |
 |------|--------------------------|------------------------------|
-| OS | Windows 11 / macOS / Ubuntu 22.04+ | Ubuntu 22.04+ 또는 macOS/Linux 최신 |
+| OS | Windows 11 / macOS / Ubuntu 22.04+ | Windows 11(WSL2 권장) / Ubuntu 22.04+ / macOS 최신 |
 | CPU | 4코어 | 8코어 이상 |
 | RAM | 16GB | 32GB 이상 |
 | 저장공간 | 여유 30GB | 여유 80GB 이상(NVMe 권장) |
