@@ -355,6 +355,10 @@ pkill -f uvicorn
 
 새로 추가된 `/home/runner/work/investment-analysis/investment-analysis/.github/workflows/deploy-ecr-ec2.yml` 워크플로우는 아래 순서로 동작합니다.
 
+- 확장팩에 docker compose 설치
+
+![alt text](image.png)
+
 1. `Dockerfile`로 웹앱 이미지를 빌드해 ECR에 push
 2. `mongo:7` 이미지를 ECR로 복제 push
 3. EC2에 `deploy/docker-compose.ec2.yml`, `deploy.env`, `backend.env` 업로드
