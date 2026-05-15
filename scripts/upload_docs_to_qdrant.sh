@@ -17,7 +17,7 @@ usage() {
 Usage: $(basename "$0")
 
 환경 변수:
-  DOCS_DIR            Markdown 문서 디렉터리 (기본: ./docs)
+  DOCS_DIR            Markdown 문서 폴더 (기본: ./docs)
   QDRANT_URL          Qdrant HTTP URL (기본: http://localhost:6333)
   QDRANT_COLLECTION   컬렉션 이름 (기본: investment_docs)
   CHUNK_SIZE          문서 청크 크기(문자 수, 기본: 1200)
@@ -39,7 +39,7 @@ for cmd in curl python3; do
 done
 
 if [[ ! -d "$DOCS_DIR" ]]; then
-  echo "[ERROR] DOCS_DIR 디렉터리가 없습니다: $DOCS_DIR"
+  echo "[ERROR] DOCS_DIR 폴더가 없습니다: $DOCS_DIR"
   exit 1
 fi
 
