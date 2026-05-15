@@ -226,6 +226,14 @@ class GroupNetworkRequest(BaseModel):
     limit: int = Field(default=80, ge=1, le=100)
 
 
+class DartCompanyListRequest(BaseModel):
+    region: str = Field(default="서울특별시", max_length=30)
+    emp_min: int | None = Field(default=None, ge=0, le=1_000_000)
+    emp_max: int | None = Field(default=None, ge=0, le=1_000_000)
+    bsns_year: str = Field(default="2024", pattern=r"^\d{4}$")
+    limit: int = Field(default=50, ge=1, le=200)
+
+
 @app.get("/api/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
@@ -439,6 +447,142 @@ def dart_group_network(req: GroupNetworkRequest) -> dict[str, object]:
         "kosdaq_count":     kosdaq_count,
         "results":          results,
         "source":           "OpenDART corpCode.xml + pykrx KRX 시장데이터",
+    }
+
+
+@lru_cache(maxsize=10000)
+def _fetch_company_detail(corp_code: str) -> dict:
+    """Fetch company overview (address, bizr_no) from DART company.json."""
+    key = _dart_api_key()
+    url = ("https://opendart.fss.or.kr/api/company.json?"
+           + urllib.parse.urlencode({"crtfc_key": key, "corp_code": corp_code}))
+    try:
+        with urllib.request.urlopen(url, timeout=8) as response:
+            data = json.loads(response.read())
+        return data if data.get("status") == "000" else {}
+    except Exception:
+        return {}
+
+
+@lru_cache(maxsize=1)
+def _load_all_listed_details() -> list[dict]:
+    """Batch-fetch company detail for all listed companies. Cached in-process.
+
+    First call may take ~30 s; subsequent calls are instant.
+    """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    rows = _load_dart_corp_codes()
+    listed = [r for r in rows if r["stock_code"]]
+
+    results: list[dict] = []
+    with ThreadPoolExecutor(max_workers=30) as executor:
+        future_to_row = {
+            executor.submit(_fetch_company_detail, r["corp_code"]): r
+            for r in listed
+        }
+        for future in as_completed(future_to_row):
+            row = future_to_row[future]
+            detail = future.result()
+            if detail:
+                results.append({
+                    "corp_code":   row["corp_code"],
+                    "corp_name":   detail.get("corp_name") or row["corp_name"],
+                    "stock_code":  row["stock_code"],
+                    "modify_date": row["modify_date"],
+                    "bizr_no":     detail.get("bizr_no", ""),
+                    "jurir_no":    detail.get("jurir_no", ""),
+                    "adres":       detail.get("adres", ""),
+                    "ceo_nm":      detail.get("ceo_nm", ""),
+                    "corp_cls":    detail.get("corp_cls", ""),
+                    "est_dt":      detail.get("est_dt", ""),
+                })
+    return results
+
+
+@lru_cache(maxsize=20000)
+def _fetch_emp_count(corp_code: str, bsns_year: str) -> int:
+    """Return total employee count from DART empSttus.json. Returns -1 on failure."""
+    key = _dart_api_key()
+    url = ("https://opendart.fss.or.kr/api/empSttus.json?"
+           + urllib.parse.urlencode({
+               "crtfc_key":  key,
+               "corp_code":  corp_code,
+               "bsns_year":  bsns_year,
+               "reprt_code": "11011",  # 사업보고서
+           }))
+    try:
+        with urllib.request.urlopen(url, timeout=8) as response:
+            data = json.loads(response.read())
+        if data.get("status") != "000":
+            return -1
+
+        def to_int(v: object) -> int:
+            try:
+                return int(str(v).replace(",", "").strip() or "0")
+            except (ValueError, TypeError):
+                return 0
+
+        items = data.get("list", [])
+        if not items:
+            return -1
+
+        total_rows = [x for x in items if "합계" in str(x.get("nm", ""))]
+        target = total_rows or items[:1]
+        total = sum(to_int(x.get("rgllbr_co", 0)) + to_int(x.get("cnttk_co", 0)) for x in target)
+        if total > 0:
+            return total
+        return to_int(items[0].get("jan_blyy_empcnt", -1)) or -1
+    except Exception:
+        return -1
+
+
+@app.post("/api/dart/company-list")
+def dart_company_list(req: DartCompanyListRequest) -> dict[str, object]:
+    """Search listed companies by region (address substring) and/or employee count."""
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    region = req.region.strip()
+    use_emp = req.emp_min is not None or req.emp_max is not None
+
+    all_companies = _load_all_listed_details()
+
+    candidates = (
+        [c for c in all_companies if region in c.get("adres", "")]
+        if region else list(all_companies)
+    )
+
+    if use_emp:
+        with ThreadPoolExecutor(max_workers=20) as executor:
+            futures = {
+                executor.submit(_fetch_emp_count, c["corp_code"], req.bsns_year): c
+                for c in candidates
+            }
+            filtered: list[dict] = []
+            for future in as_completed(futures):
+                company = futures[future]
+                emp = future.result()
+                if emp < 0:
+                    continue
+                if req.emp_min is not None and emp < req.emp_min:
+                    continue
+                if req.emp_max is not None and emp > req.emp_max:
+                    continue
+                filtered.append({**company, "emp_count": emp})
+    else:
+        filtered = [{**c, "emp_count": None} for c in candidates]
+
+    results = sorted(filtered, key=lambda x: x["corp_name"])[: req.limit]
+
+    return {
+        "region":        region or None,
+        "emp_min":       req.emp_min,
+        "emp_max":       req.emp_max,
+        "bsns_year":     req.bsns_year,
+        "total_matched": len(filtered),
+        "count":         len(results),
+        "results":       results,
+        "source":        "OpenDART company.json" + (" + empSttus.json" if use_emp else ""),
     }
 
 
