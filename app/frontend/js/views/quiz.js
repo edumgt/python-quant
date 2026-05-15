@@ -108,6 +108,22 @@ export function quizHomeView(app, navigate) {
 
 /* ─── QUIZ DAY VIEW ─────────────────────────────── */
 export function quizDayView(app, day, navigate) {
+  if (day > 1 && !loadProgress(day - 1)?.finished) {
+    app.innerHTML = `
+      <div class="card" style="text-align:center;padding:48px 24px;">
+        <div style="font-size:2.5rem;margin-bottom:16px;"><i class="fa-solid fa-lock" style="color:var(--text-muted)"></i></div>
+        <h3 style="margin:0 0 8px;font-size:1.1rem;font-weight:800">Day ${day} 잠금됨</h3>
+        <p style="font-size:.88rem;color:var(--text-muted);margin:0 0 24px;">
+          Day ${day - 1} 시험을 완료해야 접근할 수 있습니다.
+        </p>
+        <button class="btn btn-primary" id="go-prev-day">
+          <i class="fa-solid fa-arrow-left"></i> Day ${day - 1} 시험 보러 가기
+        </button>
+      </div>`;
+    app.querySelector('#go-prev-day').onclick = () => navigate(`quiz-day-${day - 1}`);
+    return;
+  }
+
   app.innerHTML = `<div class="loading-wrap"><div class="spinner"></div><div class="loading-text">문제 로딩 중…</div></div>`;
 
   fetch(`/api/quiz/day/${day}`)

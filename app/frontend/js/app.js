@@ -41,11 +41,12 @@ const learnRoutes = Object.fromEntries(
   ]),
 );
 
-const quizDayRoutes = {
-  'quiz-day-1': { label: '통합 모의고사 응시 Day 1', render: () => quizDayView(app, 1, navigate) },
-  'quiz-day-2': { label: '통합 모의고사 응시 Day 2', render: () => quizDayView(app, 2, navigate) },
-  'quiz-day-3': { label: '통합 모의고사 응시 Day 3', render: () => quizDayView(app, 3, navigate) },
-};
+const quizDayRoutes = Object.fromEntries(
+  Array.from({ length: 15 }, (_, i) => i + 1).map(d => [
+    `quiz-day-${d}`,
+    { label: `통합 모의고사 응시 Day ${d}`, render: () => quizDayView(app, d, navigate) },
+  ])
+);
 
 const routes = {
   'home':              { label: '홈',                     render: () => homeView(app, navigate) },
@@ -83,6 +84,17 @@ const routes = {
 
 let currentView = null;
 
+function updateQuizSidebarLock() {
+  for (let d = 2; d <= 15; d++) {
+    const el = document.querySelector(`.nav-item[data-view="quiz-day-${d}"]`);
+    if (!el) continue;
+    const prevDone = (() => {
+      try { const p = JSON.parse(localStorage.getItem(`quiz_progress_day${d - 1}`)); return p?.finished === true; } catch { return false; }
+    })();
+    el.classList.toggle('locked', !prevDone);
+  }
+}
+
 function navigate(view) {
   const route = routes[view] || routes['home'];
   currentView = view;
@@ -98,10 +110,14 @@ function navigate(view) {
   if (view?.startsWith('learn-') && typeof window._openNavSection === 'function') window._openNavSection('learn');
   if (view?.startsWith('quiz-') && typeof window._openNavSection === 'function') window._openNavSection('quiz');
 
+  if (view?.startsWith('quiz-')) updateQuizSidebarLock();
+
   route.render();
 
   if (typeof closeSidebar === 'function') closeSidebar();
 }
+
+window.navigate = navigate;
 
 // Wire up sidebar links
 document.querySelectorAll('.nav-item[data-view], .sidebar-link[data-view]').forEach(a => {

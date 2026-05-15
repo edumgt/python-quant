@@ -183,6 +183,19 @@ img { max-width: 100%; }
   border-left-color: var(--primary);
   font-weight: 600;
 }
+.nav-item.locked {
+  opacity: .4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.nav-item.locked::after {
+  content: '\f023';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: .65rem;
+  margin-left: auto;
+  color: var(--text-muted);
+}
 .nav-home {
   font-size: .85rem; font-weight: 600; color: var(--text);
   padding: 8px 14px 8px 20px; margin-bottom: 4px;
