@@ -344,8 +344,8 @@ pkill -f uvicorn
 
 ```
 
-- 웹앱: `http://localhost:8000`
-- API 문서: `http://localhost:8000/docs`
+- 웹앱: `http://localhost:8800`
+- API 문서: `http://localhost:8800/docs`
 - 기본 헬스체크: `GET /api/health`
 
 
